@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash([ -f \"$f\" ])",
+      "Bash(rtk read *)",
+      "Bash(echo \"NO_INDEX\")",
+      "Bash(rtk git *)",
+      "Bash(rtk ls *)"
+    ]
+  }
+}
