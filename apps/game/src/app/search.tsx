@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -146,9 +147,12 @@ export default function SearchScreen() {
                       { backgroundColor: RIGHT_COLOR, opacity: pressed ? 0.8 : 1 },
                     ]}
                   >
-                    <ThemedText style={styles.proposeText}>
-                      {t('solo.submit')} « {q} »
-                    </ThemedText>
+                    <View style={styles.proposeContent}>
+                      <Ionicons name="add-circle-outline" size={18} color="#fff" />
+                      <ThemedText style={styles.proposeText}>
+                        {t('solo.submit')} « {q} »
+                      </ThemedText>
+                    </View>
                   </Pressable>
                 </View>
               ) : submitted ? (
@@ -180,8 +184,9 @@ export default function SearchScreen() {
                     { backgroundColor: LEFT_COLOR, opacity: pressed ? 0.8 : 1 },
                   ]}
                 >
+                  <Ionicons name="arrow-back" size={20} color="#fff" />
                   <ThemedText type="subtitle" style={styles.voteText}>
-                    ← {t('game.left')}
+                    {t('game.left')}
                   </ThemedText>
                 </Pressable>
                 <Pressable
@@ -193,8 +198,9 @@ export default function SearchScreen() {
                   ]}
                 >
                   <ThemedText type="subtitle" style={styles.voteText}>
-                    {t('game.right')} →
+                    {t('game.right')}
                   </ThemedText>
+                  <Ionicons name="arrow-forward" size={20} color="#fff" />
                 </Pressable>
               </View>
             )}
@@ -264,9 +270,17 @@ const styles = StyleSheet.create({
   },
   voteButton: {
     flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: Spacing.two,
     paddingVertical: Spacing.three,
     borderRadius: Spacing.three,
     alignItems: 'center',
+  },
+  proposeContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.one,
   },
   voteText: {
     color: '#fff',

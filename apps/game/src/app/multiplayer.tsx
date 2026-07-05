@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
@@ -92,9 +93,12 @@ export default function MultiplayerScreen() {
               { backgroundColor: RIGHT_COLOR, opacity: busy || pressed ? 0.7 : 1 },
             ]}
           >
-            <ThemedText type="subtitle" style={styles.primaryText}>
-              {t('multiplayer.create')}
-            </ThemedText>
+            <View style={styles.buttonContent}>
+              <Ionicons name="add-circle-outline" size={22} color="#fff" />
+              <ThemedText type="subtitle" style={styles.primaryText}>
+                {t('multiplayer.create')}
+              </ThemedText>
+            </View>
           </Pressable>
         </View>
 
@@ -127,7 +131,10 @@ export default function MultiplayerScreen() {
               },
             ]}
           >
-            <ThemedText type="subtitle">{t('multiplayer.join')}</ThemedText>
+            <View style={styles.buttonContent}>
+              <Ionicons name="enter-outline" size={22} color={theme.text} />
+              <ThemedText type="subtitle">{t('multiplayer.join')}</ThemedText>
+            </View>
           </Pressable>
         </View>
 
@@ -172,6 +179,11 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.three,
     borderRadius: Spacing.three,
     alignItems: 'center',
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
   },
   primaryText: {
     color: '#fff',

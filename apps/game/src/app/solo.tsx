@@ -1,24 +1,34 @@
-import { useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useEffect, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LEFT_COLOR, RIGHT_COLOR } from '@/components/swipe-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { SwipeDeck, type SwipeDeckHandle } from '@/components/swipe-deck';
 import { LastVoteBar } from '@/components/last-vote-bar';
+import { TallyBar } from '@/components/tally-bar';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { AdSlot } from '@/ads/ad-slot';
 import { useInterstitial } from '@/ads/use-interstitial';
 import { useDeck } from '@/hooks/use-deck';
-import { reportItem } from '@/lib/api';
+import { useTheme } from '@/hooks/use-theme';
+import { fetchTallies, reportItem } from '@/lib/api';
 import { t } from '@/lib/i18n';
 import { useShowResults } from '@/lib/prefs';
-import type { Side } from '@cdgodd/shared';
+import type { Side, VoteTally } from '@cdgodd/shared';
 
 export default function SoloScreen() {
   const { cards, loading, error, lastVote, swipe, retry, exhausted } =
     useDeck();
   const deck = useRef<SwipeDeckHandle>(null);
+  const theme = useTheme();
   const countSwipeForAds = useInterstitial();
   const { showResults, setShowResults } = useShowResults();
 
@@ -37,6 +47,34 @@ export default function SoloScreen() {
     setReportedId(top.id);
     reportItem(top.id).catch(() => setReportedId(null));
   }
+
+  // Real-time mode: live global tally of the card currently on screen.
+  const [currentTally, setCurrentTally] = useState<VoteTally | null>(null);
+  const topId = top?.id;
+  useEffect(() => {
+    setCurrentTally(null);
+    if (!showResults || topId === undefined) return;
+    let alive = true;
+    fetchTallies([topId])
+      .then(({ tallies }) => {
+        if (alive) setCurrentTally(tallies[0] ?? null);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [showResults, topId]);
+
+  // Web: vote with the keyboard arrows.
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') deck.current?.swipeOut('left');
+      if (e.key === 'ArrowRight') deck.current?.swipeOut('right');
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   return (
     <ThemedView style={styles.container}>
@@ -69,6 +107,11 @@ export default function SoloScreen() {
           )}
         </View>
 
+        {/* Real-time mode: the current card's live global tally. */}
+        {showResults && top && currentTally && (
+          <TallyBar tally={currentTally} />
+        )}
+
         {cards.length > 0 && (
           <View style={styles.voteRow}>
             <Pressable
@@ -79,8 +122,9 @@ export default function SoloScreen() {
                 { backgroundColor: LEFT_COLOR, opacity: pressed ? 0.8 : 1 },
               ]}
             >
+              <Ionicons name="arrow-back" size={22} color="#fff" />
               <ThemedText type="subtitle" style={styles.voteButtonText}>
-                ← {t('game.left')}
+                {t('game.left')}
               </ThemedText>
             </Pressable>
             <Pressable
@@ -92,8 +136,9 @@ export default function SoloScreen() {
               ]}
             >
               <ThemedText type="subtitle" style={styles.voteButtonText}>
-                {t('game.right')} →
+                {t('game.right')}
               </ThemedText>
+              <Ionicons name="arrow-forward" size={22} color="#fff" />
             </Pressable>
           </View>
         )}
@@ -104,27 +149,36 @@ export default function SoloScreen() {
               testID="report"
               onPress={report}
               disabled={reported}
-              style={styles.smallAction}
+              style={[styles.smallAction, styles.smallActionRow]}
             >
+              <Ionicons
+                name={reported ? 'checkmark' : 'flag-outline'}
+                size={14}
+                color={theme.textSecondary}
+              />
               <ThemedText type="small" themeColor="textSecondary">
-                {reported ? `✓ ${t('game.reported')}` : `⚑ ${t('game.report')}`}
+                {reported ? t('game.reported') : t('game.report')}
               </ThemedText>
             </Pressable>
-            {/* Show/hide global results — mirrors the settings toggle. */}
+            {/* Toggle real-time results — mirrors the settings switch. */}
             <Pressable
               testID="toggle-results"
               onPress={() => setShowResults(!showResults)}
               style={styles.smallAction}
             >
-              <ThemedText type="small" style={!showResults && styles.dimmed}>
-                {showResults ? '👁️' : '🙈'}
-              </ThemedText>
+              <Ionicons
+                name={showResults ? 'eye' : 'eye-off'}
+                size={18}
+                color={theme.textSecondary}
+                style={!showResults && styles.dimmed}
+              />
             </Pressable>
           </View>
         )}
 
+        {/* The previous card's result is always shown once you've voted. */}
         <View style={styles.footer}>
-          {showResults && lastVote && <LastVoteBar lastVote={lastVote} />}
+          {lastVote && <LastVoteBar lastVote={lastVote} />}
         </View>
 
         <AdSlot />
@@ -166,6 +220,9 @@ const styles = StyleSheet.create({
   },
   voteButton: {
     flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: Spacing.two,
     paddingVertical: Spacing.three,
     borderRadius: Spacing.three,
     alignItems: 'center',
@@ -184,6 +241,11 @@ const styles = StyleSheet.create({
   smallAction: {
     paddingVertical: Spacing.one,
     paddingHorizontal: Spacing.three,
+  },
+  smallActionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.one,
   },
   dimmed: {
     opacity: 0.5,

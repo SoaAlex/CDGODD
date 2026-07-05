@@ -1,0 +1,136 @@
+[
+  {
+    "id": 1,
+    "name": "Sel",
+    "imageUrl": "https://post.medicalnewstoday.com/wp-content/uploads/sites/3/2020/02/322745_1100-732x549.jpg",
+    "votesLeft": 10,
+    "votesRight": 5
+  },
+  {
+    "id": 2,
+    "name": "Hamburger",
+    "imageUrl": "https://media-cdn.tripadvisor.com/media/photo-s/25/18/0e/8a/original-smash-burger.jpg",
+    "votesLeft": 3,
+    "votesRight": 7
+  },
+  {
+    "id": 3,
+    "name": "Moto",
+    "votesLeft": 8,
+    "votesRight": 2
+  },
+  {
+    "id": 4,
+    "name": "Chaise",
+    "votesLeft": 6,
+    "votesRight": 4
+  },
+  {
+    "id": 5,
+    "name": "Table",
+    "votesLeft": 9,
+    "votesRight": 1
+  },
+  {
+    "id": 6,
+    "name": "Ordinateur",
+    "votesLeft": 2,
+    "votesRight": 8
+  },
+  {
+    "id": 7,
+    "name": "Téléphone",
+    "votesLeft": 7,
+    "votesRight": 3
+  },
+  {
+    "id": 8,
+    "name": "Livre",
+    "votesLeft": 4,
+    "votesRight": 6
+  },
+  {
+    "id": 9,
+    "name": "Stylo",
+    "votesLeft": 5,
+    "votesRight": 5
+  },
+  {
+    "id": 10,
+    "name": "Lampe",
+    "votesLeft": 1,
+    "votesRight": 9
+  },
+  {
+    "id": 11,
+    "name": "Vélo",
+    "votesLeft": 6,
+    "votesRight": 4
+  },
+  {
+    "id": 12,
+    "name": "Sac à dos",
+    "votesLeft": 3,
+    "votesRight": 7
+  },
+  {
+    "id": 13,
+    "name": "Montre",
+    "votesLeft": 8,
+    "votesRight": 2
+  },
+  {
+    "id": 14,
+    "name": "Chaussures",
+    "votesLeft": 9,
+    "votesRight": 1
+  },
+  {
+    "id": 15,
+    "name": "Casque",
+    "votesLeft": 2,
+    "votesRight": 8
+  },
+  {
+    "id": 16,
+    "name": "Clavier",
+    "votesLeft": 7,
+    "votesRight": 3
+  },
+  {
+    "id": 17,
+    "name": "Souris",
+    "votesLeft": 4,
+    "votesRight": 6
+  },
+  {
+    "id": 18,
+    "name": "Télévision",
+    "votesLeft": 5,
+    "votesRight": 5
+  },
+  {
+    "id": 19,
+    "name": "Réfrigérateur",
+    "votesLeft": 1,
+    "votesRight": 9
+  },
+  {
+    "id": 20,
+    "name": "Four",
+    "votesLeft": 6,
+    "votesRight": 4
+  },
+  {
+    "id": 21,
+    "name": "Micro-ondes",
+    "votesLeft": 3,
+    "votesRight": 7
+  },
+  {
+    "id": 22,
+    "name": "Lave-vaisselle",
+    "votesLeft": 8,
+    "votesRight": 2
+  }
+]

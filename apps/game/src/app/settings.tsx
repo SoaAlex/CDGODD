@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Switch, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -83,11 +84,18 @@ export default function SettingsScreen() {
               },
             ]}
           >
-            <ThemedText>
-              {justReset
-                ? `✓ ${t('settings.sessionReset')}`
-                : t('settings.resetSession')}
-            </ThemedText>
+            <View style={styles.buttonContent}>
+              <Ionicons
+                name={justReset ? 'checkmark' : 'refresh'}
+                size={18}
+                color={theme.text}
+              />
+              <ThemedText>
+                {justReset
+                  ? t('settings.sessionReset')
+                  : t('settings.resetSession')}
+              </ThemedText>
+            </View>
           </Pressable>
         </View>
 
@@ -135,5 +143,10 @@ const styles = StyleSheet.create({
   rowLabel: {
     flex: 1,
     marginRight: Spacing.two,
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
   },
 });

@@ -1,8 +1,10 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  Platform,
   Pressable,
   StyleSheet,
   View,
@@ -34,6 +36,17 @@ export default function RoomScreen() {
     start,
     vote,
   } = useRoom(code ?? '');
+
+  // Web: vote with the keyboard arrows (only while a card is votable).
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') deck.current?.swipeOut('left');
+      if (e.key === 'ArrowRight') deck.current?.swipeOut('right');
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   if (error) {
     return (
@@ -119,9 +132,12 @@ export default function RoomScreen() {
               { backgroundColor: RIGHT_COLOR, opacity: pressed ? 0.8 : 1 },
             ]}
           >
-            <ThemedText type="subtitle" style={{ color: '#fff' }}>
-              {t('multiplayer.start')}
-            </ThemedText>
+            <View style={styles.buttonContent}>
+              <Ionicons name="play" size={22} color="#fff" />
+              <ThemedText type="subtitle" style={{ color: '#fff' }}>
+                {t('multiplayer.start')}
+              </ThemedText>
+            </View>
           </Pressable>
         ) : (
           <ThemedText themeColor="textSecondary">
@@ -168,8 +184,9 @@ export default function RoomScreen() {
                 { backgroundColor: LEFT_COLOR, opacity: pressed ? 0.8 : 1 },
               ]}
             >
+              <Ionicons name="arrow-back" size={22} color="#fff" />
               <ThemedText type="subtitle" style={styles.voteText}>
-                ← {t('game.left')}
+                {t('game.left')}
               </ThemedText>
             </Pressable>
             <Pressable
@@ -181,8 +198,9 @@ export default function RoomScreen() {
               ]}
             >
               <ThemedText type="subtitle" style={styles.voteText}>
-                {t('game.right')} →
+                {t('game.right')}
               </ThemedText>
+              <Ionicons name="arrow-forward" size={22} color="#fff" />
             </Pressable>
           </View>
         )}
@@ -252,9 +270,17 @@ const styles = StyleSheet.create({
   },
   voteButton: {
     flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: Spacing.two,
     paddingVertical: Spacing.three,
     borderRadius: Spacing.three,
     alignItems: 'center',
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
   },
   voteText: {
     color: '#fff',

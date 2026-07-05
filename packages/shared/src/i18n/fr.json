@@ -39,7 +39,7 @@
     "yourVote": "Ton vote"
   },
   "settings": {
-    "showResults": "Afficher les résultats après chaque vote",
+    "showResults": "Afficher les votes en direct sur la carte",
     "language": "Langue",
     "resetSession": "Réinitialiser ma session anonyme",
     "sessionReset": "Session réinitialisée",
