@@ -7,6 +7,7 @@ import type {
   VoteResponse,
 } from '@cdgodd/shared';
 import { getSessionId } from './session';
+import { getTurnstileToken } from './turnstile';
 
 /** Point at `wrangler dev` locally; set EXPO_PUBLIC_API_URL for prod builds. */
 export const API_BASE =
@@ -35,11 +36,14 @@ export function fetchDeck(cursor?: number, limit = 25): Promise<DeckResponse> {
   return request<DeckResponse>(`/deck?${params}`);
 }
 
-export function castVote(itemId: number, side: Side): Promise<VoteResponse> {
+export async function castVote(
+  itemId: number,
+  side: Side,
+): Promise<VoteResponse> {
+  const turnstileToken = await getTurnstileToken();
   return request<VoteResponse>(`/items/${itemId}/vote`, {
     method: 'POST',
-    // Turnstile wiring lands in M5; the API skips verification in dev mode.
-    body: JSON.stringify({ side, turnstileToken: 'dev' }),
+    body: JSON.stringify({ side, turnstileToken }),
   });
 }
 
@@ -48,17 +52,22 @@ export function searchItems(q: string): Promise<SearchResponse> {
   return request<SearchResponse>(`/items/search?${params}`);
 }
 
-export function submitItem(label: string): Promise<SubmissionResponse> {
+export async function submitItem(label: string): Promise<SubmissionResponse> {
+  const turnstileToken = await getTurnstileToken();
   return request<SubmissionResponse>('/submissions', {
     method: 'POST',
-    body: JSON.stringify({ label, lang: 'fr', turnstileToken: 'dev' }),
+    body: JSON.stringify({ label, lang: 'fr', turnstileToken }),
   });
 }
 
-export function reportItem(itemId: number, reason?: string): Promise<void> {
+export async function reportItem(
+  itemId: number,
+  reason?: string,
+): Promise<void> {
+  const turnstileToken = await getTurnstileToken();
   return request(`/items/${itemId}/report`, {
     method: 'POST',
-    body: JSON.stringify({ reason, turnstileToken: 'dev' }),
+    body: JSON.stringify({ reason, turnstileToken }),
   });
 }
 

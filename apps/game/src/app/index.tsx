@@ -64,8 +64,7 @@ export default function MenuScreen() {
           <MenuButton label={t('menu.play')} href="/solo" primary />
           <MenuButton label={t('solo.search')} href="/search" />
           <MenuButton label={t('menu.multiplayer')} href="/multiplayer" />
-          {/* M5: */}
-          <MenuButton label={t('menu.settings')} href="/settings" disabled />
+          <MenuButton label={t('menu.settings')} href="/settings" />
         </View>
       </SafeAreaView>
     </ThemedView>

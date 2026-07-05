@@ -36,6 +36,13 @@ export default function RootLayout() {
               headerBackButtonDisplayMode: 'minimal',
             }}
           />
+          <Stack.Screen
+            name="settings"
+            options={{
+              title: t('menu.settings'),
+              headerBackButtonDisplayMode: 'minimal',
+            }}
+          />
         </Stack>
       </ThemeProvider>
     </GestureHandlerRootView>

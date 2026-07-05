@@ -7,14 +7,23 @@ import { ThemedView } from '@/components/themed-view';
 import { SwipeDeck, type SwipeDeckHandle } from '@/components/swipe-deck';
 import { TallyBar } from '@/components/tally-bar';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { AdSlot } from '@/ads/ad-slot';
+import { useInterstitial } from '@/ads/use-interstitial';
 import { useDeck } from '@/hooks/use-deck';
 import { reportItem } from '@/lib/api';
 import { t } from '@/lib/i18n';
+import type { Side } from '@cdgodd/shared';
 
 export default function SoloScreen() {
   const { cards, loading, error, lastTally, swipe, retry, exhausted } =
     useDeck();
   const deck = useRef<SwipeDeckHandle>(null);
+  const countSwipeForAds = useInterstitial();
+
+  function onSwipe(side: Side) {
+    swipe(side);
+    countSwipeForAds();
+  }
   // Item id whose report was just sent (shows the "merci" state briefly).
   const [reportedId, setReportedId] = useState<number | null>(null);
 
@@ -54,7 +63,7 @@ export default function SoloScreen() {
           )}
 
           {cards.length > 0 && (
-            <SwipeDeck ref={deck} cards={cards} onSwipe={swipe} />
+            <SwipeDeck ref={deck} cards={cards} onSwipe={onSwipe} />
           )}
         </View>
 
@@ -103,6 +112,8 @@ export default function SoloScreen() {
         <View style={styles.footer}>
           {lastTally && <TallyBar tally={lastTally} />}
         </View>
+
+        <AdSlot />
       </SafeAreaView>
     </ThemedView>
   );
