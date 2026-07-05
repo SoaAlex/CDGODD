@@ -1,0 +1,32 @@
+name = "cdgodd-api"
+main = "src/index.ts"
+compatibility_date = "2026-06-01"
+
+[observability]
+enabled = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "cdgodd"
+# Replace after `wrangler d1 create cdgodd`:
+database_id = "REPLACE_ME"
+
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "cdgodd-images"
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "Room"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Room"]
+
+[vars]
+# Public base URL for serving R2 images (custom domain or r2.dev during dev).
+CDN_BASE = "https://images.example.com"
+# Set real secrets with `wrangler secret put`:
+#   TURNSTILE_SECRET  - Cloudflare Turnstile secret key
+#   IP_HASH_SALT      - random salt for ip_hash (rotate periodically)
+#   ADMIN_TOKEN       - bearer token for /admin routes (v1 auth)

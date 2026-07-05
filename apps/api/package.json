@@ -1,0 +1,23 @@
+{
+  "name": "@cdgodd/api",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "db:migrate:local": "wrangler d1 migrations apply cdgodd --local",
+    "db:migrate:remote": "wrangler d1 migrations apply cdgodd --remote",
+    "db:seed:local": "wrangler d1 execute cdgodd --local --file=./src/db/seed.sql"
+  },
+  "dependencies": {
+    "@cdgodd/shared": "workspace:*",
+    "hono": "^4.8.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250620.0",
+    "typescript": "^5.8.3",
+    "wrangler": "^4.22.0"
+  }
+}

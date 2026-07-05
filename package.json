@@ -1,0 +1,16 @@
+{
+  "name": "cdgodd",
+  "private": true,
+  "packageManager": "pnpm@10.12.4",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.4",
+    "typescript": "^5.8.3"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "menu": {
+    "title": "Gauche ou Droite ?",
+    "play": "Jouer",
+    "multiplayer": "Multijoueur",
+    "settings": "Paramètres"
+  },
+  "solo": {
+    "random": "Cartes aléatoires",
+    "search": "Recherche libre",
+    "searchPlaceholder": "Chercher un objet, un concept…",
+    "notFound": "Introuvable ? Proposez-le !",
+    "submit": "Proposer",
+    "submitted": "Envoyé pour validation"
+  },
+  "game": {
+    "left": "Gauche",
+    "right": "Droite",
+    "report": "Signaler",
+    "reported": "Merci, c'est signalé"
+  },
+  "multiplayer": {
+    "create": "Créer une salle",
+    "join": "Rejoindre",
+    "codePlaceholder": "Code de la salle",
+    "waiting": "En attente des joueurs…",
+    "start": "Commencer",
+    "results": "Résultats"
+  },
+  "settings": {
+    "language": "Langue",
+    "resetSession": "Réinitialiser ma session anonyme"
+  },
+  "consent": {
+    "title": "Publicités",
+    "body": "Le jeu est gratuit et anonyme. Seules les publicités peuvent collecter des données, avec votre accord."
+  },
+  "errors": {
+    "network": "Erreur réseau, réessayez",
+    "roomNotFound": "Salle introuvable"
+  }
+}

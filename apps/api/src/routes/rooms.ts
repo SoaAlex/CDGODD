@@ -1,0 +1,42 @@
+import { Hono } from 'hono';
+import { createRoomSchema, roomCodeSchema } from '@cdgodd/shared';
+import type { AppContext } from '../env';
+
+const rooms = new Hono<AppContext>();
+
+/** Unambiguous alphabet (no O/0, I/1/L) for short codes. */
+const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+
+function randomCode(): string {
+  const bytes = crypto.getRandomValues(new Uint8Array(6));
+  return [...bytes].map((b) => CODE_ALPHABET[b % CODE_ALPHABET.length]).join('');
+}
+
+/** POST /rooms — create a room, returns its short code. */
+rooms.post('/rooms', async (c) => {
+  const parsed = createRoomSchema.safeParse(
+    await c.req.json().catch(() => ({})),
+  );
+  if (!parsed.success) return c.json({ error: 'bad body' }, 400);
+
+  const code = randomCode();
+  const stub = c.env.ROOMS.get(c.env.ROOMS.idFromName(code));
+  const res = await stub.fetch(
+    `https://room.internal/?code=${code}&mode=${parsed.data.mode}&roundSize=${parsed.data.roundSize}`,
+  );
+  return new Response(res.body, res);
+});
+
+/** GET /rooms/:code and WS /rooms/:code/ws — proxy to the Durable Object. */
+rooms.all('/rooms/:code/:sub?', async (c) => {
+  const code = c.req.param('code').toUpperCase();
+  if (!roomCodeSchema.safeParse(code).success) {
+    return c.json({ error: 'invalid room code' }, 400);
+  }
+  const stub = c.env.ROOMS.get(c.env.ROOMS.idFromName(code));
+  const url = new URL(c.req.raw.url);
+  url.searchParams.set('code', code);
+  return stub.fetch(new Request(url, c.req.raw));
+});
+
+export default rooms;
