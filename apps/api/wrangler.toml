@@ -24,8 +24,10 @@ tag = "v1"
 new_sqlite_classes = ["Room"]
 
 [vars]
-# Public base URL for serving R2 images (custom domain or r2.dev during dev).
-CDN_BASE = "https://images.example.com"
+# Public base URL for card images. The Worker serves R2 objects at /img/*
+# (immutable cache headers); in prod, point this at the deployed Worker
+# domain (Cloudflare's CDN caches it) or a custom images domain.
+CDN_BASE = "http://localhost:8787/img"
 # Set real secrets with `wrangler secret put`:
 #   TURNSTILE_SECRET  - Cloudflare Turnstile secret key
 #   IP_HASH_SALT      - random salt for ip_hash (rotate periodically)

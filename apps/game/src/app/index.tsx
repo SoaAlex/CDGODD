@@ -62,6 +62,7 @@ export default function MenuScreen() {
 
         <View style={styles.menu}>
           <MenuButton label={t('menu.play')} href="/solo" primary />
+          <MenuButton label={t('solo.search')} href="/search" />
           {/* M4 + M5: */}
           <MenuButton label={t('menu.multiplayer')} href="/multiplayer" disabled />
           <MenuButton label={t('menu.settings')} href="/settings" disabled />

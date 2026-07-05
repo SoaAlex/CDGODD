@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LEFT_COLOR, RIGHT_COLOR } from '@/components/swipe-card';
@@ -8,12 +8,24 @@ import { SwipeDeck, type SwipeDeckHandle } from '@/components/swipe-deck';
 import { TallyBar } from '@/components/tally-bar';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useDeck } from '@/hooks/use-deck';
+import { reportItem } from '@/lib/api';
 import { t } from '@/lib/i18n';
 
 export default function SoloScreen() {
   const { cards, loading, error, lastTally, swipe, retry, exhausted } =
     useDeck();
   const deck = useRef<SwipeDeckHandle>(null);
+  // Item id whose report was just sent (shows the "merci" state briefly).
+  const [reportedId, setReportedId] = useState<number | null>(null);
+
+  const top = cards[0];
+  const reported = top !== undefined && reportedId === top.id;
+
+  function report() {
+    if (!top || reported) return;
+    setReportedId(top.id);
+    reportItem(top.id).catch(() => setReportedId(null));
+  }
 
   return (
     <ThemedView style={styles.container}>
@@ -75,6 +87,19 @@ export default function SoloScreen() {
           </View>
         )}
 
+        {top && (
+          <Pressable
+            testID="report"
+            onPress={report}
+            disabled={reported}
+            style={styles.reportButton}
+          >
+            <ThemedText type="small" themeColor="textSecondary">
+              {reported ? `✓ ${t('game.reported')}` : `⚑ ${t('game.report')}`}
+            </ThemedText>
+          </Pressable>
+        )}
+
         <View style={styles.footer}>
           {lastTally && <TallyBar tally={lastTally} />}
         </View>
@@ -124,6 +149,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 20,
     lineHeight: 28,
+  },
+  reportButton: {
+    alignSelf: 'center',
+    paddingVertical: Spacing.one,
+    paddingHorizontal: Spacing.three,
   },
   footer: {
     minHeight: 48,

@@ -54,6 +54,20 @@ items.get('/deck', async (c) => {
   return c.json(body);
 });
 
+/** GET /categories?lang=fr — localized category list (submit form, admin). */
+items.get('/categories', async (c) => {
+  const lang = c.req.query('lang') ?? 'fr';
+  const { results } = await c.env.DB.prepare(
+    `SELECT c.key, ct.name
+       FROM categories c
+       JOIN category_translations ct ON ct.category_id = c.id AND ct.lang = ?1
+      ORDER BY ct.name`,
+  )
+    .bind(lang)
+    .all<{ key: string; name: string }>();
+  return c.json({ categories: results });
+});
+
 /** GET /items/search?q=…&lang=fr — free-search mode. */
 items.get('/items/search', async (c) => {
   const parsed = searchQuerySchema.safeParse(c.req.query());

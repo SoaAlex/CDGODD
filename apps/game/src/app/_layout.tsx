@@ -15,6 +15,13 @@ export default function RootLayout() {
             name="solo"
             options={{ title: t('menu.play'), headerBackButtonDisplayMode: 'minimal' }}
           />
+          <Stack.Screen
+            name="search"
+            options={{
+              title: t('solo.search'),
+              headerBackButtonDisplayMode: 'minimal',
+            }}
+          />
         </Stack>
       </ThemeProvider>
     </GestureHandlerRootView>
