@@ -1,4 +1,10 @@
-import type { DeckCard, RoomState, Side, VoteTally } from './models';
+import type {
+  DeckCard,
+  RoomCardResult,
+  RoomState,
+  Side,
+  VoteTally,
+} from './models';
 
 /** GET /deck */
 export interface DeckResponse {
@@ -38,7 +44,9 @@ export type RoomClientMessage =
 export type RoomServerMessage =
   | { type: 'state'; room: RoomState }
   | { type: 'card'; cardIndex: number; card: DeckCard }
-  | { type: 'reveal'; results: VoteTally[] }
+  /** Live mode only: result of a card everyone just voted on. */
+  | { type: 'tally'; cardIndex: number; votesLeft: number; votesRight: number }
+  | { type: 'reveal'; results: RoomCardResult[] }
   | { type: 'error'; message: string };
 
 export interface ApiError {

@@ -44,8 +44,17 @@ export interface RoomState {
   code: string;
   mode: RoomMode;
   phase: RoomPhase;
-  /** Number of cards in the round (batch mode). */
+  /** Number of cards in the round. */
   roundSize: number;
   playerCount: number;
   currentCardIndex: number;
+  /** Session id of the room creator (only the host can start the round). */
+  hostId: string | null;
+}
+
+/** Per-card outcome revealed at the end of a round. */
+export interface RoomCardResult {
+  card: DeckCard;
+  votesLeft: number;
+  votesRight: number;
 }

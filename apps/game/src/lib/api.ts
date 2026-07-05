@@ -1,4 +1,5 @@
 import type {
+  CreateRoomResponse,
   DeckResponse,
   SearchResponse,
   Side,
@@ -8,8 +9,11 @@ import type {
 import { getSessionId } from './session';
 
 /** Point at `wrangler dev` locally; set EXPO_PUBLIC_API_URL for prod builds. */
-const API_BASE =
+export const API_BASE =
   process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8787';
+
+/** ws(s):// equivalent of API_BASE, for room WebSockets. */
+export const WS_BASE = API_BASE.replace(/^http/, 'ws');
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const sessionId = await getSessionId();
@@ -55,5 +59,15 @@ export function reportItem(itemId: number, reason?: string): Promise<void> {
   return request(`/items/${itemId}/report`, {
     method: 'POST',
     body: JSON.stringify({ reason, turnstileToken: 'dev' }),
+  });
+}
+
+export function createRoom(
+  mode: 'batch' | 'live',
+  roundSize: number,
+): Promise<CreateRoomResponse> {
+  return request<CreateRoomResponse>('/rooms', {
+    method: 'POST',
+    body: JSON.stringify({ mode, roundSize }),
   });
 }

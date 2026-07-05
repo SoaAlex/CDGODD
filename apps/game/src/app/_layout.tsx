@@ -22,6 +22,20 @@ export default function RootLayout() {
               headerBackButtonDisplayMode: 'minimal',
             }}
           />
+          <Stack.Screen
+            name="multiplayer"
+            options={{
+              title: t('menu.multiplayer'),
+              headerBackButtonDisplayMode: 'minimal',
+            }}
+          />
+          <Stack.Screen
+            name="room/[code]"
+            options={{
+              title: t('menu.multiplayer'),
+              headerBackButtonDisplayMode: 'minimal',
+            }}
+          />
         </Stack>
       </ThemeProvider>
     </GestureHandlerRootView>

@@ -17,6 +17,8 @@ import { t } from '@/lib/i18n';
 
 /** Horizontal travel (as a fraction of screen width) that commits a vote. */
 const COMMIT_RATIO = 0.35;
+/** Exit animation duration; also the vote-commit delay. */
+const EXIT_MS = 220;
 
 interface Props {
   cards: DeckCard[];
@@ -59,11 +61,14 @@ export const SwipeDeck = forwardRef<SwipeDeckHandle, Props>(function SwipeDeck(
 
   const swipeOut = (side: Side) => {
     const id = ++swipeId.current;
-    tx.value = withTiming(
-      (side === 'right' ? 1 : -1) * width * 1.5,
-      { duration: 220 },
-      () => runOnJS(commit)(side, id),
-    );
+    tx.value = withTiming((side === 'right' ? 1 : -1) * width * 1.5, {
+      duration: EXIT_MS,
+    });
+    // Commit on a timer, never on the animation callback: reanimated web
+    // drives animations with requestAnimationFrame, which throttled or
+    // backgrounded tabs pause — the exit animation is decoration, the vote
+    // must not depend on it.
+    setTimeout(() => commit(side, id), EXIT_MS);
   };
 
   useImperativeHandle(ref, () => ({ swipeOut }));

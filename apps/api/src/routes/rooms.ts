@@ -19,12 +19,17 @@ rooms.post('/rooms', async (c) => {
   );
   if (!parsed.success) return c.json({ error: 'bad body' }, 400);
 
-  const code = randomCode();
-  const stub = c.env.ROOMS.get(c.env.ROOMS.idFromName(code));
-  const res = await stub.fetch(
-    `https://room.internal/?code=${code}&mode=${parsed.data.mode}&roundSize=${parsed.data.roundSize}`,
-  );
-  return new Response(res.body, res);
+  // Random codes can collide with a live room; retry a few times.
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const code = randomCode();
+    const stub = c.env.ROOMS.get(c.env.ROOMS.idFromName(code));
+    const res = await stub.fetch(
+      `https://room.internal/create?code=${code}&mode=${parsed.data.mode}&roundSize=${parsed.data.roundSize}`,
+      { method: 'POST' },
+    );
+    if (res.status !== 409) return new Response(res.body, res);
+  }
+  return c.json({ error: 'could not allocate room code' }, 503);
 });
 
 /** GET /rooms/:code and WS /rooms/:code/ws — proxy to the Durable Object. */
