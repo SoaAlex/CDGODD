@@ -2,18 +2,25 @@ import { Image } from 'expo-image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { DeckCard, Side, VoteTally } from '@cdgodd/shared';
 import { castVote, fetchDeck } from '@/lib/api';
+import { recordVote } from '@/lib/history';
 
 /** Refetch a new batch when this few cards remain. */
 const REFILL_THRESHOLD = 5;
 /** How many upcoming card images to prefetch. */
 const PREFETCH_AHEAD = 5;
 
+/** The previous card's vote: what it was, how you voted, how the crowd did. */
+export interface LastVote {
+  card: DeckCard;
+  side: Side;
+  tally: VoteTally | null; // null until the server responds
+}
+
 interface DeckState {
   cards: DeckCard[];
   loading: boolean;
   error: string | null;
-  /** Community tally of the last card voted on (for the feedback bar). */
-  lastTally: VoteTally | null;
+  lastVote: LastVote | null;
 }
 
 export function useDeck() {
@@ -21,7 +28,7 @@ export function useDeck() {
     cards: [],
     loading: true,
     error: null,
-    lastTally: null,
+    lastVote: null,
   });
   const cursor = useRef<number | undefined>(undefined);
   const exhausted = useRef(false);
@@ -78,10 +85,28 @@ export function useDeck() {
       if (!top) return;
       queue.current = queue.current.slice(1);
       const snapshot = queue.current;
-      setState((s) => ({ ...s, cards: snapshot }));
+      setState((s) => ({
+        ...s,
+        cards: snapshot,
+        lastVote: { card: top, side, tally: null },
+      }));
+
+      void recordVote({
+        itemId: top.id,
+        side,
+        label: top.label,
+        imageUrl: top.imageUrl,
+        at: Date.now(),
+      });
 
       castVote(top.id, side)
-        .then(({ tally }) => setState((s) => ({ ...s, lastTally: tally })))
+        .then(({ tally }) =>
+          setState((s) =>
+            s.lastVote?.card.id === top.id
+              ? { ...s, lastVote: { ...s.lastVote, tally } }
+              : s,
+          ),
+        )
         .catch(() => {
           /* vote lost on network error — acceptable for solo mode */
         });

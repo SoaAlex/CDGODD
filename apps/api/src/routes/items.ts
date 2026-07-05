@@ -68,6 +68,28 @@ items.get('/categories', async (c) => {
   return c.json({ categories: results });
 });
 
+/**
+ * GET /items/tallies?ids=1,2,3 — current global tallies for a set of items
+ * (history page refreshes its locally-stored votes with these).
+ */
+items.get('/items/tallies', async (c) => {
+  const ids = (c.req.query('ids') ?? '')
+    .split(',')
+    .map((s) => Number(s))
+    .filter((n) => Number.isInteger(n) && n > 0)
+    .slice(0, 100);
+  if (ids.length === 0) return c.json({ tallies: [] });
+
+  const placeholders = ids.map((_, i) => `?${i + 1}`).join(',');
+  const { results } = await c.env.DB.prepare(
+    `SELECT id AS itemId, votes_left AS votesLeft, votes_right AS votesRight
+       FROM items WHERE id IN (${placeholders})`,
+  )
+    .bind(...ids)
+    .all();
+  return c.json({ tallies: results });
+});
+
 /** GET /items/search?q=…&lang=fr — free-search mode. */
 items.get('/items/search', async (c) => {
   const parsed = searchQuerySchema.safeParse(c.req.query());

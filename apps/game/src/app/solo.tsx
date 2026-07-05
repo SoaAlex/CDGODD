@@ -5,20 +5,22 @@ import { LEFT_COLOR, RIGHT_COLOR } from '@/components/swipe-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { SwipeDeck, type SwipeDeckHandle } from '@/components/swipe-deck';
-import { TallyBar } from '@/components/tally-bar';
+import { LastVoteBar } from '@/components/last-vote-bar';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { AdSlot } from '@/ads/ad-slot';
 import { useInterstitial } from '@/ads/use-interstitial';
 import { useDeck } from '@/hooks/use-deck';
 import { reportItem } from '@/lib/api';
 import { t } from '@/lib/i18n';
+import { useShowResults } from '@/lib/prefs';
 import type { Side } from '@cdgodd/shared';
 
 export default function SoloScreen() {
-  const { cards, loading, error, lastTally, swipe, retry, exhausted } =
+  const { cards, loading, error, lastVote, swipe, retry, exhausted } =
     useDeck();
   const deck = useRef<SwipeDeckHandle>(null);
   const countSwipeForAds = useInterstitial();
+  const { showResults, setShowResults } = useShowResults();
 
   function onSwipe(side: Side) {
     swipe(side);
@@ -97,20 +99,32 @@ export default function SoloScreen() {
         )}
 
         {top && (
-          <Pressable
-            testID="report"
-            onPress={report}
-            disabled={reported}
-            style={styles.reportButton}
-          >
-            <ThemedText type="small" themeColor="textSecondary">
-              {reported ? `✓ ${t('game.reported')}` : `⚑ ${t('game.report')}`}
-            </ThemedText>
-          </Pressable>
+          <View style={styles.actionRow}>
+            <Pressable
+              testID="report"
+              onPress={report}
+              disabled={reported}
+              style={styles.smallAction}
+            >
+              <ThemedText type="small" themeColor="textSecondary">
+                {reported ? `✓ ${t('game.reported')}` : `⚑ ${t('game.report')}`}
+              </ThemedText>
+            </Pressable>
+            {/* Show/hide global results — mirrors the settings toggle. */}
+            <Pressable
+              testID="toggle-results"
+              onPress={() => setShowResults(!showResults)}
+              style={styles.smallAction}
+            >
+              <ThemedText type="small" style={!showResults && styles.dimmed}>
+                {showResults ? '👁️' : '🙈'}
+              </ThemedText>
+            </Pressable>
+          </View>
         )}
 
         <View style={styles.footer}>
-          {lastTally && <TallyBar tally={lastTally} />}
+          {showResults && lastVote && <LastVoteBar lastVote={lastVote} />}
         </View>
 
         <AdSlot />
@@ -161,13 +175,21 @@ const styles = StyleSheet.create({
     fontSize: 20,
     lineHeight: 28,
   },
-  reportButton: {
-    alignSelf: 'center',
+  actionRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: Spacing.four,
+  },
+  smallAction: {
     paddingVertical: Spacing.one,
     paddingHorizontal: Spacing.three,
   },
+  dimmed: {
+    opacity: 0.5,
+  },
   footer: {
-    minHeight: 48,
+    minHeight: 56,
     justifyContent: 'flex-end',
   },
 });

@@ -71,6 +71,12 @@ export async function reportItem(
   });
 }
 
+export function fetchTallies(
+  ids: number[],
+): Promise<{ tallies: VoteResponse['tally'][] }> {
+  return request(`/items/tallies?ids=${ids.join(',')}`);
+}
+
 export function createRoom(
   mode: 'batch' | 'live',
   roundSize: number,

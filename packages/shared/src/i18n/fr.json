@@ -3,7 +3,8 @@
     "title": "Gauche ou Droite ?",
     "play": "Jouer",
     "multiplayer": "Multijoueur",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "history": "Historique"
   },
   "solo": {
     "random": "Cartes aléatoires",
@@ -33,7 +34,12 @@
     "cards": "cartes",
     "shareCode": "Partage ce code avec tes amis"
   },
+  "history": {
+    "empty": "Aucun vote pour l'instant",
+    "yourVote": "Ton vote"
+  },
   "settings": {
+    "showResults": "Afficher les résultats après chaque vote",
     "language": "Langue",
     "resetSession": "Réinitialiser ma session anonyme",
     "sessionReset": "Session réinitialisée",

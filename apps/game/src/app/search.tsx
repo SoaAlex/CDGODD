@@ -16,6 +16,7 @@ import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { castVote, searchItems, submitItem } from '@/lib/api';
+import { recordVote } from '@/lib/history';
 import { t } from '@/lib/i18n';
 
 const DEBOUNCE_MS = 300;
@@ -62,6 +63,13 @@ export default function SearchScreen() {
 
   function vote(side: Side) {
     if (!selected) return;
+    void recordVote({
+      itemId: selected.id,
+      side,
+      label: selected.label,
+      imageUrl: selected.imageUrl,
+      at: Date.now(),
+    });
     castVote(selected.id, side)
       .then(({ tally }) => setTally(tally))
       .catch(() => setTally(null));

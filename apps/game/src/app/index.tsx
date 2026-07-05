@@ -64,6 +64,7 @@ export default function MenuScreen() {
           <MenuButton label={t('menu.play')} href="/solo" primary />
           <MenuButton label={t('solo.search')} href="/search" />
           <MenuButton label={t('menu.multiplayer')} href="/multiplayer" />
+          <MenuButton label={t('menu.history')} href="/history" />
           <MenuButton label={t('menu.settings')} href="/settings" />
         </View>
       </SafeAreaView>

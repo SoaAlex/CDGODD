@@ -37,6 +37,13 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name="history"
+            options={{
+              title: t('menu.history'),
+              headerBackButtonDisplayMode: 'minimal',
+            }}
+          />
+          <Stack.Screen
             name="settings"
             options={{
               title: t('menu.settings'),
