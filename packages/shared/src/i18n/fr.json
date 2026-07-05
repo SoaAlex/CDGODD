@@ -18,7 +18,9 @@
     "left": "Gauche",
     "right": "Droite",
     "report": "Signaler",
-    "reported": "Merci, c'est signalé"
+    "reported": "Merci, c'est signalé",
+    "showResults": "Voir les votes en direct",
+    "hideResults": "Masquer les votes en direct"
   },
   "multiplayer": {
     "create": "Créer une salle",

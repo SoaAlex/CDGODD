@@ -10,11 +10,6 @@ import type {
 import { WS_BASE } from '@/lib/api';
 import { getSessionId } from '@/lib/session';
 
-interface CurrentCard {
-  index: number;
-  card: DeckCard;
-}
-
 interface LiveTally {
   cardIndex: number;
   votesLeft: number;
@@ -22,20 +17,24 @@ interface LiveTally {
 }
 
 /**
- * Connects to a room's Durable Object over WebSocket and mirrors its
- * state. `votedIndex` tracks the card we already voted on so the UI can
- * show "waiting for the others" until the room advances.
+ * Connects to a room's Durable Object over WebSocket and mirrors its state.
+ *
+ * Players swipe the whole round at their own pace — no waiting between
+ * cards. `deck` is the full round dealt at start; `myIndex` is how far this
+ * player has swiped. Once you've voted every card you're `done` and wait
+ * only for the others; the room reveals when everyone has finished.
  */
 export function useRoom(code: string) {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [room, setRoom] = useState<RoomState | null>(null);
-  const [current, setCurrent] = useState<CurrentCard | null>(null);
+  const [deck, setDeck] = useState<DeckCard[] | null>(null);
+  const [myIndex, setMyIndex] = useState(0);
   const [liveTally, setLiveTally] = useState<LiveTally | null>(null);
   const [results, setResults] = useState<RoomCardResult[] | null>(null);
-  const [votedIndex, setVotedIndex] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
   const ws = useRef<WebSocket | null>(null);
+  const indexRef = useRef(0);
 
   useEffect(() => {
     let closed = false;
@@ -59,8 +58,10 @@ export function useRoom(code: string) {
           case 'state':
             setRoom(msg.room);
             break;
-          case 'card':
-            setCurrent({ index: msg.cardIndex, card: msg.card });
+          case 'deck':
+            indexRef.current = 0;
+            setMyIndex(0);
+            setDeck(msg.cards);
             break;
           case 'tally':
             setLiveTally(msg);
@@ -93,26 +94,30 @@ export function useRoom(code: string) {
 
   const vote = useCallback(
     (side: Side) => {
-      if (!current) return;
-      setVotedIndex(current.index);
-      send({ type: 'vote', cardIndex: current.index, side });
+      const idx = indexRef.current;
+      if (!deck || idx >= deck.length) return;
+      send({ type: 'vote', cardIndex: idx, side });
+      indexRef.current = idx + 1;
+      setMyIndex(idx + 1);
     },
-    [current, send],
+    [deck, send],
   );
 
-  const isHost = room !== null && sessionId !== null && room.hostId === sessionId;
-  const waiting =
-    current !== null && votedIndex === current.index && results === null;
+  const isHost =
+    room !== null && sessionId !== null && room.hostId === sessionId;
+  /** Finished my own deck; waiting only for the other players now. */
+  const done = deck !== null && myIndex >= deck.length && results === null;
 
   return {
     room,
-    current,
+    deck,
+    myIndex,
     liveTally,
     results,
     error,
     connected,
     isHost,
-    waiting,
+    done,
     start,
     vote,
   };

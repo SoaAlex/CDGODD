@@ -164,7 +164,7 @@ export default function SoloScreen() {
             <Pressable
               testID="toggle-results"
               onPress={() => setShowResults(!showResults)}
-              style={styles.smallAction}
+              style={[styles.smallAction, styles.smallActionRow]}
             >
               <Ionicons
                 name={showResults ? 'eye' : 'eye-off'}
@@ -172,6 +172,9 @@ export default function SoloScreen() {
                 color={theme.textSecondary}
                 style={!showResults && styles.dimmed}
               />
+              <ThemedText type="small" themeColor="textSecondary">
+                {showResults ? t('game.hideResults') : t('game.showResults')}
+              </ThemedText>
             </Pressable>
           </View>
         )}

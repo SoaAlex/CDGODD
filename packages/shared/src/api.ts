@@ -43,8 +43,9 @@ export type RoomClientMessage =
 /** WebSocket messages: room -> client */
 export type RoomServerMessage =
   | { type: 'state'; room: RoomState }
-  | { type: 'card'; cardIndex: number; card: DeckCard }
-  /** Live mode only: result of a card everyone just voted on. */
+  /** The full round dealt at start; players swipe it at their own pace. */
+  | { type: 'deck'; cards: DeckCard[] }
+  /** Live mode only: running tally of a card the voter just voted on. */
   | { type: 'tally'; cardIndex: number; votesLeft: number; votesRight: number }
   | { type: 'reveal'; results: RoomCardResult[] }
   | { type: 'error'; message: string };

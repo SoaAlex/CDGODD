@@ -159,8 +159,8 @@ export class Room implements DurableObject {
       const wasPlayer = this.players.delete(ws);
       if (!wasPlayer) return;
       this.broadcast({ type: 'state', room: this.state });
-      // Don't deadlock a round on someone who left mid-card.
-      if (this.phase === 'playing') this.maybeAdvance();
+      // Someone leaving may be the last vote we were waiting on.
+      if (this.phase === 'playing') this.maybeReveal();
     };
     ws.addEventListener('close', drop);
     ws.addEventListener('error', drop);
@@ -176,8 +176,10 @@ export class Room implements DurableObject {
         this.players.set(ws, msg.sessionId);
         this.hostId ??= msg.sessionId;
         this.broadcast({ type: 'state', room: this.state });
-        // Late joiner during a round: catch them up on the current card.
-        if (this.phase === 'playing') this.sendCurrentCard(ws);
+        // Late/rejoining player during a round: hand them the whole deck so
+        // they can swipe it at their own pace (already-cast votes are
+        // ignored server-side, so re-swiping is harmless).
+        if (this.phase === 'playing') this.sendDeck(ws);
         if (this.phase === 'results') this.send(ws, this.revealMessage());
         break;
       }
@@ -189,58 +191,64 @@ export class Room implements DurableObject {
         }
         if (this.phase !== 'lobby') return;
         this.phase = 'playing';
-        this.currentCardIndex = 0;
         this.broadcast({ type: 'state', room: this.state });
-        this.broadcastCurrentCard();
+        // Deal the full round to everyone; each player paces themselves.
+        for (const player of this.players.keys()) this.sendDeck(player);
         break;
       }
 
       case 'vote': {
         const sessionId = this.players.get(ws);
         if (!sessionId || this.phase !== 'playing') return;
-        if (msg.cardIndex !== this.currentCardIndex) return; // stale vote
+        const cardCount = this.config?.cards.length ?? 0;
+        if (!Number.isInteger(msg.cardIndex)) return;
+        if (msg.cardIndex < 0 || msg.cardIndex >= cardCount) return;
         if (msg.side !== 'left' && msg.side !== 'right') return;
 
-        let cardVotes = this.votes.get(this.currentCardIndex);
+        let cardVotes = this.votes.get(msg.cardIndex);
         if (!cardVotes) {
           cardVotes = new Map();
-          this.votes.set(this.currentCardIndex, cardVotes);
+          this.votes.set(msg.cardIndex, cardVotes);
         }
-        if (cardVotes.has(sessionId)) return; // one vote per player per card
-        cardVotes.set(sessionId, msg.side);
-        this.maybeAdvance();
+        // One vote per player per card; a re-vote is ignored but must still
+        // fall through to the completion check (e.g. a rejoined player's
+        // final re-swipe).
+        if (!cardVotes.has(sessionId)) cardVotes.set(sessionId, msg.side);
+
+        // Live mode: give the voter the running tally for this card now —
+        // no waiting for anyone else.
+        if (this.config?.mode === 'live') {
+          const { votesLeft, votesRight } = this.tallyOf(msg.cardIndex);
+          this.send(ws, {
+            type: 'tally',
+            cardIndex: msg.cardIndex,
+            votesLeft,
+            votesRight,
+          });
+        }
+
+        this.maybeReveal();
         break;
       }
     }
   }
 
-  /** Advance when every currently-connected player has voted the card. */
-  private maybeAdvance() {
+  /** Reveal once every connected player has voted on every card. */
+  private maybeReveal() {
+    if (this.phase !== 'playing') return;
     const sessions = new Set(this.players.values());
     if (sessions.size === 0) return;
-    const cardVotes = this.votes.get(this.currentCardIndex);
-    const votedCount = [...sessions].filter((s) => cardVotes?.has(s)).length;
-    if (votedCount < sessions.size) return;
+    const cardCount = this.config?.cards.length ?? 0;
 
-    if (this.config?.mode === 'live') {
-      const { votesLeft, votesRight } = this.tallyOf(this.currentCardIndex);
-      this.broadcast({
-        type: 'tally',
-        cardIndex: this.currentCardIndex,
-        votesLeft,
-        votesRight,
-      });
+    for (const session of sessions) {
+      for (let i = 0; i < cardCount; i++) {
+        if (!this.votes.get(i)?.has(session)) return; // still voting
+      }
     }
 
-    this.currentCardIndex += 1;
-    if (this.currentCardIndex >= (this.config?.cards.length ?? 0)) {
-      this.phase = 'results';
-      this.broadcast({ type: 'state', room: this.state });
-      this.broadcast(this.revealMessage());
-    } else {
-      this.broadcast({ type: 'state', room: this.state });
-      this.broadcastCurrentCard();
-    }
+    this.phase = 'results';
+    this.broadcast({ type: 'state', room: this.state });
+    this.broadcast(this.revealMessage());
   }
 
   private tallyOf(index: number): { votesLeft: number; votesRight: number } {
@@ -261,22 +269,8 @@ export class Room implements DurableObject {
     return { type: 'reveal', results };
   }
 
-  private sendCurrentCard(ws: WebSocket) {
-    const card = this.config?.cards[this.currentCardIndex];
-    if (card) {
-      this.send(ws, { type: 'card', cardIndex: this.currentCardIndex, card });
-    }
-  }
-
-  private broadcastCurrentCard() {
-    const card = this.config?.cards[this.currentCardIndex];
-    if (card) {
-      this.broadcast({
-        type: 'card',
-        cardIndex: this.currentCardIndex,
-        card,
-      });
-    }
+  private sendDeck(ws: WebSocket) {
+    this.send(ws, { type: 'deck', cards: this.config?.cards ?? [] });
   }
 
   private send(ws: WebSocket, msg: RoomServerMessage) {

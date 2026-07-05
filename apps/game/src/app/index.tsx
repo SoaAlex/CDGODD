@@ -53,15 +53,16 @@ export default function MenuScreen() {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.hero}>
           <View style={styles.titleRow}>
+            <ThemedText type="title">C'est de </ThemedText>
             <ThemedText type="title" style={{ color: LEFT_COLOR }}>
               Gauche
             </ThemedText>
-            <ThemedText type="title"> ou </ThemedText>
+            <ThemedText type="title"> ou de </ThemedText>
             <ThemedText type="title" style={{ color: RIGHT_COLOR }}>
               Droite
             </ThemedText>
+            <ThemedText type="title"> ?</ThemedText>
           </View>
-          <ThemedText type="title">?</ThemedText>
         </View>
 
         <View style={styles.menu}>

@@ -23,26 +23,27 @@ import { t } from '@/lib/i18n';
 export default function RoomScreen() {
   const { code } = useLocalSearchParams<{ code: string }>();
   const theme = useTheme();
-  const deck = useRef<SwipeDeckHandle>(null);
+  const deckRef = useRef<SwipeDeckHandle>(null);
   const {
     room,
-    current,
+    deck,
+    myIndex,
     liveTally,
     results,
     error,
     connected,
     isHost,
-    waiting,
+    done,
     start,
     vote,
   } = useRoom(code ?? '');
 
-  // Web: vote with the keyboard arrows (only while a card is votable).
+  // Web: vote with the keyboard arrows.
   useEffect(() => {
     if (Platform.OS !== 'web') return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') deck.current?.swipeOut('left');
-      if (e.key === 'ArrowRight') deck.current?.swipeOut('right');
+      if (e.key === 'ArrowLeft') deckRef.current?.swipeOut('left');
+      if (e.key === 'ArrowRight') deckRef.current?.swipeOut('right');
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -148,23 +149,28 @@ export default function RoomScreen() {
     );
   }
 
-  // ---- Playing ----
+  // ---- Playing (each player swipes the whole deck at their own pace) ----
+  const remaining = deck ? deck.slice(myIndex) : [];
+  // Live mode: show the tally only for the card we just voted on.
+  const showLiveTally =
+    room.mode === 'live' && liveTally?.cardIndex === myIndex - 1;
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <ThemedText type="small" themeColor="textSecondary" style={styles.centerText}>
-          {(current?.index ?? 0) + 1} / {room.roundSize}
+          {Math.min(myIndex + 1, room.roundSize)} / {room.roundSize}
         </ThemedText>
 
         <View style={styles.deckZone}>
-          {current && !waiting && (
+          {!done && remaining.length > 0 && (
             <SwipeDeck
-              ref={deck}
-              cards={[current.card]}
+              ref={deckRef}
+              cards={remaining}
               onSwipe={(side) => vote(side)}
             />
           )}
-          {waiting && (
+          {done && (
             <View style={styles.centered}>
               <ActivityIndicator />
               <ThemedText themeColor="textSecondary">
@@ -174,11 +180,11 @@ export default function RoomScreen() {
           )}
         </View>
 
-        {current && !waiting && (
+        {!done && remaining.length > 0 && (
           <View style={styles.voteRow}>
             <Pressable
               testID="vote-left"
-              onPress={() => deck.current?.swipeOut('left')}
+              onPress={() => deckRef.current?.swipeOut('left')}
               style={({ pressed }) => [
                 styles.voteButton,
                 { backgroundColor: LEFT_COLOR, opacity: pressed ? 0.8 : 1 },
@@ -191,7 +197,7 @@ export default function RoomScreen() {
             </Pressable>
             <Pressable
               testID="vote-right"
-              onPress={() => deck.current?.swipeOut('right')}
+              onPress={() => deckRef.current?.swipeOut('right')}
               style={({ pressed }) => [
                 styles.voteButton,
                 { backgroundColor: RIGHT_COLOR, opacity: pressed ? 0.8 : 1 },
@@ -206,7 +212,7 @@ export default function RoomScreen() {
         )}
 
         <View style={styles.footer}>
-          {room.mode === 'live' && liveTally && (
+          {showLiveTally && liveTally && (
             <TallyBar
               tally={{
                 itemId: liveTally.cardIndex,
