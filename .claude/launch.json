@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "api",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--dir", "apps/api", "exec", "wrangler", "dev", "--port", "8787"],
+      "port": 8787
+    },
+    {
+      "name": "game-web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--dir", "apps/game", "exec", "expo", "start", "--web", "--port", "8081"],
+      "port": 8081
+    }
+  ]
+}

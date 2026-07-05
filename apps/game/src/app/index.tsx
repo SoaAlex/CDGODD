@@ -1,61 +1,71 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
+import { LEFT_COLOR, RIGHT_COLOR } from '@/components/swipe-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
+import { t } from '@/lib/i18n';
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+function MenuButton({
+  label,
+  href,
+  primary,
+  disabled,
+}: {
+  label: string;
+  href: string;
+  primary?: boolean;
+  disabled?: boolean;
+}) {
+  const theme = useTheme();
+  const router = useRouter();
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
+    <Pressable
+      disabled={disabled}
+      onPress={() => router.push(href as never)}
+      style={({ pressed }) => [
+        styles.button,
+        {
+          backgroundColor: primary ? RIGHT_COLOR : theme.backgroundElement,
+          opacity: disabled ? 0.4 : pressed ? 0.8 : 1,
+        },
+      ]}
+    >
+      <ThemedText
+        type="subtitle"
+        style={[styles.buttonText, primary && { color: '#fff' }]}
+      >
+        {label}
+      </ThemedText>
+    </Pressable>
   );
 }
 
-export default function HomeScreen() {
+export default function MenuScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+        <View style={styles.hero}>
+          <View style={styles.titleRow}>
+            <ThemedText type="title" style={{ color: LEFT_COLOR }}>
+              Gauche
+            </ThemedText>
+            <ThemedText type="title"> ou </ThemedText>
+            <ThemedText type="title" style={{ color: RIGHT_COLOR }}>
+              Droite
+            </ThemedText>
+          </View>
+          <ThemedText type="title">?</ThemedText>
+        </View>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
+        <View style={styles.menu}>
+          <MenuButton label={t('menu.play')} href="/solo" primary />
+          {/* M4 + M5: */}
+          <MenuButton label={t('menu.multiplayer')} href="/multiplayer" disabled />
+          <MenuButton label={t('menu.settings')} href="/settings" disabled />
+        </View>
       </SafeAreaView>
     </ThemedView>
   );
@@ -64,35 +74,34 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     flexDirection: 'row',
+    justifyContent: 'center',
   },
   safeArea: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
     maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
     paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+    justifyContent: 'center',
+    gap: Spacing.six,
   },
-  title: {
-    textAlign: 'center',
+  hero: {
+    alignItems: 'center',
   },
-  code: {
-    textTransform: 'uppercase',
+  titleRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
   },
-  stepContainer: {
+  menu: {
     gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  },
+  button: {
+    paddingVertical: Spacing.three,
+    borderRadius: Spacing.three,
+    alignItems: 'center',
+  },
+  buttonText: {
+    fontSize: 22,
+    lineHeight: 30,
   },
 });
