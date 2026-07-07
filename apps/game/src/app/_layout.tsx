@@ -26,7 +26,10 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="index"
+            options={{ headerShown: false, title: t('menu.title') }}
+          />
           <Stack.Screen
             name="solo"
             options={{ title: t('menu.play'), headerBackButtonDisplayMode: 'minimal' }}

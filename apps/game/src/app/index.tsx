@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import Head from 'expo-router/head';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LEFT_COLOR, RIGHT_COLOR } from '@/components/swipe-card';
@@ -51,6 +52,13 @@ function MenuButton({
 export default function MenuScreen() {
   return (
     <ThemedView style={styles.container}>
+      <Head>
+        <title>{t('menu.title')}</title>
+        <meta
+          name="description"
+          content="Classe des objets et concepts entre la gauche et la droite."
+        />
+      </Head>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.topBar}>
           <MuteButton />
