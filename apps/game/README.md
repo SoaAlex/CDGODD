@@ -1,56 +1,53 @@
-# Welcome to your Expo app 👋
+# `cdgodd-game`
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+The game client — Expo (React Native), one codebase for **web, iOS, and
+Android**. The web export is served as an assets-only Cloudflare Worker.
 
-## Get started
+- **Production (web):** https://cestdegaucheoudedroite.com
+- **Config:** [`app.json`](app.json), [`wrangler.toml`](wrangler.toml)
 
-1. Install dependencies
+## Features
 
-   ```bash
-   npm install
-   ```
+- **Solo** — swipe cards (Reanimated gestures) or use the ← / → arrow keys on
+  web / Gauche–Droite buttons. Deck is batch-fetched with the next few card
+  images prefetched. Global results are hidden by default; a toggle shows the
+  previous card's result and, when on, the live tally of the current card.
+- **Free search** — find an item and vote on it, or propose a new one (moderated).
+- **Multiplayer** — create/join a room by 6-char code; everyone gets the same
+  deck and swipes it at their own pace. Batch mode reveals all results at the
+  end; live mode returns each voter their card's running tally. Rooms are
+  Durable Objects on the API.
+- **History** — device-local record of your votes with fresh global tallies.
+- **Anonymous** — a resettable device `session_id`, no account. Only ads collect
+  data, behind a consent flow.
+- **Ads** — AdMob on native (UMP consent, banner + interstitial), optional
+  AdSense on web; never blocks gameplay.
+- **Fonts & music** — ClashGrotesk / MonteiroLobato from `assets/`; the theme
+  song loops on web only.
 
-2. Start the app
+## Platform-split modules
 
-   ```bash
-   npx expo start
-   ```
+Web vs native behaviour is handled with Metro's `.web.ts(x)` resolution, not
+runtime branches:
 
-In the output, you'll find options to open the app in a
+- `src/ads/` — AdMob/UMP on native, AdSense/no-op on web.
+- `src/lib/music.*` — plays on web, no-op on native.
+- `src/lib/turnstile.*` — invisible widget on web, placeholder on native.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Config
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- `EXPO_PUBLIC_API_URL` — API base (default `http://localhost:8787`; CI sets the
+  production URL). See [`.env.example`](.env.example) for all `EXPO_PUBLIC_*`
+  vars (AdMob unit ids, AdSense client/slot, Turnstile sitekey).
 
-## Get a fresh project
-
-When you're ready, run:
+## Run & deploy
 
 ```bash
-npm run reset-project
+pnpm exec expo start --web       # dev on :8081 (also --ios / --android)
+pnpm typecheck
+pnpm build:web                   # expo export --platform web → dist/
+pnpm deploy                      # build:web + wrangler deploy → cestdegaucheoudedroite.com
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Native builds (App Store / Play Store) go through EAS Build — not part of the
+web CI pipeline.
