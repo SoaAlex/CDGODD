@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
   },
   smallBold: {
     fontFamily: Fonts.sansMedium,
+    fontWeight: '600',
     fontSize: 14,
     lineHeight: 20,
   },
@@ -48,11 +49,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: Fonts.display,
+    fontWeight: '700',
     fontSize: 48,
     lineHeight: 56,
   },
   subtitle: {
     fontFamily: Fonts.sansMedium,
+    fontWeight: '600',
     fontSize: 32,
     lineHeight: 44,
   },

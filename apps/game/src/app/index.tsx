@@ -4,7 +4,6 @@ import { useRouter } from 'expo-router';
 import Head from 'expo-router/head';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LEFT_COLOR, RIGHT_COLOR } from '@/components/swipe-card';
 import { MuteButton } from '@/components/mute-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -79,13 +78,13 @@ export default function MenuScreen() {
             label={t('menu.play')}
             href="/solo"
             icon="play"
-            color={RIGHT_COLOR}
+            color="#e2523a"
           />
           <MenuButton
             label={t('menu.multiplayer')}
             href="/multiplayer"
             icon="people"
-            color={LEFT_COLOR}
+            color="#6db0f8"
           />
           <MenuButton label={t('solo.search')} href="/search" icon="search" />
           <MenuButton label={t('menu.history')} href="/history" icon="time-outline" />

@@ -34,16 +34,20 @@ export const Colors = {
 
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 
-/** App fonts, loaded from assets/fonts in the root layout. */
+/**
+ * App fonts. One ClashGrotesk variable family for every role, matching the
+ * web app (weight is set via fontWeight in the text styles).
+ */
+const CLASH = 'ClashGrotesk-Variable';
 export const Fonts = {
   /** Body / UI text. */
-  sans: 'ClashGrotesk-Regular',
+  sans: CLASH,
   /** Headings, buttons, emphasis. */
-  sansMedium: 'ClashGrotesk-Medium',
+  sansMedium: CLASH,
   /** Airy variant for secondary text. */
-  sansLight: 'ClashGrotesk-Light',
+  sansLight: CLASH,
   /** Display font for the game title. */
-  display: 'MonteiroLobato',
+  display: CLASH,
   mono: Platform.select({ ios: 'ui-monospace', default: 'monospace' }),
 };
 

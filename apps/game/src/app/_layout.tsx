@@ -21,10 +21,8 @@ const NavTheme = {
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
-    'ClashGrotesk-Regular': require('../../assets/fonts/ClashGrotesk-Regular.ttf'),
-    'ClashGrotesk-Medium': require('../../assets/fonts/ClashGrotesk-Medium.ttf'),
-    'ClashGrotesk-Light': require('../../assets/fonts/ClashGrotesk-Light.ttf'),
-    MonteiroLobato: require('../../assets/fonts/monteiro-lobato-font/MonteiroLobato.ttf'),
+    // Single ClashGrotesk variable family everywhere, matching the web app.
+    'ClashGrotesk-Variable': require('../../assets/fonts/ClashGrotesk-Variable.ttf'),
   });
 
   useEffect(() => {
