@@ -135,7 +135,7 @@ export default function RoomScreen() {
                   { backgroundColor: theme.backgroundElement },
                 ]}
               >
-                <ThemedText numberOfLines={1} style={styles.resultLabel}>
+                <ThemedText type="subtitle" numberOfLines={2}>
                   {item.card.label}
                 </ThemedText>
                 <View style={styles.resultBar}>
@@ -146,6 +146,14 @@ export default function RoomScreen() {
                       votesRight: item.votesRight,
                     }}
                   />
+                </View>
+                <View style={styles.votersRow}>
+                  <ThemedText type="small" style={styles.votersLeft}>
+                    {item.votersLeft.join(', ')}
+                  </ThemedText>
+                  <ThemedText type="small" style={styles.votersRight}>
+                    {item.votersRight.join(', ')}
+                  </ThemedText>
                 </View>
               </View>
             )}
@@ -426,15 +434,26 @@ const styles = StyleSheet.create({
     gap: Spacing.one,
   },
   resultsList: {
-    gap: Spacing.two,
+    gap: Spacing.three,
   },
   resultRow: {
-    borderRadius: Spacing.two,
-    padding: Spacing.three,
-    gap: Spacing.two,
-  },
-  resultLabel: {
-    fontWeight: '600',
+    borderRadius: Spacing.three,
+    padding: Spacing.four,
+    gap: Spacing.three,
   },
   resultBar: {},
+  votersRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: Spacing.three,
+  },
+  votersLeft: {
+    flex: 1,
+    color: LEFT_COLOR,
+  },
+  votersRight: {
+    flex: 1,
+    color: RIGHT_COLOR,
+    textAlign: 'right',
+  },
 });

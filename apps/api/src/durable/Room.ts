@@ -308,9 +308,23 @@ export class Room implements DurableObject {
     return { votesLeft, votesRight };
   }
 
+  /** Nicknames of who voted each side of a card (for the reveal). */
+  private votersOf(index: number): {
+    votersLeft: string[];
+    votersRight: string[];
+  } {
+    const votersLeft: string[] = [];
+    const votersRight: string[] = [];
+    for (const [sessionId, side] of this.votes.get(index) ?? []) {
+      const name = this.names.get(sessionId) ?? 'Joueur';
+      (side === 'left' ? votersLeft : votersRight).push(name);
+    }
+    return { votersLeft, votersRight };
+  }
+
   private revealMessage(): RoomServerMessage {
     const results: RoomCardResult[] = (this.config?.cards ?? []).map(
-      (card, i) => ({ card, ...this.tallyOf(i) }),
+      (card, i) => ({ card, ...this.tallyOf(i), ...this.votersOf(i) }),
     );
     return { type: 'reveal', results };
   }

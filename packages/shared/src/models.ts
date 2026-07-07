@@ -65,4 +65,7 @@ export interface RoomCardResult {
   card: DeckCard;
   votesLeft: number;
   votesRight: number;
+  /** Nicknames of who voted each side (ephemeral, display only). */
+  votersLeft: string[];
+  votersRight: string[];
 }
