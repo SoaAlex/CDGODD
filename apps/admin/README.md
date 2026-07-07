@@ -15,11 +15,18 @@ A sidebar-navigated SPA, all talking to the API with a bearer token:
 
 - **Dashboard** (`/`) — stat cards (approved/pending/rejected/reports) plus a
   moderation-queue preview.
-- **Modération** (`/items`) — pending/approved/rejected queue with image
-  thumbnails and status badges; approve, reject, or reset to pending.
+- **Modération** (`/items`) — all/pending/approved/rejected queue with image
+  thumbnails, category and status badges. Quick actions (approve, reject, reset
+  to pending) plus a full **edit modal**: replace the image, rename the label,
+  change category, override vote counts, and set status.
 - **Créer un item** (`/add-item`) — create an item with a French label,
   category, and drag-and-drop image (uploaded to R2); goes live immediately.
 - **Signalements** (`/reports`) — reported items, most-reported first.
+
+Editing is backed by `PATCH /admin/items/:id` (partial: `label`, `status`,
+`votes_left`, `votes_right`, `categoryKey`) and `PATCH /admin/items/:id/image`
+(multipart image replace). `GET /admin/items` returns `category_key` /
+`category_name` for display.
 
 Auth is v1-simple: paste the API's `ADMIN_TOKEN` on the `/login` screen. It is
 verified against `GET /admin/stats`, kept in `sessionStorage`, and sent as
@@ -33,7 +40,7 @@ src/
   App.tsx              routes + AuthProvider
   hooks/useAuth.tsx    token context (login/logout/verify)
   lib/api.ts           API base, bearer headers, image URLs
-  components/          Layout (sidebar + top bar), ProtectedRoute
+  components/          Layout (sidebar + top bar), ProtectedRoute, ItemEditModal
   pages/               Login, Dashboard, Items, AddItem, Reports
   index.css            Tailwind + shared .card/.btn/.table utility classes
 ```

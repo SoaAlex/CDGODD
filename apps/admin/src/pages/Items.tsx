@@ -3,10 +3,12 @@ import {
   CheckCircleIcon,
   XCircleIcon,
   ArrowUturnLeftIcon,
+  PencilSquareIcon,
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../hooks/useAuth';
 import { API, apiGet, authHeaders, imageUrl } from '../lib/api';
-import type { AdminItem, ItemStatus } from '../types';
+import { ItemEditModal } from '../components/ItemEditModal';
+import type { AdminItem, Category, ItemStatus } from '../types';
 
 type Filter = 'all' | ItemStatus;
 const TABS: Filter[] = ['all', 'pending', 'approved', 'rejected'];
@@ -26,6 +28,8 @@ export function Items() {
   const { token } = useAuth();
   const [status, setStatus] = useState<Filter>('all');
   const [items, setItems] = useState<AdminItem[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [editing, setEditing] = useState<AdminItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -61,6 +65,13 @@ export function Items() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    fetch(`${API}/categories?lang=fr`)
+      .then((r) => r.json())
+      .then((d: { categories: Category[] }) => setCategories(d.categories))
+      .catch(() => setCategories([]));
+  }, []);
 
   async function setItemStatus(id: number, next: ItemStatus) {
     await fetch(`${API}/admin/items/${id}`, {
@@ -116,6 +127,7 @@ export function Items() {
               <tr>
                 <th className="table-header-cell">Image</th>
                 <th className="table-header-cell">Label</th>
+                <th className="table-header-cell">Catégorie</th>
                 <th className="table-header-cell">Statut</th>
                 <th className="table-header-cell">Gauche</th>
                 <th className="table-header-cell">Droite</th>
@@ -143,6 +155,15 @@ export function Items() {
                     )}
                   </td>
                   <td className="table-cell">
+                    {it.category_name ? (
+                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                        {it.category_name}
+                      </span>
+                    ) : (
+                      <span className="text-gray-400">—</span>
+                    )}
+                  </td>
+                  <td className="table-cell">
                     <span
                       className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${STATUS_STYLES[it.status]}`}
                     >
@@ -162,6 +183,13 @@ export function Items() {
                   </td>
                   <td className="table-cell">
                     <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => setEditing(it)}
+                        className="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 p-1 rounded transition-colors"
+                        title="Modifier"
+                      >
+                        <PencilSquareIcon className="h-4 w-4" />
+                      </button>
                       {it.status !== 'approved' && (
                         <button
                           onClick={() => setItemStatus(it.id, 'approved')}
@@ -208,6 +236,19 @@ export function Items() {
           </div>
         )}
       </div>
+
+      {editing && (
+        <ItemEditModal
+          item={editing}
+          categories={categories}
+          token={token}
+          onClose={() => setEditing(null)}
+          onSaved={() => {
+            setEditing(null);
+            void load();
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -9,6 +9,8 @@ export interface AdminItem {
   votes_right: number;
   report_count: number;
   created_at: number;
+  category_key: string | null;
+  category_name: string | null;
 }
 
 export interface AdminReport {

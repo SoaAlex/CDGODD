@@ -9,9 +9,13 @@ admin.use('*', adminAuth);
 admin.get('/items', async (c) => {
   const status = c.req.query('status') ?? 'pending';
   const { results } = await c.env.DB.prepare(
-    `SELECT i.*, t.label
+    `SELECT i.*, t.label,
+            c.key AS category_key, ct.name AS category_name
        FROM items i
        LEFT JOIN item_translations t ON t.item_id = i.id AND t.lang = 'fr'
+       LEFT JOIN categories c ON c.id = i.category_id
+       LEFT JOIN category_translations ct
+              ON ct.category_id = c.id AND ct.lang = 'fr'
       WHERE i.status = ?1
       ORDER BY i.created_at DESC
       LIMIT 100`,
@@ -21,16 +25,80 @@ admin.get('/items', async (c) => {
   return c.json({ items: results });
 });
 
-/** PATCH /admin/items/:id — approve / reject. */
+/**
+ * PATCH /admin/items/:id — partial edit.
+ * Any subset of: status, label (fr), votes_left, votes_right, categoryKey
+ * (empty string / null clears the category). Image is replaced via the
+ * separate /admin/items/:id/image endpoint.
+ */
 admin.patch('/items/:id', async (c) => {
   const itemId = Number(c.req.param('id'));
-  const body = (await c.req.json().catch(() => ({}))) as { status?: string };
-  if (!['approved', 'rejected', 'pending'].includes(body.status ?? '')) {
-    return c.json({ error: 'bad status' }, 400);
+  const body = (await c.req.json().catch(() => ({}))) as {
+    status?: string;
+    label?: string;
+    votes_left?: number;
+    votes_right?: number;
+    categoryKey?: string | null;
+  };
+
+  const sets: string[] = [];
+  const binds: unknown[] = [];
+
+  if (body.status !== undefined) {
+    if (!['approved', 'rejected', 'pending'].includes(body.status)) {
+      return c.json({ error: 'bad status' }, 400);
+    }
+    sets.push('status = ?');
+    binds.push(body.status);
   }
-  await c.env.DB.prepare(`UPDATE items SET status = ?2 WHERE id = ?1`)
-    .bind(itemId, body.status)
-    .run();
+
+  for (const key of ['votes_left', 'votes_right'] as const) {
+    const value = body[key];
+    if (value !== undefined) {
+      if (!Number.isInteger(value) || value < 0) {
+        return c.json({ error: `bad ${key}` }, 400);
+      }
+      sets.push(`${key} = ?`);
+      binds.push(value);
+    }
+  }
+
+  if (body.categoryKey !== undefined) {
+    let categoryId: number | null = null;
+    if (body.categoryKey) {
+      const cat = await c.env.DB.prepare(
+        `SELECT id FROM categories WHERE key = ?1`,
+      )
+        .bind(body.categoryKey)
+        .first<{ id: number }>();
+      if (!cat) return c.json({ error: 'unknown category' }, 400);
+      categoryId = cat.id;
+    }
+    sets.push('category_id = ?');
+    binds.push(categoryId);
+  }
+
+  if (sets.length > 0) {
+    binds.push(itemId);
+    await c.env.DB.prepare(
+      `UPDATE items SET ${sets.join(', ')} WHERE id = ?`,
+    )
+      .bind(...binds)
+      .run();
+  }
+
+  if (body.label !== undefined) {
+    const label = body.label.trim();
+    if (!label) return c.json({ error: 'label empty' }, 400);
+    await c.env.DB.prepare(
+      `INSERT INTO item_translations (item_id, lang, label)
+       VALUES (?1, 'fr', ?2)
+       ON CONFLICT(item_id, lang) DO UPDATE SET label = excluded.label`,
+    )
+      .bind(itemId, label)
+      .run();
+  }
+
   return c.json({ ok: true });
 });
 
