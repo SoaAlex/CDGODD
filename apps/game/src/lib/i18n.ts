@@ -22,3 +22,12 @@ export function t(key: MessageKey): string {
   }
   return typeof node === 'string' ? node : key;
 }
+
+/**
+ * Localized display name for a dynamic category key coming from the API.
+ * Falls back to the raw key when no translation exists yet.
+ */
+export function categoryName(key: string): string {
+  const name = (fr.categories as Record<string, string>)[key];
+  return name ?? key;
+}

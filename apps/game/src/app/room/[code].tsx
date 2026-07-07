@@ -213,13 +213,22 @@ export default function RoomScreen() {
 
         <View style={styles.footer}>
           {showLiveTally && liveTally && (
-            <TallyBar
-              tally={{
-                itemId: liveTally.cardIndex,
-                votesLeft: liveTally.votesLeft,
-                votesRight: liveTally.votesRight,
-              }}
-            />
+            <View style={styles.tallyBlock}>
+              <ThemedText
+                type="small"
+                themeColor="textSecondary"
+                style={styles.centerText}
+              >
+                {t('game.globalVotes')}
+              </ThemedText>
+              <TallyBar
+                tally={{
+                  itemId: liveTally.cardIndex,
+                  votesLeft: liveTally.votesLeft,
+                  votesRight: liveTally.votesRight,
+                }}
+              />
+            </View>
           )}
         </View>
       </SafeAreaView>
@@ -296,6 +305,9 @@ const styles = StyleSheet.create({
   footer: {
     minHeight: 40,
     justifyContent: 'flex-end',
+  },
+  tallyBlock: {
+    gap: Spacing.one,
   },
   resultsList: {
     gap: Spacing.two,

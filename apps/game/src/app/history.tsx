@@ -88,7 +88,14 @@ export default function HistoryScreen() {
                       </ThemedText>
                     </View>
                   </View>
-                  {tally && <TallyBar tally={tally} />}
+                  {tally && (
+                    <View style={styles.tallyBlock}>
+                      <ThemedText type="small" themeColor="textSecondary">
+                        {t('game.globalVotes')}
+                      </ThemedText>
+                      <TallyBar tally={tally} />
+                    </View>
+                  )}
                 </View>
               </View>
             );
@@ -141,6 +148,9 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
+    gap: Spacing.one,
+  },
+  tallyBlock: {
     gap: Spacing.one,
   },
   titleRow: {

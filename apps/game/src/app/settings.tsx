@@ -57,6 +57,9 @@ export default function SettingsScreen() {
               ✓
             </ThemedText>
           </View>
+          <ThemedText type="small" themeColor="textSecondary">
+            {t('settings.moreLanguages')}
+          </ThemedText>
         </View>
 
         {/* Anonymous session */}

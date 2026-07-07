@@ -18,7 +18,7 @@ import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { castVote, searchItems, submitItem } from '@/lib/api';
 import { recordVote } from '@/lib/history';
-import { t } from '@/lib/i18n';
+import { categoryName, t } from '@/lib/i18n';
 
 const DEBOUNCE_MS = 300;
 
@@ -128,7 +128,7 @@ export default function SearchScreen() {
                 <ThemedText>{item.label}</ThemedText>
                 {item.categoryKey && (
                   <ThemedText type="small" themeColor="textSecondary">
-                    {item.categoryKey}
+                    {categoryName(item.categoryKey)}
                   </ThemedText>
                 )}
               </Pressable>

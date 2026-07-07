@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import type { DeckCard } from '@cdgodd/shared';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { categoryName, t } from '@/lib/i18n';
 
 /** French political colors: gauche = red, droite = blue (from the web app). */
 export const LEFT_COLOR = '#e2523a';
@@ -27,6 +28,9 @@ export function SwipeCard({ card }: { card: DeckCard }) {
           <ThemedText type="title" style={styles.placeholderEmoji}>
             🤔
           </ThemedText>
+          <ThemedText type="small" style={{ color: CARD_TEXT_SECONDARY }}>
+            {t('game.imageComingSoon')}
+          </ThemedText>
         </View>
       )}
       <View style={styles.labelZone}>
@@ -35,7 +39,7 @@ export function SwipeCard({ card }: { card: DeckCard }) {
         </ThemedText>
         {card.categoryKey && (
           <ThemedText type="small" style={{ color: CARD_TEXT_SECONDARY }}>
-            {card.categoryKey}
+            {categoryName(card.categoryKey)}
           </ThemedText>
         )}
       </View>

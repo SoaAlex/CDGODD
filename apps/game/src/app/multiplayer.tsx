@@ -193,7 +193,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.three,
     fontSize: 22,
-    letterSpacing: 6,
     textAlign: 'center',
   },
 });

@@ -8,8 +8,7 @@ import { LEFT_COLOR, RIGHT_COLOR } from '@/components/swipe-card';
 import { MuteButton } from '@/components/mute-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { MaxContentWidth, Spacing } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+import { ACCENT_COLOR, MaxContentWidth, Spacing } from '@/constants/theme';
 import { t } from '@/lib/i18n';
 
 const logo = require('../../assets/images/home_logo.png');
@@ -23,20 +22,20 @@ function MenuButton({
   label: string;
   href: string;
   icon: keyof typeof Ionicons.glyphMap;
-  /** Filled accent color; default is the neutral surface. */
+  /** Filled accent color; default is a white surface with dark content. */
   color?: string;
 }) {
-  const theme = useTheme();
   const router = useRouter();
   const filled = color !== undefined;
-  const contentColor = filled ? '#fff' : theme.text;
+  const backgroundColor = color ?? '#fff';
+  const contentColor = filled ? '#fff' : ACCENT_COLOR;
   return (
     <Pressable
       onPress={() => router.push(href as never)}
       style={({ pressed }) => [
         styles.button,
         {
-          backgroundColor: color ?? theme.backgroundElement,
+          backgroundColor,
           opacity: pressed ? 0.8 : 1,
         },
       ]}

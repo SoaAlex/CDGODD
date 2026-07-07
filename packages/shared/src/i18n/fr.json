@@ -19,8 +19,10 @@
     "right": "Droite",
     "report": "Signaler",
     "reported": "Merci, c'est signalé",
-    "showResults": "Voir les votes en direct",
-    "hideResults": "Masquer les votes en direct"
+    "showResults": "Voir les résultats des votes",
+    "hideResults": "Masquer les résultats des votes",
+    "imageComingSoon": "Image à venir",
+    "globalVotes": "Votes globaux"
   },
   "multiplayer": {
     "create": "Créer une salle",
@@ -46,7 +48,13 @@
     "resetSession": "Réinitialiser ma session anonyme",
     "sessionReset": "Session réinitialisée",
     "anonymity": "Anonymat",
-    "sessionHint": "Le jeu est 100% anonyme : aucun compte, aucune donnée personnelle. Cet identifiant aléatoire sert uniquement à éviter les votes en double."
+    "sessionHint": "Le jeu est 100% anonyme : aucun compte, aucune donnée personnelle. Cet identifiant aléatoire sert uniquement à éviter les votes en double.",
+    "moreLanguages": "D'autres langues seront ajoutées prochainement."
+  },
+  "categories": {
+    "food": "Nourriture",
+    "culture": "Culture",
+    "daily-life": "Vie quotidienne"
   },
   "consent": {
     "title": "Publicités",
