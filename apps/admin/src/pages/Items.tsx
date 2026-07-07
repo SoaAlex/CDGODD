@@ -8,8 +8,10 @@ import { useAuth } from '../hooks/useAuth';
 import { API, apiGet, authHeaders, imageUrl } from '../lib/api';
 import type { AdminItem, ItemStatus } from '../types';
 
-const TABS: ItemStatus[] = ['pending', 'approved', 'rejected'];
-const TAB_LABELS: Record<ItemStatus, string> = {
+type Filter = 'all' | ItemStatus;
+const TABS: Filter[] = ['all', 'pending', 'approved', 'rejected'];
+const TAB_LABELS: Record<Filter, string> = {
+  all: 'Tous',
   pending: 'En attente',
   approved: 'Approuvés',
   rejected: 'Rejetés',
@@ -22,7 +24,7 @@ const STATUS_STYLES: Record<ItemStatus, string> = {
 
 export function Items() {
   const { token } = useAuth();
-  const [status, setStatus] = useState<ItemStatus>('pending');
+  const [status, setStatus] = useState<Filter>('all');
   const [items, setItems] = useState<AdminItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,11 +33,24 @@ export function Items() {
     setLoading(true);
     setError(null);
     try {
-      const data = await apiGet<{ items: AdminItem[] }>(
-        `/admin/items?status=${status}`,
-        token,
-      );
-      setItems(data.items);
+      if (status === 'all') {
+        // API has no "all" filter — merge the three status queues.
+        const lists = await Promise.all(
+          (['pending', 'approved', 'rejected'] as ItemStatus[]).map((s) =>
+            apiGet<{ items: AdminItem[] }>(`/admin/items?status=${s}`, token),
+          ),
+        );
+        const merged = lists
+          .flatMap((l) => l.items)
+          .sort((a, b) => b.created_at - a.created_at);
+        setItems(merged);
+      } else {
+        const data = await apiGet<{ items: AdminItem[] }>(
+          `/admin/items?status=${status}`,
+          token,
+        );
+        setItems(data.items);
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur');
     } finally {
