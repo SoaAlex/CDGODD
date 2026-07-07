@@ -53,7 +53,7 @@ enabled = true
 [[env.dev.d1_databases]]
 binding = "DB"
 database_name = "cdgodd-dev"
-database_id = "REPLACE_WITH_DEV_D1_ID" # `wrangler d1 create cdgodd-dev`
+database_id = "0fe3f8db-fee4-4faf-968e-83e3a2b6d554"
 
 [[env.dev.r2_buckets]]
 binding = "IMAGES"

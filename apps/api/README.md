@@ -98,8 +98,7 @@ wrangler r2 bucket create cdgodd-images-dev
 #   to the cdgodd-images-dev bucket (R2 > bucket > Settings > Custom Domains).
 wrangler secret put ADMIN_TOKEN --env dev
 wrangler secret put TURNSTILE_SECRET --env dev   # optional; unset = skip check
-pnpm db:migrate:dev
-pnpm db:seed:dev
+pnpm db:migrate:dev   # dev DB starts empty; add cards via the admin app
 ```
 
 **Deploy:**

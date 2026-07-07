@@ -11,8 +11,7 @@
     "db:migrate:local": "wrangler d1 migrations apply cdgodd --local",
     "db:migrate:remote": "wrangler d1 migrations apply cdgodd --remote",
     "db:migrate:dev": "wrangler d1 migrations apply cdgodd-dev --remote --env dev",
-    "db:seed:local": "wrangler d1 execute cdgodd --local --file=./src/db/seed.sql",
-    "db:seed:dev": "wrangler d1 execute cdgodd-dev --remote --env dev --file=./src/db/seed.sql"
+    "db:seed:local": "wrangler d1 execute cdgodd --local --file=./src/db/seed.sql"
   },
   "dependencies": {
     "@cdgodd/shared": "workspace:*",
