@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
-const API = '/api';
+// Prod builds point straight at the API worker; dev uses the Vite proxy.
+const API = import.meta.env.VITE_API_URL ?? '/api';
 
 interface AdminItem {
   id: number;

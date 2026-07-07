@@ -57,7 +57,11 @@ admin.post('/items', async (c) => {
     const ext = image.type.split('/')[1]?.replace('jpeg', 'jpg') ?? 'bin';
     imageKey = `items/${crypto.randomUUID()}.${ext}`;
     await c.env.IMAGES.put(imageKey, image.stream(), {
-      httpMetadata: { contentType: image.type },
+      httpMetadata: {
+        contentType: image.type,
+        // Keys are content-unique UUIDs → the images domain caches forever.
+        cacheControl: 'public, max-age=31536000, immutable',
+      },
     });
   }
 
@@ -97,7 +101,11 @@ admin.patch('/items/:id/image', async (c) => {
   const ext = image.type.split('/')[1]?.replace('jpeg', 'jpg') ?? 'bin';
   const imageKey = `items/${crypto.randomUUID()}.${ext}`;
   await c.env.IMAGES.put(imageKey, image.stream(), {
-    httpMetadata: { contentType: image.type },
+    httpMetadata: {
+      contentType: image.type,
+      // Keys are content-unique UUIDs, so the images domain can cache forever.
+      cacheControl: 'public, max-age=31536000, immutable',
+    },
   });
   await c.env.DB.prepare(`UPDATE items SET image_key = ?2 WHERE id = ?1`)
     .bind(itemId, imageKey)

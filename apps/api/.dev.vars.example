@@ -1,4 +1,6 @@
 # Copy to .dev.vars for local development (never committed).
 ADMIN_TOKEN=dev-admin-token
+# Local dev serves images through the Worker instead of the R2 domain.
+CDN_BASE=http://localhost:8787/img
 # TURNSTILE_SECRET=...
 # IP_HASH_SALT=...
