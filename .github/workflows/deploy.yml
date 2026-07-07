@@ -1,12 +1,14 @@
 name: Deploy
 
+# main -> production (cestdegaucheoudedroite.com)
+# any other branch -> dev (dev.cestdegaucheoudedroite.com), isolated D1/R2
 on:
   push:
-    branches: [main]
+    branches: ['**']
   workflow_dispatch:
 
 concurrency:
-  group: deploy
+  group: deploy-${{ github.ref }}
   cancel-in-progress: false
 
 env:
@@ -32,34 +34,49 @@ jobs:
       - name: Typecheck
         run: pnpm turbo typecheck
 
-      # --- API (api.cestdegaucheoudedroite.com) ---
+      # Select target: main -> prod, everything else -> dev ([env.dev] in
+      # each wrangler.toml; separate D1/R2, *.dev.cestdegaucheoudedroite.com).
+      - name: Select environment
+        id: target
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "wrangler_env_flag=" >> "$GITHUB_OUTPUT"
+            echo "d1_name=cdgodd" >> "$GITHUB_OUTPUT"
+            echo "api_url=https://api.cestdegaucheoudedroite.com" >> "$GITHUB_OUTPUT"
+          else
+            echo "wrangler_env_flag=--env dev" >> "$GITHUB_OUTPUT"
+            echo "d1_name=cdgodd-dev" >> "$GITHUB_OUTPUT"
+            echo "api_url=https://api.dev.cestdegaucheoudedroite.com" >> "$GITHUB_OUTPUT"
+          fi
+
+      # --- API ---
       - name: Apply D1 migrations
         working-directory: apps/api
-        run: pnpm exec wrangler d1 migrations apply cdgodd --remote
+        run: pnpm exec wrangler d1 migrations apply ${{ steps.target.outputs.d1_name }} --remote ${{ steps.target.outputs.wrangler_env_flag }}
 
       - name: Deploy API worker
         working-directory: apps/api
-        run: pnpm exec wrangler deploy
+        run: pnpm exec wrangler deploy ${{ steps.target.outputs.wrangler_env_flag }}
 
-      # --- Admin (admin.cestdegaucheoudedroite.com) ---
+      # --- Admin ---
       - name: Build admin
         working-directory: apps/admin
         run: pnpm build
         env:
-          VITE_API_URL: https://api.cestdegaucheoudedroite.com
+          VITE_API_URL: ${{ steps.target.outputs.api_url }}
 
       - name: Deploy admin
         working-directory: apps/admin
-        run: pnpm exec wrangler deploy
+        run: pnpm exec wrangler deploy ${{ steps.target.outputs.wrangler_env_flag }}
 
-      # --- Game web (cestdegaucheoudedroite.com) ---
+      # --- Game web ---
       - name: Build game web
         working-directory: apps/game
         run: pnpm build:web
         env:
-          EXPO_PUBLIC_API_URL: https://api.cestdegaucheoudedroite.com
+          EXPO_PUBLIC_API_URL: ${{ steps.target.outputs.api_url }}
           EXPO_PUBLIC_TURNSTILE_SITEKEY: 0x4AAAAAADxcifQdjBeiuVUB
 
       - name: Deploy game
         working-directory: apps/game
-        run: pnpm exec wrangler deploy
+        run: pnpm exec wrangler deploy ${{ steps.target.outputs.wrangler_env_flag }}
