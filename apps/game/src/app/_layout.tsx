@@ -1,14 +1,25 @@
 import { useFonts } from 'expo-font';
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
+import { DefaultTheme, ThemeProvider } from 'expo-router';
 import { Stack } from 'expo-router';
 import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GradientBackground } from '@/components/gradient-background';
 import { t } from '@/lib/i18n';
 import { startBackgroundMusic } from '@/lib/music';
 
+/** Navigation theme that lets the gradient show through and keeps chrome white. */
+const NavTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: 'transparent',
+    card: 'transparent',
+    text: '#ffffff',
+    border: 'transparent',
+  },
+};
+
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [fontsLoaded] = useFonts({
     'ClashGrotesk-Regular': require('../../assets/fonts/ClashGrotesk-Regular.ttf'),
     'ClashGrotesk-Medium': require('../../assets/fonts/ClashGrotesk-Medium.ttf'),
@@ -24,12 +35,21 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen
-            name="index"
-            options={{ headerShown: false, title: t('menu.title') }}
-          />
+      <GradientBackground>
+        <ThemeProvider value={NavTheme}>
+          <Stack
+            screenOptions={{
+              contentStyle: { backgroundColor: 'transparent' },
+              headerStyle: { backgroundColor: 'transparent' },
+              headerShadowVisible: false,
+              headerTintColor: '#fff',
+              headerTitleStyle: { color: '#fff' },
+            }}
+          >
+            <Stack.Screen
+              name="index"
+              options={{ headerShown: false, title: t('menu.title') }}
+            />
           <Stack.Screen
             name="solo"
             options={{ title: t('menu.play'), headerBackButtonDisplayMode: 'minimal' }}
@@ -69,8 +89,9 @@ export default function RootLayout() {
               headerBackButtonDisplayMode: 'minimal',
             }}
           />
-        </Stack>
-      </ThemeProvider>
+          </Stack>
+        </ThemeProvider>
+      </GradientBackground>
     </GestureHandlerRootView>
   );
 }

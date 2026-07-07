@@ -39,7 +39,7 @@ export default function HistoryScreen() {
   if (entries === null) {
     return (
       <ThemedView style={[styles.container, styles.centered]}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color="#fff" />
       </ThemedView>
     );
   }

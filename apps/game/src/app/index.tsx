@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import Head from 'expo-router/head';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -10,6 +11,8 @@ import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { t } from '@/lib/i18n';
+
+const logo = require('../../assets/images/home_logo.png');
 
 function MenuButton({
   label,
@@ -64,17 +67,12 @@ export default function MenuScreen() {
           <MuteButton />
         </View>
         <View style={styles.hero}>
-          <View style={styles.titleRow}>
-            <ThemedText type="title">C'est de </ThemedText>
-            <ThemedText type="title" style={{ color: LEFT_COLOR }}>
-              Gauche
-            </ThemedText>
-            <ThemedText type="title"> ou de </ThemedText>
-            <ThemedText type="title" style={{ color: RIGHT_COLOR }}>
-              Droite
-            </ThemedText>
-            <ThemedText type="title"> ?</ThemedText>
-          </View>
+          <Image
+            source={logo}
+            style={styles.logo}
+            contentFit="contain"
+            accessibilityLabel={t('menu.title')}
+          />
         </View>
 
         <View style={styles.menu}>
@@ -125,10 +123,10 @@ const styles = StyleSheet.create({
   hero: {
     alignItems: 'center',
   },
-  titleRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
+  logo: {
+    width: '100%',
+    maxWidth: 300,
+    aspectRatio: 1,
   },
   menu: {
     gap: Spacing.three,

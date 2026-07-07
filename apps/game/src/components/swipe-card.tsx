@@ -3,16 +3,18 @@ import { StyleSheet, View } from 'react-native';
 import type { DeckCard } from '@cdgodd/shared';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
 
-/** French political colors: gauche = red, droite = blue. */
-export const LEFT_COLOR = '#e63946';
-export const RIGHT_COLOR = '#1d6fd8';
+/** French political colors: gauche = red, droite = blue (from the web app). */
+export const LEFT_COLOR = '#e2523a';
+export const RIGHT_COLOR = '#6db0f8';
+
+/** Solid card colors — the card is an opaque white surface on the gradient. */
+const CARD_TEXT = '#1b1b2f';
+const CARD_TEXT_SECONDARY = 'rgba(27, 27, 47, 0.55)';
 
 export function SwipeCard({ card }: { card: DeckCard }) {
-  const theme = useTheme();
   return (
-    <View style={[styles.card, { backgroundColor: theme.backgroundElement }]}>
+    <View style={styles.card}>
       {card.imageUrl ? (
         <Image
           source={{ uri: card.imageUrl }}
@@ -28,11 +30,11 @@ export function SwipeCard({ card }: { card: DeckCard }) {
         </View>
       )}
       <View style={styles.labelZone}>
-        <ThemedText type="subtitle" style={styles.label}>
+        <ThemedText type="subtitle" style={[styles.label, { color: CARD_TEXT }]}>
           {card.label}
         </ThemedText>
         {card.categoryKey && (
-          <ThemedText type="small" themeColor="textSecondary">
+          <ThemedText type="small" style={{ color: CARD_TEXT_SECONDARY }}>
             {card.categoryKey}
           </ThemedText>
         )}
@@ -46,8 +48,9 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: Spacing.four,
     overflow: 'hidden',
+    backgroundColor: '#ffffff',
     // Subtle elevation (boxShadow works on native + web since RN 0.76).
-    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)',
+    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
     elevation: 6,
   },
   image: {
@@ -56,6 +59,7 @@ const styles = StyleSheet.create({
   placeholder: {
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#eef0f6',
   },
   placeholderEmoji: {
     fontSize: 96,

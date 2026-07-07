@@ -106,7 +106,7 @@ export default function SearchScreen() {
           ]}
         />
 
-        {searching && <ActivityIndicator style={styles.spinner} />}
+        {searching && <ActivityIndicator style={styles.spinner} color="#fff" />}
 
         {!selected && (
           <FlatList

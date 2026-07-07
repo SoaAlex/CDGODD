@@ -80,7 +80,7 @@ export default function SoloScreen() {
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <View style={styles.deckZone}>
-          {loading && <ActivityIndicator size="large" />}
+          {loading && <ActivityIndicator size="large" color="#fff" />}
 
           {!loading && error && (
             <View style={styles.center}>

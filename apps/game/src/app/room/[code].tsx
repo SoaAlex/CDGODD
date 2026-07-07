@@ -63,7 +63,7 @@ export default function RoomScreen() {
   if (!connected || !room) {
     return (
       <Centered>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color="#fff" />
       </Centered>
     );
   }
@@ -172,7 +172,7 @@ export default function RoomScreen() {
           )}
           {done && (
             <View style={styles.centered}>
-              <ActivityIndicator />
+              <ActivityIndicator color="#fff" />
               <ThemedText themeColor="textSecondary">
                 {t('multiplayer.waitingOthers')}
               </ThemedText>

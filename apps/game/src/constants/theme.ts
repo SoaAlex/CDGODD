@@ -7,21 +7,29 @@ import '@/global.css';
 
 import { Platform } from 'react-native';
 
+/** Purple brand gradient (from the original web app). */
+export const Gradient = ['#667eea', '#764ba2'] as const;
+
+/** Purple accent matching the gradient. */
+export const ACCENT_COLOR = '#667eea';
+
+/**
+ * Single fixed palette tuned to sit on top of {@link Gradient}: transparent
+ * screen backgrounds so the gradient shows through, white text, and frosted
+ * "glass" surfaces. Light and dark point to the same values — the app keeps the
+ * gradient look regardless of the OS color scheme.
+ */
+const palette = {
+  text: '#ffffff',
+  background: 'transparent',
+  backgroundElement: 'rgba(255, 255, 255, 0.16)',
+  backgroundSelected: 'rgba(255, 255, 255, 0.28)',
+  textSecondary: 'rgba(255, 255, 255, 0.75)',
+} as const;
+
 export const Colors = {
-  light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
-  },
-  dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
-  },
+  light: palette,
+  dark: palette,
 } as const;
 
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;

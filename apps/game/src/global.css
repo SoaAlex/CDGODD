@@ -1,3 +1,10 @@
+html,
+body,
+#root {
+  /* Fallback behind the app's purple gradient so web never flashes white. */
+  background-color: #667eea;
+}
+
 :root {
   --font-display:
     Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
