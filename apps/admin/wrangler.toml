@@ -9,3 +9,13 @@ routes = [
 [assets]
 directory = "./dist"
 not_found_handling = "single-page-application"
+
+# Dev environment (deploy: `wrangler deploy --env dev`, worker `cdgodd-admin-v2-dev`).
+[env.dev]
+routes = [
+  { pattern = "admin.dev.cestdegaucheoudedroite.com", custom_domain = true },
+]
+
+[env.dev.assets]
+directory = "./dist"
+not_found_handling = "single-page-application"

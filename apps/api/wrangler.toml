@@ -35,3 +35,39 @@ CDN_BASE = "https://images.cestdegaucheoudedroite.com"
 #   TURNSTILE_SECRET  - Cloudflare Turnstile secret key
 #   IP_HASH_SALT      - random salt for ip_hash (rotate periodically)
 #   ADMIN_TOKEN       - bearer token for /admin routes (v1 auth)
+
+# ---------------------------------------------------------------------------
+# Dev environment  (deploy: `wrangler deploy --env dev`, worker `cdgodd-api-dev`)
+# Isolated D1 + R2 so dev traffic never touches prod data.
+# Named environments do NOT inherit top-level config — everything is repeated.
+# Set dev secrets with `wrangler secret put <NAME> --env dev`.
+# ---------------------------------------------------------------------------
+[env.dev]
+routes = [
+  { pattern = "api.dev.cestdegaucheoudedroite.com", custom_domain = true },
+]
+
+[env.dev.observability]
+enabled = true
+
+[[env.dev.d1_databases]]
+binding = "DB"
+database_name = "cdgodd-dev"
+database_id = "REPLACE_WITH_DEV_D1_ID" # `wrangler d1 create cdgodd-dev`
+
+[[env.dev.r2_buckets]]
+binding = "IMAGES"
+bucket_name = "cdgodd-images-dev" # `wrangler r2 bucket create cdgodd-images-dev`
+
+[[env.dev.durable_objects.bindings]]
+name = "ROOMS"
+class_name = "Room"
+
+[[env.dev.migrations]]
+tag = "v1"
+new_sqlite_classes = ["Room"]
+
+[env.dev.vars]
+# Add custom domain `images.dev.cestdegaucheoudedroite.com` to the
+# cdgodd-images-dev bucket in the Cloudflare dashboard (R2 > Settings).
+CDN_BASE = "https://images.dev.cestdegaucheoudedroite.com"

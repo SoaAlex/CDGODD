@@ -76,3 +76,39 @@ pnpm deploy     # wrangler deploy → api.cestdegaucheoudedroite.com
 
 CI applies remote migrations before deploying; when deploying manually, run
 `pnpm db:migrate:remote` first if the schema changed.
+
+## Dev environment
+
+A separate Cloudflare stack served under `dev.` subdomains, with its **own**
+D1 database and R2 bucket so dev traffic never touches prod data. Defined by the
+`[env.dev]` block in [`wrangler.toml`](wrangler.toml) (worker `cdgodd-api-dev`).
+
+| Prod | Dev |
+|------|-----|
+| `api.cestdegaucheoudedroite.com` | `api.dev.cestdegaucheoudedroite.com` |
+| D1 `cdgodd` | D1 `cdgodd-dev` |
+| R2 `cdgodd-images` (`images.cestdegaucheoudedroite.com`) | R2 `cdgodd-images-dev` (`images.dev.cestdegaucheoudedroite.com`) |
+
+**One-time setup:**
+
+```bash
+wrangler d1 create cdgodd-dev        # paste the id into [env.dev] database_id
+wrangler r2 bucket create cdgodd-images-dev
+# In the dashboard: add custom domain images.dev.cestdegaucheoudedroite.com
+#   to the cdgodd-images-dev bucket (R2 > bucket > Settings > Custom Domains).
+wrangler secret put ADMIN_TOKEN --env dev
+wrangler secret put TURNSTILE_SECRET --env dev   # optional; unset = skip check
+pnpm db:migrate:dev
+pnpm db:seed:dev
+```
+
+**Deploy:**
+
+```bash
+pnpm deploy:dev        # wrangler deploy --env dev
+pnpm db:migrate:dev    # run first if the schema changed
+```
+
+Deploy the dev front-ends with `pnpm --filter @cdgodd/game deploy:dev` and
+`pnpm --filter @cdgodd/admin deploy:dev` — both are built pointing at
+`api.dev.cestdegaucheoudedroite.com`.
