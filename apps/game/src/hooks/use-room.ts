@@ -24,7 +24,7 @@ interface LiveTally {
  * player has swiped. Once you've voted every card you're `done` and wait
  * only for the others; the room reveals when everyone has finished.
  */
-export function useRoom(code: string) {
+export function useRoom(code: string, name: string | null) {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [room, setRoom] = useState<RoomState | null>(null);
   const [deck, setDeck] = useState<DeckCard[] | null>(null);
@@ -37,6 +37,8 @@ export function useRoom(code: string) {
   const indexRef = useRef(0);
 
   useEffect(() => {
+    // No nickname yet: the room screen is still asking for one.
+    if (!name) return;
     let closed = false;
     let socket: WebSocket | null = null;
 
@@ -48,7 +50,7 @@ export function useRoom(code: string) {
 
       socket.onopen = () => {
         setConnected(true);
-        const join: RoomClientMessage = { type: 'join', sessionId: sid };
+        const join: RoomClientMessage = { type: 'join', sessionId: sid, name };
         socket?.send(JSON.stringify(join));
       };
 
@@ -59,8 +61,12 @@ export function useRoom(code: string) {
             setRoom(msg.room);
             break;
           case 'deck':
+            // A fresh deck also means a fresh round (host replay): wipe
+            // everything left over from the previous one.
             indexRef.current = 0;
             setMyIndex(0);
+            setResults(null);
+            setLiveTally(null);
             setDeck(msg.cards);
             break;
           case 'tally':
@@ -84,13 +90,15 @@ export function useRoom(code: string) {
       socket?.close();
       ws.current = null;
     };
-  }, [code]);
+  }, [code, name]);
 
   const send = useCallback((msg: RoomClientMessage) => {
     ws.current?.send(JSON.stringify(msg));
   }, []);
 
   const start = useCallback(() => send({ type: 'start' }), [send]);
+
+  const restart = useCallback(() => send({ type: 'restart' }), [send]);
 
   const vote = useCallback(
     (side: Side) => {
@@ -119,6 +127,7 @@ export function useRoom(code: string) {
     isHost,
     done,
     start,
+    restart,
     vote,
   };
 }

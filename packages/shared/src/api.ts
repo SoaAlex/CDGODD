@@ -36,9 +36,11 @@ export interface CreateRoomResponse {
 
 /** WebSocket messages: client -> room */
 export type RoomClientMessage =
-  | { type: 'join'; sessionId: string }
+  | { type: 'join'; sessionId: string; name: string }
   | { type: 'start' }
-  | { type: 'vote'; cardIndex: number; side: Side };
+  | { type: 'vote'; cardIndex: number; side: Side }
+  /** Host only, from the results phase: deal fresh cards and replay. */
+  | { type: 'restart' };
 
 /** WebSocket messages: room -> client */
 export type RoomServerMessage =

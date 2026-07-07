@@ -48,6 +48,9 @@ Multiplayer (Durable Object):
 
 - `POST /rooms` `{ mode, roundSize }` — create a room, returns a 6-char code
 - `GET  /rooms/:code` — room state · `WS /rooms/:code/ws` — join & play
+- WS: players join with an ephemeral nickname (shown to the room, never
+  persisted); after the reveal the room stays open and the host can send
+  `restart` to replay with the same players and a fresh hand
 
 Admin (bearer `ADMIN_TOKEN`):
 

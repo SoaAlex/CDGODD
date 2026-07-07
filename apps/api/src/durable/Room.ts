@@ -3,6 +3,7 @@ import type {
   RoomCardResult,
   RoomClientMessage,
   RoomMode,
+  RoomPlayer,
   RoomServerMessage,
   RoomState,
   Side,
@@ -38,6 +39,8 @@ export class Room implements DurableObject {
   private hostId: string | null = null;
   /** ws -> sessionId of connected players. */
   private players = new Map<WebSocket, string>();
+  /** sessionId -> chosen nickname (ephemeral, in-memory like votes). */
+  private names = new Map<string, string>();
   /** cardIndex -> sessionId -> side. */
   private votes = new Map<number, Map<string, Side>>();
 
@@ -53,12 +56,18 @@ export class Room implements DurableObject {
   }
 
   private get state(): RoomState {
+    const sessions = new Set(this.players.values());
+    const players: RoomPlayer[] = [...sessions].map((id) => ({
+      id,
+      name: this.names.get(id) ?? 'Joueur',
+    }));
     return {
       code: this.config?.code ?? '',
       mode: this.config?.mode ?? 'batch',
       phase: this.phase,
       roundSize: this.config?.cards.length ?? 0,
-      playerCount: new Set(this.players.values()).size,
+      playerCount: sessions.size,
+      players,
       currentCardIndex: this.currentCardIndex,
       hostId: this.hostId,
     };
@@ -96,6 +105,21 @@ export class Room implements DurableObject {
       50,
     );
 
+    const cards = await this.dealCards(roundSize);
+    if (cards.length === 0) {
+      return Response.json({ error: 'no items available' }, { status: 503 });
+    }
+
+    this.config = { code, mode, cards };
+    await this.ctx.storage.put('config', this.config);
+    // Rooms are ephemeral: self-destruct after 24h so codes can be reused.
+    await this.ctx.storage.setAlarm(Date.now() + 24 * 60 * 60 * 1000);
+
+    return Response.json({ room: this.state });
+  }
+
+  /** Draw a fresh random hand of approved cards from D1. */
+  private async dealCards(roundSize: number): Promise<DeckCard[]> {
     const { results } = await this.env.DB.prepare(
       `SELECT i.id, t.label, i.image_key, cat.key AS category_key
          FROM items i
@@ -113,23 +137,12 @@ export class Room implements DurableObject {
         category_key: string | null;
       }>();
 
-    if (results.length === 0) {
-      return Response.json({ error: 'no items available' }, { status: 503 });
-    }
-
-    const cards: DeckCard[] = results.map((r) => ({
+    return results.map((r) => ({
       id: r.id,
       label: r.label,
       categoryKey: r.category_key,
       imageUrl: r.image_key ? `${this.env.CDN_BASE}/${r.image_key}` : null,
     }));
-
-    this.config = { code, mode, cards };
-    await this.ctx.storage.put('config', this.config);
-    // Rooms are ephemeral: self-destruct after 24h so codes can be reused.
-    await this.ctx.storage.setAlarm(Date.now() + 24 * 60 * 60 * 1000);
-
-    return Response.json({ room: this.state });
   }
 
   async alarm(): Promise<void> {
@@ -138,6 +151,7 @@ export class Room implements DurableObject {
     this.phase = 'lobby';
     for (const ws of this.players.keys()) ws.close(1000, 'room expired');
     this.players.clear();
+    this.names.clear();
     this.votes.clear();
   }
 
@@ -152,7 +166,7 @@ export class Room implements DurableObject {
         this.send(ws, { type: 'error', message: 'bad message' });
         return;
       }
-      this.handle(ws, msg);
+      void this.handle(ws, msg);
     });
 
     const drop = () => {
@@ -166,13 +180,18 @@ export class Room implements DurableObject {
     ws.addEventListener('error', drop);
   }
 
-  private handle(ws: WebSocket, msg: RoomClientMessage) {
+  private async handle(ws: WebSocket, msg: RoomClientMessage) {
     switch (msg.type) {
       case 'join': {
         if (typeof msg.sessionId !== 'string' || msg.sessionId.length > 64) {
           this.send(ws, { type: 'error', message: 'bad session id' });
           return;
         }
+        // Nickname is display-only and ephemeral: trimmed, capped, never
+        // persisted (dies with the room like votes).
+        const name =
+          typeof msg.name === 'string' ? msg.name.trim().slice(0, 24) : '';
+        this.names.set(msg.sessionId, name || 'Joueur');
         this.players.set(ws, msg.sessionId);
         this.hostId ??= msg.sessionId;
         this.broadcast({ type: 'state', room: this.state });
@@ -228,6 +247,33 @@ export class Room implements DurableObject {
         }
 
         this.maybeReveal();
+        break;
+      }
+
+      case 'restart': {
+        // Room stays open after a round: from the results screen the host
+        // can relaunch with the same players and a fresh random hand.
+        if (this.players.get(ws) !== this.hostId) {
+          this.send(ws, { type: 'error', message: 'host only' });
+          return;
+        }
+        if (this.phase !== 'results' || !this.config) return;
+
+        const cards = await this.dealCards(this.config.cards.length);
+        // Guard against a duplicate restart racing across the await.
+        if (this.phase !== 'results') return;
+        if (cards.length === 0) {
+          this.send(ws, { type: 'error', message: 'no items available' });
+          return;
+        }
+        this.config = { ...this.config, cards };
+        await this.ctx.storage.put('config', this.config);
+
+        this.votes.clear();
+        this.currentCardIndex = 0;
+        this.phase = 'playing';
+        this.broadcast({ type: 'state', room: this.state });
+        for (const player of this.players.keys()) this.sendDeck(player);
         break;
       }
     }

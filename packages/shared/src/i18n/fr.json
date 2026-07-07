@@ -36,7 +36,11 @@
     "modeBatch": "Résultats à la fin",
     "modeLive": "Résultats en direct",
     "cards": "cartes",
-    "shareCode": "Partage ce code avec tes amis"
+    "shareCode": "Partage ce code avec tes amis",
+    "nickname": "Choisis ton pseudo",
+    "nicknamePlaceholder": "Ton pseudo",
+    "playAgain": "Rejouer",
+    "waitingHost": "En attente de l'hôte pour rejouer…"
   },
   "history": {
     "empty": "Aucun vote pour l'instant",

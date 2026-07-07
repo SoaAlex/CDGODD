@@ -40,6 +40,12 @@ export type RoomMode = 'batch' | 'live';
 
 export type RoomPhase = 'lobby' | 'playing' | 'results';
 
+/** A connected player as seen by everyone in the room (ephemeral, in-memory). */
+export interface RoomPlayer {
+  id: string;
+  name: string;
+}
+
 export interface RoomState {
   code: string;
   mode: RoomMode;
@@ -47,6 +53,8 @@ export interface RoomState {
   /** Number of cards in the round. */
   roundSize: number;
   playerCount: number;
+  /** Currently connected players with their chosen nicknames. */
+  players: RoomPlayer[];
   currentCardIndex: number;
   /** Session id of the room creator (only the host can start the round). */
   hostId: string | null;

@@ -1,12 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
   Platform,
   Pressable,
   StyleSheet,
+  TextInput,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -24,6 +25,9 @@ export default function RoomScreen() {
   const { code } = useLocalSearchParams<{ code: string }>();
   const theme = useTheme();
   const deckRef = useRef<SwipeDeckHandle>(null);
+  // Nickname lives only in this screen's state: gone when the room closes.
+  const [nameInput, setNameInput] = useState('');
+  const [name, setName] = useState<string | null>(null);
   const {
     room,
     deck,
@@ -35,8 +39,9 @@ export default function RoomScreen() {
     isHost,
     done,
     start,
+    restart,
     vote,
-  } = useRoom(code ?? '');
+  } = useRoom(code ?? '', name);
 
   // Web: vote with the keyboard arrows.
   useEffect(() => {
@@ -56,6 +61,49 @@ export default function RoomScreen() {
         <ThemedText themeColor="textSecondary">
           {t('errors.roomNotFound')}
         </ThemedText>
+      </Centered>
+    );
+  }
+
+  // ---- Nickname (asked before connecting, so everyone joins named) ----
+  if (!name) {
+    const clean = nameInput.trim();
+    return (
+      <Centered>
+        <ThemedText type="subtitle">{t('multiplayer.nickname')}</ThemedText>
+        <TextInput
+          testID="nickname-input"
+          value={nameInput}
+          onChangeText={setNameInput}
+          placeholder={t('multiplayer.nicknamePlaceholder')}
+          placeholderTextColor={theme.textSecondary}
+          autoCorrect={false}
+          maxLength={24}
+          onSubmitEditing={() => clean && setName(clean)}
+          style={[
+            styles.nameInput,
+            { backgroundColor: theme.backgroundElement, color: theme.text },
+          ]}
+        />
+        <Pressable
+          testID="nickname-submit"
+          onPress={() => setName(clean)}
+          disabled={!clean}
+          style={({ pressed }) => [
+            styles.startButton,
+            {
+              backgroundColor: RIGHT_COLOR,
+              opacity: !clean ? 0.4 : pressed ? 0.8 : 1,
+            },
+          ]}
+        >
+          <View style={styles.buttonContent}>
+            <Ionicons name="enter-outline" size={22} color="#fff" />
+            <ThemedText type="subtitle" style={{ color: '#fff' }}>
+              {t('multiplayer.join')}
+            </ThemedText>
+          </View>
+        </Pressable>
       </Centered>
     );
   }
@@ -102,6 +150,29 @@ export default function RoomScreen() {
               </View>
             )}
           />
+          {/* Room stays open: host can relaunch with the same players. */}
+          {isHost ? (
+            <Pressable
+              testID="restart-round"
+              onPress={restart}
+              style={({ pressed }) => [
+                styles.startButton,
+                styles.selfCenter,
+                { backgroundColor: RIGHT_COLOR, opacity: pressed ? 0.8 : 1 },
+              ]}
+            >
+              <View style={styles.buttonContent}>
+                <Ionicons name="refresh" size={22} color="#fff" />
+                <ThemedText type="subtitle" style={{ color: '#fff' }}>
+                  {t('multiplayer.playAgain')}
+                </ThemedText>
+              </View>
+            </Pressable>
+          ) : (
+            <ThemedText themeColor="textSecondary" style={styles.centerText}>
+              {t('multiplayer.waitingHost')}
+            </ThemedText>
+          )}
         </SafeAreaView>
       </ThemedView>
     );
@@ -124,6 +195,24 @@ export default function RoomScreen() {
             ? t('multiplayer.modeLive')
             : t('multiplayer.modeBatch')}
         </ThemedText>
+        <View style={styles.playerList}>
+          {room.players.map((p) => (
+            <View
+              key={p.id}
+              style={[
+                styles.playerChip,
+                { backgroundColor: theme.backgroundElement },
+              ]}
+            >
+              <Ionicons
+                name={p.id === room.hostId ? 'star' : 'person'}
+                size={14}
+                color={theme.textSecondary}
+              />
+              <ThemedText type="small">{p.name}</ThemedText>
+            </View>
+          ))}
+        </View>
         {isHost ? (
           <Pressable
             testID="start-round"
@@ -274,6 +363,33 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.six,
     paddingVertical: Spacing.three,
     borderRadius: Spacing.three,
+  },
+  selfCenter: {
+    alignSelf: 'center',
+  },
+  nameInput: {
+    width: '100%',
+    maxWidth: 320,
+    borderRadius: Spacing.three,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.three,
+    fontSize: 22,
+    textAlign: 'center',
+  },
+  playerList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: Spacing.two,
+    maxWidth: '90%',
+  },
+  playerChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.one,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.one,
+    borderRadius: Spacing.four,
   },
   deckZone: {
     flex: 1,
