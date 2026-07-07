@@ -2,7 +2,7 @@ name = "cdgodd-game"
 compatibility_date = "2026-06-01"
 
 routes = [
-  { pattern = "cestdegaucheoudedroite.fr", custom_domain = true },
+  { pattern = "cestdegaucheoudedroite.com", custom_domain = true },
 ]
 
 # Assets-only Worker: serves the Expo web export (expo export -p web).

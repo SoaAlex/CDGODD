@@ -3,7 +3,7 @@ main = "src/index.ts"
 compatibility_date = "2026-06-01"
 
 routes = [
-  { pattern = "api.cestdegaucheoudedroite.fr", custom_domain = true },
+  { pattern = "api.cestdegaucheoudedroite.com", custom_domain = true },
 ]
 
 [observability]
@@ -12,8 +12,7 @@ enabled = true
 [[d1_databases]]
 binding = "DB"
 database_name = "cdgodd"
-# Replace after `wrangler d1 create cdgodd`:
-database_id = "REPLACE_ME"
+database_id = "70625d39-d78a-4dcc-8507-d9ad6660269a"
 
 [[r2_buckets]]
 binding = "IMAGES"
@@ -31,7 +30,7 @@ new_sqlite_classes = ["Room"]
 # Public base URL for card images: the R2 bucket's custom domain (direct,
 # Cloudflare-cached). Local dev overrides this in .dev.vars to hit the
 # Worker's /img/* route instead.
-CDN_BASE = "https://images.cestdegaucheoudedroite.fr"
+CDN_BASE = "https://images.cestdegaucheoudedroite.com"
 # Set real secrets with `wrangler secret put`:
 #   TURNSTILE_SECRET  - Cloudflare Turnstile secret key
 #   IP_HASH_SALT      - random salt for ip_hash (rotate periodically)

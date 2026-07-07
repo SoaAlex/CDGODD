@@ -32,7 +32,7 @@ jobs:
       - name: Typecheck
         run: pnpm turbo typecheck
 
-      # --- API (api.cestdegaucheoudedroite.fr) ---
+      # --- API (api.cestdegaucheoudedroite.com) ---
       - name: Apply D1 migrations
         working-directory: apps/api
         run: pnpm exec wrangler d1 migrations apply cdgodd --remote
@@ -41,23 +41,23 @@ jobs:
         working-directory: apps/api
         run: pnpm exec wrangler deploy
 
-      # --- Admin (admin.cestdegaucheoudedroite.fr) ---
+      # --- Admin (admin.cestdegaucheoudedroite.com) ---
       - name: Build admin
         working-directory: apps/admin
         run: pnpm build
         env:
-          VITE_API_URL: https://api.cestdegaucheoudedroite.fr
+          VITE_API_URL: https://api.cestdegaucheoudedroite.com
 
       - name: Deploy admin
         working-directory: apps/admin
         run: pnpm exec wrangler deploy
 
-      # --- Game web (cestdegaucheoudedroite.fr) ---
+      # --- Game web (cestdegaucheoudedroite.com) ---
       - name: Build game web
         working-directory: apps/game
         run: pnpm build:web
         env:
-          EXPO_PUBLIC_API_URL: https://api.cestdegaucheoudedroite.fr
+          EXPO_PUBLIC_API_URL: https://api.cestdegaucheoudedroite.com
 
       - name: Deploy game
         working-directory: apps/game

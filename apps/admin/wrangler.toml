@@ -1,8 +1,8 @@
-name = "cdgodd-admin"
+name = "cdgodd-admin-v2"
 compatibility_date = "2026-06-01"
 
 routes = [
-  { pattern = "admin.cestdegaucheoudedroite.fr", custom_domain = true },
+  { pattern = "admin.cestdegaucheoudedroite.com", custom_domain = true },
 ]
 
 # Assets-only Worker: serves the Vite build, no server code.
