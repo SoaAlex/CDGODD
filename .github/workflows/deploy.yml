@@ -58,6 +58,7 @@ jobs:
         run: pnpm build:web
         env:
           EXPO_PUBLIC_API_URL: https://api.cestdegaucheoudedroite.com
+          EXPO_PUBLIC_TURNSTILE_SITEKEY: 0x4AAAAAADxcifQdjBeiuVUB
 
       - name: Deploy game
         working-directory: apps/game

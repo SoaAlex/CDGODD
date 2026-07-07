@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LEFT_COLOR, RIGHT_COLOR } from '@/components/swipe-card';
+import { MuteButton } from '@/components/mute-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
@@ -51,6 +52,9 @@ export default function MenuScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
+        <View style={styles.topBar}>
+          <MuteButton />
+        </View>
         <View style={styles.hero}>
           <View style={styles.titleRow}>
             <ThemedText type="title">C'est de </ThemedText>
@@ -103,6 +107,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.four,
     justifyContent: 'center',
     gap: Spacing.six,
+  },
+  topBar: {
+    position: 'absolute',
+    top: Spacing.three,
+    right: Spacing.four,
+    zIndex: 1,
   },
   hero: {
     alignItems: 'center',

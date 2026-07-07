@@ -1,6 +1,17 @@
 import { Asset } from 'expo-asset';
 
+const MUTE_KEY = 'cdgodd.music_muted';
+
 let audio: HTMLAudioElement | null = null;
+let muted = readMuted();
+
+function readMuted(): boolean {
+  try {
+    return window.localStorage.getItem(MUTE_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Web only: loop the theme song for the whole session. Browsers block
@@ -17,12 +28,13 @@ export function startBackgroundMusic(): void {
   audio = new window.Audio(uri);
   audio.loop = true;
   audio.volume = 0.35;
+  if (muted) return; // created but paused; unmute starts it
 
   const tryPlay = () => {
     audio?.play().catch(() => {
       // Autoplay blocked — wait for the first user gesture.
       const onGesture = () => {
-        void audio?.play().catch(() => {});
+        if (!muted) void audio?.play().catch(() => {});
         window.removeEventListener('pointerdown', onGesture);
         window.removeEventListener('keydown', onGesture);
       };
@@ -31,4 +43,23 @@ export function startBackgroundMusic(): void {
     });
   };
   tryPlay();
+}
+
+export function isMusicMuted(): boolean {
+  return muted;
+}
+
+export function setMusicMuted(next: boolean): void {
+  muted = next;
+  try {
+    window.localStorage.setItem(MUTE_KEY, next ? '1' : '0');
+  } catch {
+    /* ignore */
+  }
+  if (!audio) return;
+  if (next) {
+    audio.pause();
+  } else {
+    void audio.play().catch(() => {});
+  }
 }

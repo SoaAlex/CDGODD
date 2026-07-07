@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Gauche ou Droite",
+    "name": "C'est de Gauche ou de Droite ?",
     "slug": "cdgodd",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -21,7 +21,8 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "name": "C'est de Gauche ou de Droite ?"
     },
     "plugins": [
       "expo-router",
