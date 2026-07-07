@@ -2,8 +2,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import Head from 'expo-router/head';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AdSlot } from '@/ads/ad-slot';
 import { MuteButton } from '@/components/mute-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -61,6 +62,12 @@ export default function MenuScreen() {
         />
       </Head>
       <SafeAreaView style={styles.safeArea}>
+        {/* Mobile: banner pinned to the top of the menu. */}
+        {Platform.OS !== 'web' && (
+          <View style={styles.adHeader}>
+            <AdSlot />
+          </View>
+        )}
         <View style={styles.topBar}>
           <MuteButton />
         </View>
@@ -94,6 +101,13 @@ export default function MenuScreen() {
             icon="settings"
           />
         </View>
+
+        {/* Web: banner pinned to the bottom of the page. */}
+        {Platform.OS === 'web' && (
+          <View style={styles.adFooter}>
+            <AdSlot />
+          </View>
+        )}
       </SafeAreaView>
     </ThemedView>
   );
@@ -128,6 +142,14 @@ const styles = StyleSheet.create({
   },
   menu: {
     gap: Spacing.three,
+  },
+  adHeader: {
+    // Pins the banner to the page top despite justifyContent: 'center'.
+    marginBottom: 'auto',
+  },
+  adFooter: {
+    // Pins the banner to the page bottom despite justifyContent: 'center'.
+    marginTop: 'auto',
   },
   button: {
     flexDirection: 'row',

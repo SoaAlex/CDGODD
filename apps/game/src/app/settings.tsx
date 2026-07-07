@@ -7,7 +7,7 @@ import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { t } from '@/lib/i18n';
-import { useShowResults } from '@/lib/prefs';
+import { useAdsEnabled, useShowResults } from '@/lib/prefs';
 import { getSessionId, resetSessionId } from '@/lib/session';
 
 export default function SettingsScreen() {
@@ -15,6 +15,7 @@ export default function SettingsScreen() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [justReset, setJustReset] = useState(false);
   const { showResults, setShowResults } = useShowResults();
+  const { adsEnabled, setAdsEnabled } = useAdsEnabled();
 
   useEffect(() => {
     void getSessionId().then(setSessionId);
@@ -110,6 +111,16 @@ export default function SettingsScreen() {
           <ThemedText type="small" themeColor="textSecondary">
             {t('consent.body')}
           </ThemedText>
+          <View style={[styles.row, { backgroundColor: theme.backgroundElement }]}>
+            <ThemedText type="small" style={styles.rowLabel}>
+              {t('consent.adsToggle')}
+            </ThemedText>
+            <Switch
+              testID="ads-enabled-switch"
+              value={adsEnabled}
+              onValueChange={setAdsEnabled}
+            />
+          </View>
         </View>
       </SafeAreaView>
     </ThemedView>

@@ -62,7 +62,8 @@
   },
   "consent": {
     "title": "Publicités",
-    "body": "Le jeu est gratuit et anonyme. Seules les publicités peuvent collecter des données, avec votre accord."
+    "body": "Le jeu est gratuit et anonyme. Seules les publicités peuvent collecter des données, avec votre accord.",
+    "adsToggle": "Les pubs m'aident à financer le jeu, mais si elles vous agacent autant que moi, voici de quoi les désactiver :)"
   },
   "errors": {
     "network": "Erreur réseau, réessayez",

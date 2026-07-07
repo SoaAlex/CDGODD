@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
+import { useAdsEnabled } from '@/lib/prefs';
 import { ensureAdsReady } from './consent';
 
 const INTERSTITIAL_UNIT_ID =
@@ -14,6 +15,7 @@ export const SWIPES_PER_INTERSTITIAL = 20;
  * block gameplay.
  */
 export function useInterstitial() {
+  const { adsEnabled, loaded } = useAdsEnabled();
   const ad = useRef<InterstitialAd | null>(null);
   const swipes = useRef(0);
 
@@ -24,12 +26,14 @@ export function useInterstitial() {
   }, []);
 
   useEffect(() => {
+    if (!loaded || !adsEnabled) return;
     void ensureAdsReady().then((ok) => {
       if (ok) preload();
     });
-  }, [preload]);
+  }, [loaded, adsEnabled, preload]);
 
   return useCallback(() => {
+    if (!adsEnabled) return;
     swipes.current += 1;
     if (swipes.current % SWIPES_PER_INTERSTITIAL !== 0) return;
     const current = ad.current;
@@ -41,5 +45,5 @@ export function useInterstitial() {
       }
       preload();
     }
-  }, [preload]);
+  }, [adsEnabled, preload]);
 }
