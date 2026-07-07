@@ -87,11 +87,11 @@ export default function MenuScreen() {
             color="#6db0f8"
           />
           <MenuButton label={t('solo.search')} href="/search" icon="search" />
-          <MenuButton label={t('menu.history')} href="/history" icon="time-outline" />
+          <MenuButton label={t('menu.history')} href="/history" icon="time" />
           <MenuButton
             label={t('menu.settings')}
             href="/settings"
-            icon="settings-outline"
+            icon="settings"
           />
         </View>
       </SafeAreaView>
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: Spacing.two,
     paddingVertical: Spacing.three,
-    borderRadius: Spacing.three,
+    borderRadius: Spacing.six,
     alignItems: 'center',
   },
   buttonText: {
