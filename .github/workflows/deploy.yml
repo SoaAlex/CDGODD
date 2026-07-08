@@ -1,9 +1,13 @@
 name: Deploy
 
-# main -> production deploy (custom domains).
-# any other branch -> preview version upload: same Workers, no traffic change,
-# preview URL on *-<worker>.cestdegaucheoudedroite.workers.dev.
-# Previews share PROD bindings (D1/R2) — no migrations run outside main.
+# Behavior comes from GitHub environments (repo Settings > Environments):
+#   production (main only, branch-protected):
+#     WRANGLER_COMMAND=deploy, RUN_MIGRATIONS=true, DEPLOY_URL=prod site
+#   dev (every other branch):
+#     WRANGLER_COMMAND=versions upload, RUN_MIGRATIONS=false
+# Branch pushes upload preview versions of the prod Workers: no traffic
+# change, preview URL on *-<worker>.cestdegaucheoudedroite.workers.dev.
+# Previews share PROD bindings (D1/R2) — migrations never run outside main.
 on:
   push:
     branches: ['**']
@@ -16,11 +20,13 @@ concurrency:
 env:
   CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
   CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-  IS_MAIN: ${{ github.ref == 'refs/heads/main' }}
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'dev' }}
+      url: ${{ vars.DEPLOY_URL }}
     steps:
       - uses: actions/checkout@v4
 
@@ -39,19 +45,13 @@ jobs:
 
       # --- API ---
       - name: Apply D1 migrations
-        if: env.IS_MAIN == 'true'
+        if: vars.RUN_MIGRATIONS == 'true'
         working-directory: apps/api
         run: pnpm exec wrangler d1 migrations apply cdgodd --remote
 
       - name: Deploy API worker
-        if: env.IS_MAIN == 'true'
         working-directory: apps/api
-        run: pnpm exec wrangler deploy
-
-      - name: Upload API preview version
-        if: env.IS_MAIN != 'true'
-        working-directory: apps/api
-        run: pnpm exec wrangler versions upload
+        run: pnpm exec wrangler ${{ vars.WRANGLER_COMMAND }}
 
       # --- Admin ---
       - name: Build admin
@@ -61,14 +61,8 @@ jobs:
           VITE_API_URL: https://api.cestdegaucheoudedroite.com
 
       - name: Deploy admin
-        if: env.IS_MAIN == 'true'
         working-directory: apps/admin
-        run: pnpm exec wrangler deploy
-
-      - name: Upload admin preview version
-        if: env.IS_MAIN != 'true'
-        working-directory: apps/admin
-        run: pnpm exec wrangler versions upload
+        run: pnpm exec wrangler ${{ vars.WRANGLER_COMMAND }}
 
       # --- Game web ---
       - name: Build game web
@@ -79,11 +73,5 @@ jobs:
           EXPO_PUBLIC_TURNSTILE_SITEKEY: 0x4AAAAAADxcifQdjBeiuVUB
 
       - name: Deploy game
-        if: env.IS_MAIN == 'true'
         working-directory: apps/game
-        run: pnpm exec wrangler deploy
-
-      - name: Upload game preview version
-        if: env.IS_MAIN != 'true'
-        working-directory: apps/game
-        run: pnpm exec wrangler versions upload
+        run: pnpm exec wrangler ${{ vars.WRANGLER_COMMAND }}
