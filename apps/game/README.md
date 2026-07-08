@@ -20,8 +20,10 @@ Android**. The web export is served as an assets-only Cloudflare Worker.
 - **History** — device-local record of your votes with fresh global tallies.
 - **Anonymous** — a resettable device `session_id`, no account. Only ads collect
   data, behind a consent flow.
-- **Ads** — AdMob on native (UMP consent, banner + interstitial), optional
-  AdSense on web; never blocks gameplay.
+- **Ads** — AdMob on native (UMP consent, top banners + interstitial), optional
+  AdSense on web (bottom banner on home, 160x600 side rails on wide swipe
+  screens); a settings switch (`cdgodd.ads_enabled`) turns everything off.
+  Never blocks gameplay.
 - **Fonts & music** — ClashGrotesk / MonteiroLobato from `assets/`; the theme
   song loops on web only.
 

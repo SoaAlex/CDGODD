@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RoomMode, Side } from '@cdgodd/shared';
+import { AdRails } from '@/ads/ad-rails';
+import { AdSlot } from '@/ads/ad-slot';
 import { RoomSettings } from '@/components/room-settings';
 import { LEFT_COLOR, RIGHT_COLOR } from '@/components/swipe-card';
 import { SwipeDeck, type SwipeDeckHandle } from '@/components/swipe-deck';
@@ -351,81 +353,85 @@ export default function RoomScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea} edges={['bottom']}>
-        <ThemedText type="small" themeColor="textSecondary" style={styles.centerText}>
-          {Math.min(myIndex + 1, room.roundSize)} / {room.roundSize}
-        </ThemedText>
+      <AdRails>
+        <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+          {/* Mobile: banner at the top; web gets side rails instead. */}
+          {Platform.OS !== 'web' && <AdSlot />}
+          <ThemedText type="small" themeColor="textSecondary" style={styles.centerText}>
+            {Math.min(myIndex + 1, room.roundSize)} / {room.roundSize}
+          </ThemedText>
 
-        <View style={styles.deckZone}>
-          {!done && remaining.length > 0 && (
-            <SwipeDeck
-              ref={deckRef}
-              cards={remaining}
-              onSwipe={(side) => vote(side)}
-            />
-          )}
-          {done && (
-            <View style={styles.centered}>
-              <ActivityIndicator color="#fff" />
-              <ThemedText themeColor="textSecondary">
-                {t('multiplayer.waitingOthers')}
-              </ThemedText>
-            </View>
-          )}
-        </View>
-
-        {!done && remaining.length > 0 && (
-          <View style={styles.voteRow}>
-            <Pressable
-              testID="vote-left"
-              onPress={() => deckRef.current?.swipeOut('left')}
-              style={({ pressed }) => [
-                styles.voteButton,
-                { backgroundColor: LEFT_COLOR, opacity: pressed ? 0.8 : 1 },
-              ]}
-            >
-              <Ionicons name="arrow-back" size={22} color="#fff" />
-              <ThemedText type="subtitle" style={styles.voteText}>
-                {t('game.left')}
-              </ThemedText>
-            </Pressable>
-            <Pressable
-              testID="vote-right"
-              onPress={() => deckRef.current?.swipeOut('right')}
-              style={({ pressed }) => [
-                styles.voteButton,
-                { backgroundColor: RIGHT_COLOR, opacity: pressed ? 0.8 : 1 },
-              ]}
-            >
-              <ThemedText type="subtitle" style={styles.voteText}>
-                {t('game.right')}
-              </ThemedText>
-              <Ionicons name="arrow-forward" size={22} color="#fff" />
-            </Pressable>
-          </View>
-        )}
-
-        <View style={styles.footer}>
-          {showLiveTally && liveTally && (
-            <View style={styles.tallyBlock}>
-              <ThemedText
-                type="small"
-                themeColor="textSecondary"
-                style={styles.centerText}
-              >
-                {t('game.globalVotes')}
-              </ThemedText>
-              <TallyBar
-                tally={{
-                  itemId: liveTally.cardIndex,
-                  votesLeft: liveTally.votesLeft,
-                  votesRight: liveTally.votesRight,
-                }}
+          <View style={styles.deckZone}>
+            {!done && remaining.length > 0 && (
+              <SwipeDeck
+                ref={deckRef}
+                cards={remaining}
+                onSwipe={(side) => vote(side)}
               />
+            )}
+            {done && (
+              <View style={styles.centered}>
+                <ActivityIndicator color="#fff" />
+                <ThemedText themeColor="textSecondary">
+                  {t('multiplayer.waitingOthers')}
+                </ThemedText>
+              </View>
+            )}
+          </View>
+
+          {!done && remaining.length > 0 && (
+            <View style={styles.voteRow}>
+              <Pressable
+                testID="vote-left"
+                onPress={() => deckRef.current?.swipeOut('left')}
+                style={({ pressed }) => [
+                  styles.voteButton,
+                  { backgroundColor: LEFT_COLOR, opacity: pressed ? 0.8 : 1 },
+                ]}
+              >
+                <Ionicons name="arrow-back" size={22} color="#fff" />
+                <ThemedText type="subtitle" style={styles.voteText}>
+                  {t('game.left')}
+                </ThemedText>
+              </Pressable>
+              <Pressable
+                testID="vote-right"
+                onPress={() => deckRef.current?.swipeOut('right')}
+                style={({ pressed }) => [
+                  styles.voteButton,
+                  { backgroundColor: RIGHT_COLOR, opacity: pressed ? 0.8 : 1 },
+                ]}
+              >
+                <ThemedText type="subtitle" style={styles.voteText}>
+                  {t('game.right')}
+                </ThemedText>
+                <Ionicons name="arrow-forward" size={22} color="#fff" />
+              </Pressable>
             </View>
           )}
-        </View>
-      </SafeAreaView>
+
+          <View style={styles.footer}>
+            {showLiveTally && liveTally && (
+              <View style={styles.tallyBlock}>
+                <ThemedText
+                  type="small"
+                  themeColor="textSecondary"
+                  style={styles.centerText}
+                >
+                  {t('game.globalVotes')}
+                </ThemedText>
+                <TallyBar
+                  tally={{
+                    itemId: liveTally.cardIndex,
+                    votesLeft: liveTally.votesLeft,
+                    votesRight: liveTally.votesRight,
+                  }}
+                />
+              </View>
+            )}
+          </View>
+        </SafeAreaView>
+      </AdRails>
     </ThemedView>
   );
 }

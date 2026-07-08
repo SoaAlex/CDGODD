@@ -71,6 +71,10 @@ jobs:
         env:
           EXPO_PUBLIC_API_URL: https://api.cestdegaucheoudedroite.com
           EXPO_PUBLIC_TURNSTILE_SITEKEY: 0x4AAAAAADxcifQdjBeiuVUB
+          # AdSense ids are public by design (visible in page source).
+          EXPO_PUBLIC_ADSENSE_CLIENT: ca-pub-5889686672909524
+          EXPO_PUBLIC_ADSENSE_SLOT_BANNER: '3436416771'
+          EXPO_PUBLIC_ADSENSE_SLOT_SIDE: '8908235306'
 
       - name: Deploy game
         working-directory: apps/game

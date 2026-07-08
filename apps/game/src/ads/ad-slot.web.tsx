@@ -1,7 +1,12 @@
 import { useEffect, useRef } from 'react';
+import { useAdsEnabled } from '@/lib/prefs';
+import type { AdSlotProps } from './types';
 
 const ADSENSE_CLIENT = process.env.EXPO_PUBLIC_ADSENSE_CLIENT;
-const ADSENSE_SLOT = process.env.EXPO_PUBLIC_ADSENSE_SLOT;
+const SLOT_BANNER =
+  process.env.EXPO_PUBLIC_ADSENSE_SLOT_BANNER ??
+  process.env.EXPO_PUBLIC_ADSENSE_SLOT;
+const SLOT_SIDE = process.env.EXPO_PUBLIC_ADSENSE_SLOT_SIDE;
 
 declare global {
   interface Window {
@@ -10,15 +15,21 @@ declare global {
 }
 
 /**
- * Web: an AdSense unit when EXPO_PUBLIC_ADSENSE_CLIENT/SLOT are set,
- * nothing otherwise. Mobile (AdMob) is the primary ad surface — web ads
- * are optional reach, never required for the game to work.
+ * Web: an AdSense unit when EXPO_PUBLIC_ADSENSE_CLIENT and the placement's
+ * slot id are set, nothing otherwise. Mobile (AdMob) is the primary ad
+ * surface — web ads are optional reach, never required for the game to work.
+ * `banner` is a responsive horizontal unit; `side` a fixed 160x600
+ * wide skyscraper for desktop rails.
  */
-export function AdSlot() {
+export function AdSlot({ placement = 'banner' }: AdSlotProps) {
+  const { adsEnabled, loaded } = useAdsEnabled();
   const pushed = useRef(false);
 
+  const slot = placement === 'side' ? SLOT_SIDE : SLOT_BANNER;
+  const active = Boolean(ADSENSE_CLIENT && slot) && loaded && adsEnabled;
+
   useEffect(() => {
-    if (!ADSENSE_CLIENT || !ADSENSE_SLOT || pushed.current) return;
+    if (!active || pushed.current) return;
     pushed.current = true;
     if (!document.querySelector('script[data-cdgodd-adsense]')) {
       const script = document.createElement('script');
@@ -29,16 +40,27 @@ export function AdSlot() {
       document.head.appendChild(script);
     }
     (window.adsbygoogle = window.adsbygoogle ?? []).push({});
-  }, []);
+  }, [active]);
 
-  if (!ADSENSE_CLIENT || !ADSENSE_SLOT) return null;
+  if (!active) return null;
+
+  if (placement === 'side') {
+    return (
+      <ins
+        className="adsbygoogle"
+        style={{ display: 'inline-block', width: 160, height: 600 }}
+        data-ad-client={ADSENSE_CLIENT}
+        data-ad-slot={slot}
+      />
+    );
+  }
 
   return (
     <ins
       className="adsbygoogle"
       style={{ display: 'block', minHeight: 50 }}
       data-ad-client={ADSENSE_CLIENT}
-      data-ad-slot={ADSENSE_SLOT}
+      data-ad-slot={slot}
       data-ad-format="auto"
       data-full-width-responsive="true"
     />
