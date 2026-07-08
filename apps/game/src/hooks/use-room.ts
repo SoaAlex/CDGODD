@@ -3,6 +3,7 @@ import type {
   DeckCard,
   RoomCardResult,
   RoomClientMessage,
+  RoomMode,
   RoomServerMessage,
   RoomState,
   Side,
@@ -31,6 +32,8 @@ export function useRoom(code: string, name: string | null) {
   const [myIndex, setMyIndex] = useState(0);
   const [liveTally, setLiveTally] = useState<LiveTally | null>(null);
   const [results, setResults] = useState<RoomCardResult[] | null>(null);
+  /** This player's own votes for the current round, indexed by card. */
+  const [myVotes, setMyVotes] = useState<Side[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
   const ws = useRef<WebSocket | null>(null);
@@ -67,6 +70,7 @@ export function useRoom(code: string, name: string | null) {
             setMyIndex(0);
             setResults(null);
             setLiveTally(null);
+            setMyVotes([]);
             setDeck(msg.cards);
             break;
           case 'tally':
@@ -98,13 +102,22 @@ export function useRoom(code: string, name: string | null) {
 
   const start = useCallback(() => send({ type: 'start' }), [send]);
 
-  const restart = useCallback(() => send({ type: 'restart' }), [send]);
+  const restart = useCallback(
+    (settings?: { mode: RoomMode; roundSize: number }) =>
+      send({ type: 'restart', ...settings }),
+    [send],
+  );
 
   const vote = useCallback(
     (side: Side) => {
       const idx = indexRef.current;
       if (!deck || idx >= deck.length) return;
       send({ type: 'vote', cardIndex: idx, side });
+      setMyVotes((prev) => {
+        const next = [...prev];
+        next[idx] = side;
+        return next;
+      });
       indexRef.current = idx + 1;
       setMyIndex(idx + 1);
     },
@@ -122,6 +135,7 @@ export function useRoom(code: string, name: string | null) {
     myIndex,
     liveTally,
     results,
+    myVotes,
     error,
     connected,
     isHost,

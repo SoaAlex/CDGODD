@@ -82,6 +82,9 @@ export default function HistoryScreen() {
                     <ThemedText type="smallBold" numberOfLines={1} style={styles.label}>
                       {item.label}
                     </ThemedText>
+                    <ThemedText type="small" themeColor="textSecondary">
+                      {t('history.yourVote')}
+                    </ThemedText>
                     <View style={[styles.voteChip, { backgroundColor: sideColor }]}>
                       <ThemedText type="small" style={styles.voteChipText}>
                         {item.side === 'left' ? t('game.left') : t('game.right')}

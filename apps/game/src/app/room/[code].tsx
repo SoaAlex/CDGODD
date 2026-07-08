@@ -11,6 +11,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { RoomMode, Side } from '@cdgodd/shared';
+import { RoomSettings } from '@/components/room-settings';
 import { LEFT_COLOR, RIGHT_COLOR } from '@/components/swipe-card';
 import { SwipeDeck, type SwipeDeckHandle } from '@/components/swipe-deck';
 import { TallyBar } from '@/components/tally-bar';
@@ -28,12 +30,18 @@ export default function RoomScreen() {
   // Nickname lives only in this screen's state: gone when the room closes.
   const [nameInput, setNameInput] = useState('');
   const [name, setName] = useState<string | null>(null);
+  // Host replay: "Rejouer" first opens this settings step (same form as
+  // room creation), then restarts the round with the chosen settings.
+  const [configuring, setConfiguring] = useState(false);
+  const [replayMode, setReplayMode] = useState<RoomMode>('batch');
+  const [replayRoundSize, setReplayRoundSize] = useState(10);
   const {
     room,
     deck,
     myIndex,
     liveTally,
     results,
+    myVotes,
     error,
     connected,
     isHost,
@@ -42,6 +50,12 @@ export default function RoomScreen() {
     restart,
     vote,
   } = useRoom(code ?? '', name);
+
+  // Leaving the results phase (round restarted) closes the settings step.
+  const phase = room?.phase;
+  useEffect(() => {
+    if (phase !== 'results') setConfiguring(false);
+  }, [phase]);
 
   // Web: vote with the keyboard arrows.
   useEffect(() => {
@@ -116,6 +130,38 @@ export default function RoomScreen() {
     );
   }
 
+  // ---- Replay settings (host, from results): same form as room creation ----
+  if (room.phase === 'results' && isHost && configuring) {
+    return (
+      <Centered>
+        <ThemedText type="subtitle">{t('multiplayer.playAgain')}</ThemedText>
+        <RoomSettings
+          mode={replayMode}
+          roundSize={replayRoundSize}
+          onModeChange={setReplayMode}
+          onRoundSizeChange={setReplayRoundSize}
+        />
+        <Pressable
+          testID="restart-round"
+          onPress={() =>
+            restart({ mode: replayMode, roundSize: replayRoundSize })
+          }
+          style={({ pressed }) => [
+            styles.startButton,
+            { backgroundColor: RIGHT_COLOR, opacity: pressed ? 0.8 : 1 },
+          ]}
+        >
+          <View style={styles.buttonContent}>
+            <Ionicons name="play" size={22} color="#fff" />
+            <ThemedText type="subtitle" style={{ color: '#fff' }}>
+              {t('multiplayer.start')}
+            </ThemedText>
+          </View>
+        </Pressable>
+      </Centered>
+    );
+  }
+
   // ---- Results ----
   if (room.phase === 'results' && results) {
     return (
@@ -128,41 +174,92 @@ export default function RoomScreen() {
             data={results}
             keyExtractor={(r) => String(r.card.id)}
             contentContainerStyle={styles.resultsList}
-            renderItem={({ item }) => (
-              <View
-                style={[
-                  styles.resultRow,
-                  { backgroundColor: theme.backgroundElement },
-                ]}
-              >
-                <ThemedText type="subtitle" numberOfLines={2}>
-                  {item.card.label}
-                </ThemedText>
-                <View style={styles.resultBar}>
-                  <TallyBar
-                    tally={{
-                      itemId: item.card.id,
-                      votesLeft: item.votesLeft,
-                      votesRight: item.votesRight,
-                    }}
-                  />
-                </View>
-                <View style={styles.votersRow}>
-                  <ThemedText type="small" style={styles.votersLeft}>
-                    {item.votersLeft.join(', ')}
+            renderItem={({ item, index }) => {
+              const myVote: Side | undefined = myVotes[index];
+              return (
+                <View
+                  style={[
+                    styles.resultRow,
+                    { backgroundColor: theme.backgroundElement },
+                  ]}
+                >
+                  <ThemedText type="subtitle" numberOfLines={2}>
+                    {item.card.label}
                   </ThemedText>
-                  <ThemedText type="small" style={styles.votersRight}>
-                    {item.votersRight.join(', ')}
-                  </ThemedText>
+                  <View style={styles.resultBar}>
+                    <TallyBar
+                      tally={{
+                        itemId: item.card.id,
+                        votesLeft: item.votesLeft,
+                        votesRight: item.votesRight,
+                      }}
+                    />
+                  </View>
+                  {myVote && (
+                    <View style={styles.myVoteRow}>
+                      <ThemedText type="small" themeColor="textSecondary">
+                        {t('history.yourVote')}
+                      </ThemedText>
+                      <View
+                        style={[
+                          styles.sideBadge,
+                          {
+                            backgroundColor:
+                              myVote === 'left' ? LEFT_COLOR : RIGHT_COLOR,
+                          },
+                        ]}
+                      >
+                        <ThemedText type="small" style={styles.sideBadgeText}>
+                          {myVote === 'left' ? t('game.left') : t('game.right')}
+                        </ThemedText>
+                      </View>
+                    </View>
+                  )}
+                  <View style={styles.votersRow}>
+                    <View style={styles.votersSide}>
+                      {item.votersLeft.map((voter, i) => (
+                        <View
+                          key={`${voter}-${i}`}
+                          style={[
+                            styles.voterChip,
+                            { backgroundColor: LEFT_COLOR },
+                          ]}
+                        >
+                          <ThemedText type="small" style={styles.voterChipText}>
+                            {voter}
+                          </ThemedText>
+                        </View>
+                      ))}
+                    </View>
+                    <View style={[styles.votersSide, styles.votersSideRight]}>
+                      {item.votersRight.map((voter, i) => (
+                        <View
+                          key={`${voter}-${i}`}
+                          style={[
+                            styles.voterChip,
+                            { backgroundColor: RIGHT_COLOR },
+                          ]}
+                        >
+                          <ThemedText type="small" style={styles.voterChipText}>
+                            {voter}
+                          </ThemedText>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
                 </View>
-              </View>
-            )}
+              );
+            }}
           />
           {/* Room stays open: host can relaunch with the same players. */}
           {isHost ? (
             <Pressable
-              testID="restart-round"
-              onPress={restart}
+              testID="replay-settings"
+              onPress={() => {
+                setReplayMode(room.mode);
+                setReplayRoundSize(room.roundSize);
+                setConfiguring(true);
+              }}
               style={({ pressed }) => [
                 styles.startButton,
                 styles.selfCenter,
@@ -442,18 +539,43 @@ const styles = StyleSheet.create({
     gap: Spacing.three,
   },
   resultBar: {},
+  myVoteRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+  },
+  sideBadge: {
+    borderRadius: Spacing.three,
+    paddingHorizontal: Spacing.two,
+    paddingVertical: 1,
+  },
+  sideBadgeText: {
+    color: '#fff',
+    fontSize: 12,
+    lineHeight: 16,
+  },
   votersRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: Spacing.three,
   },
-  votersLeft: {
+  votersSide: {
     flex: 1,
-    color: LEFT_COLOR,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.one,
   },
-  votersRight: {
-    flex: 1,
-    color: RIGHT_COLOR,
-    textAlign: 'right',
+  votersSideRight: {
+    justifyContent: 'flex-end',
+  },
+  voterChip: {
+    borderRadius: Spacing.three,
+    paddingHorizontal: Spacing.two,
+    paddingVertical: 1,
+  },
+  voterChipText: {
+    color: '#fff',
+    fontSize: 12,
+    lineHeight: 16,
   },
 });

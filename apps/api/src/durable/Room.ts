@@ -255,21 +255,30 @@ export class Room implements DurableObject {
 
       case 'restart': {
         // Room stays open after a round: from the results screen the host
-        // can relaunch with the same players and a fresh random hand.
+        // can relaunch with the same players, a fresh random hand and,
+        // optionally, new settings (validated like /create).
         if (this.players.get(ws) !== this.hostId) {
           this.send(ws, { type: 'error', message: 'host only' });
           return;
         }
         if (this.phase !== 'results' || !this.config) return;
 
-        const cards = await this.dealCards(this.config.cards.length);
+        const mode: RoomMode =
+          msg.mode === 'live' || msg.mode === 'batch'
+            ? msg.mode
+            : this.config.mode;
+        const roundSize = Number.isInteger(msg.roundSize)
+          ? Math.min(Math.max(msg.roundSize as number, 1), 50)
+          : this.config.cards.length;
+
+        const cards = await this.dealCards(roundSize);
         // Guard against a duplicate restart racing across the await.
         if (this.phase !== 'results') return;
         if (cards.length === 0) {
           this.send(ws, { type: 'error', message: 'no items available' });
           return;
         }
-        this.config = { ...this.config, cards };
+        this.config = { ...this.config, mode, cards };
         await this.ctx.storage.put('config', this.config);
 
         this.votes.clear();

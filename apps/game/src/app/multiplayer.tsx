@@ -3,15 +3,14 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { RIGHT_COLOR } from '@/components/swipe-card';
+import { RoomSettings } from '@/components/room-settings';
+import { LEFT_COLOR, RIGHT_COLOR } from '@/components/swipe-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { createRoom } from '@/lib/api';
 import { t } from '@/lib/i18n';
-
-const ROUND_SIZES = [5, 10, 20] as const;
 
 export default function MultiplayerScreen() {
   const theme = useTheme();
@@ -40,11 +39,6 @@ export default function MultiplayerScreen() {
     if (clean.length === 6) router.push(`/room/${clean}` as never);
   }
 
-  const chip = (selected: boolean) => ({
-    backgroundColor: selected ? RIGHT_COLOR : theme.backgroundElement,
-  });
-  const chipText = (selected: boolean) => (selected ? { color: '#fff' } : null);
-
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
@@ -52,37 +46,12 @@ export default function MultiplayerScreen() {
         <View style={styles.section}>
           <ThemedText type="subtitle">{t('multiplayer.create')}</ThemedText>
 
-          <View style={styles.chipRow}>
-            {(['batch', 'live'] as const).map((m) => (
-              <Pressable
-                key={m}
-                testID={`mode-${m}`}
-                onPress={() => setMode(m)}
-                style={[styles.chip, chip(mode === m)]}
-              >
-                <ThemedText type="small" style={chipText(mode === m)}>
-                  {m === 'batch'
-                    ? t('multiplayer.modeBatch')
-                    : t('multiplayer.modeLive')}
-                </ThemedText>
-              </Pressable>
-            ))}
-          </View>
-
-          <View style={styles.chipRow}>
-            {ROUND_SIZES.map((n) => (
-              <Pressable
-                key={n}
-                testID={`size-${n}`}
-                onPress={() => setRoundSize(n)}
-                style={[styles.chip, chip(roundSize === n)]}
-              >
-                <ThemedText type="small" style={chipText(roundSize === n)}>
-                  {n} {t('multiplayer.cards')}
-                </ThemedText>
-              </Pressable>
-            ))}
-          </View>
+          <RoomSettings
+            mode={mode}
+            roundSize={roundSize}
+            onModeChange={setMode}
+            onRoundSizeChange={setRoundSize}
+          />
 
           <Pressable
             testID="create-room"
@@ -126,14 +95,16 @@ export default function MultiplayerScreen() {
             style={({ pressed }) => [
               styles.primaryButton,
               {
-                backgroundColor: theme.backgroundElement,
+                backgroundColor: LEFT_COLOR,
                 opacity: code.trim().length !== 6 ? 0.4 : pressed ? 0.7 : 1,
               },
             ]}
           >
             <View style={styles.buttonContent}>
-              <Ionicons name="enter-outline" size={22} color={theme.text} />
-              <ThemedText type="subtitle">{t('multiplayer.join')}</ThemedText>
+              <Ionicons name="enter-outline" size={22} color="#fff" />
+              <ThemedText type="subtitle" style={styles.primaryText}>
+                {t('multiplayer.join')}
+              </ThemedText>
             </View>
           </Pressable>
         </View>
@@ -164,16 +135,6 @@ const styles = StyleSheet.create({
   },
   section: {
     gap: Spacing.three,
-  },
-  chipRow: {
-    flexDirection: 'row',
-    gap: Spacing.two,
-    flexWrap: 'wrap',
-  },
-  chip: {
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-    borderRadius: Spacing.four,
   },
   primaryButton: {
     paddingVertical: Spacing.three,

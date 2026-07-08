@@ -1,6 +1,7 @@
 import type {
   DeckCard,
   RoomCardResult,
+  RoomMode,
   RoomState,
   Side,
   VoteTally,
@@ -40,8 +41,11 @@ export type RoomClientMessage =
   | { type: 'join'; sessionId: string; name: string }
   | { type: 'start' }
   | { type: 'vote'; cardIndex: number; side: Side }
-  /** Host only, from the results phase: deal fresh cards and replay. */
-  | { type: 'restart' };
+  /**
+   * Host only, from the results phase: deal fresh cards and replay.
+   * New settings are optional; omitted fields keep the room's current ones.
+   */
+  | { type: 'restart'; mode?: RoomMode; roundSize?: number };
 
 /** WebSocket messages: room -> client */
 export type RoomServerMessage =
