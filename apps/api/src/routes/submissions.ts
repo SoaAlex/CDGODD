@@ -20,7 +20,7 @@ submissions.post('/submissions', async (c) => {
     await c.req.json().catch(() => ({})),
   );
   if (!parsed.success) return c.json({ error: 'bad body' }, 400);
-  const { label, lang, categoryKey, turnstileToken } = parsed.data;
+  const { label, lang, categoryKeys, turnstileToken } = parsed.data;
 
   const sessionId = c.get('sessionId');
   if (!sessionId) return c.json({ error: 'missing session id' }, 400);
@@ -52,17 +52,11 @@ submissions.post('/submissions', async (c) => {
     } satisfies SubmissionResponse);
   }
 
-  const category = categoryKey
-    ? await c.env.DB.prepare(`SELECT id FROM categories WHERE key = ?1`)
-        .bind(categoryKey)
-        .first<{ id: number }>()
-    : null;
-
   const item = await c.env.DB.prepare(
-    `INSERT INTO items (category_id, status, submitted_by, created_at)
-     VALUES (?1, 'pending', ?2, ?3) RETURNING id`,
+    `INSERT INTO items (status, submitted_by, created_at)
+     VALUES ('pending', ?1, ?2) RETURNING id`,
   )
-    .bind(category?.id ?? null, sessionId, Date.now())
+    .bind(sessionId, Date.now())
     .first<{ id: number }>();
 
   await c.env.DB.prepare(
@@ -70,6 +64,17 @@ submissions.post('/submissions', async (c) => {
   )
     .bind(item!.id, lang, label)
     .run();
+
+  // Attach any known categories; unknown keys are silently skipped (player
+  // input is only a hint — the admin fixes categories at approval time).
+  for (const key of new Set(categoryKeys ?? [])) {
+    await c.env.DB.prepare(
+      `INSERT INTO item_categories (item_id, category_id)
+       SELECT ?1, id FROM categories WHERE key = ?2`,
+    )
+      .bind(item!.id, key)
+      .run();
+  }
 
   return c.json({
     status: 'pending',

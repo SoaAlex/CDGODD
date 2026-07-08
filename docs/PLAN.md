@@ -112,7 +112,6 @@ CREATE TABLE category_translations (
 
 CREATE TABLE items (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
-  category_id INTEGER REFERENCES categories(id),
   image_key   TEXT,                         -- R2 object key, NOT full URL
   votes_left  INTEGER NOT NULL DEFAULT 0,
   votes_right INTEGER NOT NULL DEFAULT 0,
@@ -122,6 +121,13 @@ CREATE TABLE items (
   created_at  INTEGER NOT NULL              -- epoch ms
 );
 CREATE INDEX idx_items_status ON items(status);
+
+-- Items can belong to several categories (migration 0002).
+CREATE TABLE item_categories (
+  item_id     INTEGER NOT NULL REFERENCES items(id),
+  category_id INTEGER NOT NULL REFERENCES categories(id),
+  PRIMARY KEY (item_id, category_id)
+);
 
 CREATE TABLE item_translations (
   item_id     INTEGER NOT NULL REFERENCES items(id),
@@ -163,7 +169,7 @@ All write endpoints carry a **Cloudflare Turnstile token** (privacy-friendly, no
 - `GET  /deck?lang=fr&cursor=…&limit=25` → next batch of approved items (label + image URL)
 - `POST /items/:id/vote` `{ side, turnstileToken }` → upserts into `votes`, updates counters, returns tallies
 - `GET  /items/search?q=…&lang=fr` → free-search mode lookup
-- `POST /submissions` `{ label, category, image, turnstileToken }` → moderation → `pending` or auto-reject
+- `POST /submissions` `{ label, categoryKeys, image, turnstileToken }` → moderation → `pending` or auto-reject
 - `POST /items/:id/report` `{ reason, turnstileToken }` → increments report_count, inserts report row
 
 **Multiplayer (rooms):**

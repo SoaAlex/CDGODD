@@ -9,8 +9,8 @@ export interface AdminItem {
   votes_right: number;
   report_count: number;
   created_at: number;
-  category_key: string | null;
-  category_name: string | null;
+  /** Parsed client-side from the API's CSV `category_keys` column. */
+  category_keys: string[];
 }
 
 export interface AdminReport {

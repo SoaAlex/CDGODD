@@ -37,9 +37,9 @@ export function SwipeCard({ card }: { card: DeckCard }) {
         <ThemedText type="subtitle" style={[styles.label, { color: CARD_TEXT }]}>
           {card.label}
         </ThemedText>
-        {card.categoryKey && (
+        {card.categoryKeys.length > 0 && (
           <ThemedText type="small" style={{ color: CARD_TEXT_SECONDARY }}>
-            {categoryName(card.categoryKey)}
+            {card.categoryKeys.map(categoryName).join(' · ')}
           </ThemedText>
         )}
       </View>

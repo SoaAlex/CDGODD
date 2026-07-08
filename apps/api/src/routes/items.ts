@@ -14,14 +14,22 @@ interface DeckRow {
   id: number;
   label: string;
   image_key: string | null;
-  category_key: string | null;
+  /** GROUP_CONCAT of category keys — keys are [a-z0-9-] so ',' is safe. */
+  category_keys: string | null;
 }
+
+/** Correlated subquery aggregating an item's category keys into a CSV. */
+export const CATEGORY_KEYS_SQL = `
+  (SELECT GROUP_CONCAT(c.key)
+     FROM item_categories ic
+     JOIN categories c ON c.id = ic.category_id
+    WHERE ic.item_id = i.id) AS category_keys`;
 
 function toCard(row: DeckRow, cdnBase: string): DeckCard {
   return {
     id: row.id,
     label: row.label,
-    categoryKey: row.category_key,
+    categoryKeys: row.category_keys ? row.category_keys.split(',') : [],
     imageUrl: row.image_key ? `${cdnBase}/${row.image_key}` : null,
   };
 }
@@ -37,10 +45,9 @@ items.get('/deck', async (c) => {
   const { lang, cursor = 0, limit } = parsed.data;
 
   const { results } = await c.env.DB.prepare(
-    `SELECT i.id, t.label, i.image_key, cat.key AS category_key
+    `SELECT i.id, t.label, i.image_key, ${CATEGORY_KEYS_SQL}
        FROM items i
        JOIN item_translations t ON t.item_id = i.id AND t.lang = ?1
-       LEFT JOIN categories cat ON cat.id = i.category_id
       WHERE i.status = 'approved' AND i.id > ?2
       ORDER BY i.id
       LIMIT ?3`,
@@ -97,10 +104,9 @@ items.get('/items/search', async (c) => {
   const { q, lang } = parsed.data;
 
   const { results } = await c.env.DB.prepare(
-    `SELECT i.id, t.label, i.image_key, cat.key AS category_key
+    `SELECT i.id, t.label, i.image_key, ${CATEGORY_KEYS_SQL}
        FROM items i
        JOIN item_translations t ON t.item_id = i.id AND t.lang = ?1
-       LEFT JOIN categories cat ON cat.id = i.category_id
       WHERE i.status = 'approved' AND t.label LIKE ?2
       ORDER BY t.label
       LIMIT 20`,

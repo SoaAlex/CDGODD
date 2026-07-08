@@ -8,17 +8,55 @@ admin.use('*', adminAuth);
 const CATEGORY_KEY_RE = /^[a-z0-9-]{1,50}$/;
 const LANG_RE = /^[a-z]{2}$/;
 
+/**
+ * Resolve category keys to ids, deduplicated. Returns null if any key is
+ * unknown (caller answers 400).
+ */
+async function resolveCategoryIds(
+  db: D1Database,
+  keys: string[],
+): Promise<number[] | null> {
+  const unique = [...new Set(keys.map((k) => k.trim()).filter(Boolean))];
+  if (unique.length === 0) return [];
+  const placeholders = unique.map((_, i) => `?${i + 1}`).join(',');
+  const { results } = await db
+    .prepare(`SELECT id FROM categories WHERE key IN (${placeholders})`)
+    .bind(...unique)
+    .all<{ id: number }>();
+  if (results.length !== unique.length) return null;
+  return results.map((r) => r.id);
+}
+
+/** Replace an item's category set with the given category ids. */
+async function setItemCategories(
+  db: D1Database,
+  itemId: number,
+  categoryIds: number[],
+): Promise<void> {
+  const statements = [
+    db.prepare(`DELETE FROM item_categories WHERE item_id = ?1`).bind(itemId),
+    ...categoryIds.map((id) =>
+      db
+        .prepare(
+          `INSERT INTO item_categories (item_id, category_id) VALUES (?1, ?2)`,
+        )
+        .bind(itemId, id),
+    ),
+  ];
+  await db.batch(statements);
+}
+
 /** GET /admin/items?status=pending — moderation queue / item list. */
 admin.get('/items', async (c) => {
   const status = c.req.query('status') ?? 'pending';
   const { results } = await c.env.DB.prepare(
     `SELECT i.*, t.label,
-            c.key AS category_key, ct.name AS category_name
+            (SELECT GROUP_CONCAT(c.key)
+               FROM item_categories ic
+               JOIN categories c ON c.id = ic.category_id
+              WHERE ic.item_id = i.id) AS category_keys
        FROM items i
        LEFT JOIN item_translations t ON t.item_id = i.id AND t.lang = 'fr'
-       LEFT JOIN categories c ON c.id = i.category_id
-       LEFT JOIN category_translations ct
-              ON ct.category_id = c.id AND ct.lang = 'fr'
       WHERE i.status = ?1
       ORDER BY i.created_at DESC
       LIMIT 100`,
@@ -30,9 +68,9 @@ admin.get('/items', async (c) => {
 
 /**
  * PATCH /admin/items/:id — partial edit.
- * Any subset of: status, label (fr), votes_left, votes_right, categoryKey
- * (empty string / null clears the category). Image is replaced via the
- * separate /admin/items/:id/image endpoint.
+ * Any subset of: status, label (fr), votes_left, votes_right, categoryKeys
+ * (replaces the whole category set; [] clears it). Image is replaced via
+ * the separate /admin/items/:id/image endpoint.
  */
 admin.patch('/items/:id', async (c) => {
   const itemId = Number(c.req.param('id'));
@@ -41,7 +79,7 @@ admin.patch('/items/:id', async (c) => {
     label?: string;
     votes_left?: number;
     votes_right?: number;
-    categoryKey?: string | null;
+    categoryKeys?: string[];
   };
 
   const sets: string[] = [];
@@ -66,19 +104,15 @@ admin.patch('/items/:id', async (c) => {
     }
   }
 
-  if (body.categoryKey !== undefined) {
-    let categoryId: number | null = null;
-    if (body.categoryKey) {
-      const cat = await c.env.DB.prepare(
-        `SELECT id FROM categories WHERE key = ?1`,
-      )
-        .bind(body.categoryKey)
-        .first<{ id: number }>();
-      if (!cat) return c.json({ error: 'unknown category' }, 400);
-      categoryId = cat.id;
+  if (body.categoryKeys !== undefined) {
+    if (!Array.isArray(body.categoryKeys)) {
+      return c.json({ error: 'categoryKeys must be an array' }, 400);
     }
-    sets.push('category_id = ?');
-    binds.push(categoryId);
+    const categoryIds = await resolveCategoryIds(c.env.DB, body.categoryKeys);
+    if (categoryIds === null) {
+      return c.json({ error: 'unknown category' }, 400);
+    }
+    await setItemCategories(c.env.DB, itemId, categoryIds);
   }
 
   if (sets.length > 0) {
@@ -107,8 +141,8 @@ admin.patch('/items/:id', async (c) => {
 
 /**
  * POST /admin/items — create an item with its image (multipart form).
- * Fields: label (required), lang (default fr), categoryKey, image (file).
- * Admin-created items go live immediately (status=approved).
+ * Fields: label (required), lang (default fr), categoryKeys (repeatable),
+ * image (file). Admin-created items go live immediately (status=approved).
  */
 admin.post('/items', async (c) => {
   const form = await c.req.formData().catch(() => null);
@@ -116,9 +150,12 @@ admin.post('/items', async (c) => {
 
   const label = String(form.get('label') ?? '').trim();
   const lang = String(form.get('lang') ?? 'fr');
-  const categoryKey = String(form.get('categoryKey') ?? '').trim();
+  const categoryKeys = form.getAll('categoryKeys').map(String);
   const image = form.get('image');
   if (!label) return c.json({ error: 'label required' }, 400);
+
+  const categoryIds = await resolveCategoryIds(c.env.DB, categoryKeys);
+  if (categoryIds === null) return c.json({ error: 'unknown category' }, 400);
 
   let imageKey: string | null = null;
   if (image instanceof File && image.size > 0) {
@@ -136,17 +173,11 @@ admin.post('/items', async (c) => {
     });
   }
 
-  const category = categoryKey
-    ? await c.env.DB.prepare(`SELECT id FROM categories WHERE key = ?1`)
-        .bind(categoryKey)
-        .first<{ id: number }>()
-    : null;
-
   const item = await c.env.DB.prepare(
-    `INSERT INTO items (category_id, image_key, status, created_at)
-     VALUES (?1, ?2, 'approved', ?3) RETURNING id`,
+    `INSERT INTO items (image_key, status, created_at)
+     VALUES (?1, 'approved', ?2) RETURNING id`,
   )
-    .bind(category?.id ?? null, imageKey, Date.now())
+    .bind(imageKey, Date.now())
     .first<{ id: number }>();
 
   await c.env.DB.prepare(
@@ -154,6 +185,10 @@ admin.post('/items', async (c) => {
   )
     .bind(item!.id, lang, label)
     .run();
+
+  if (categoryIds.length > 0) {
+    await setItemCategories(c.env.DB, item!.id, categoryIds);
+  }
 
   return c.json({ ok: true, itemId: item!.id, imageKey });
 });

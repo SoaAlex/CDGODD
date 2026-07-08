@@ -35,7 +35,9 @@ export function ItemEditModal({
   const [status, setStatus] = useState<ItemStatus>(item.status);
   const [votesLeft, setVotesLeft] = useState(String(item.votes_left));
   const [votesRight, setVotesRight] = useState(String(item.votes_right));
-  const [categoryKey, setCategoryKey] = useState(item.category_key ?? '');
+  const [categoryKeys, setCategoryKeys] = useState<Set<string>>(
+    () => new Set(item.category_keys),
+  );
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -168,7 +170,7 @@ export function ItemEditModal({
           status,
           votes_left: left,
           votes_right: right,
-          categoryKey: categoryKey || null,
+          categoryKeys: [...categoryKeys],
         }),
       });
       const data = (await res.json()) as { ok?: boolean; error?: string };
@@ -326,23 +328,44 @@ export function ItemEditModal({
             </div>
           </div>
 
-          {/* Category */}
+          {/* Categories (multi-select) */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Catégorie
+              Catégories
             </label>
-            <select
-              value={categoryKey}
-              onChange={(e) => setCategoryKey(e.target.value)}
-              className="input-field"
-            >
-              <option value="">(aucune)</option>
-              {categories.map((cat) => (
-                <option key={cat.key} value={cat.key}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((cat) => {
+                const checked = categoryKeys.has(cat.key);
+                return (
+                  <label
+                    key={cat.key}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm cursor-pointer transition-colors ${
+                      checked
+                        ? 'bg-blue-50 border-blue-500 text-blue-700'
+                        : 'bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() =>
+                        setCategoryKeys((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(cat.key)) next.delete(cat.key);
+                          else next.add(cat.key);
+                          return next;
+                        })
+                      }
+                      className="sr-only"
+                    />
+                    {cat.name}
+                  </label>
+                );
+              })}
+              {categories.length === 0 && (
+                <span className="text-sm text-gray-400">Aucune catégorie</span>
+              )}
+            </div>
           </div>
 
           {/* Status */}

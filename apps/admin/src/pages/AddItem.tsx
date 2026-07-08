@@ -24,7 +24,7 @@ export function AddItem() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [label, setLabel] = useState('');
-  const [categoryKey, setCategoryKey] = useState('');
+  const [categoryKeys, setCategoryKeys] = useState<Set<string>>(new Set());
   const [categories, setCategories] = useState<Category[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -73,7 +73,7 @@ export function AddItem() {
     const form = new FormData();
     form.set('label', label.trim());
     form.set('lang', 'fr');
-    if (categoryKey) form.set('categoryKey', categoryKey);
+    for (const key of categoryKeys) form.append('categoryKeys', key);
     if (file) form.set('image', file);
 
     try {
@@ -135,20 +135,41 @@ export function AddItem() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Catégorie
+              Catégories
             </label>
-            <select
-              value={categoryKey}
-              onChange={(e) => setCategoryKey(e.target.value)}
-              className="input-field"
-            >
-              <option value="">(aucune)</option>
-              {categories.map((c) => (
-                <option key={c.key} value={c.key}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((c) => {
+                const checked = categoryKeys.has(c.key);
+                return (
+                  <label
+                    key={c.key}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm cursor-pointer transition-colors ${
+                      checked
+                        ? 'bg-blue-50 border-blue-500 text-blue-700'
+                        : 'bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() =>
+                        setCategoryKeys((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(c.key)) next.delete(c.key);
+                          else next.add(c.key);
+                          return next;
+                        })
+                      }
+                      className="sr-only"
+                    />
+                    {c.name}
+                  </label>
+                );
+              })}
+              {categories.length === 0 && (
+                <span className="text-sm text-gray-400">Aucune catégorie</span>
+              )}
+            </div>
           </div>
 
           <div>

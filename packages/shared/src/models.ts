@@ -6,7 +6,8 @@ export type ItemStatus = 'pending' | 'approved' | 'rejected';
 /** An item as stored in the DB (aggregate counters included). */
 export interface Item {
   id: number;
-  categoryId: number | null;
+  /** Keys of the categories the item belongs to (item_categories join). */
+  categoryIds: number[];
   imageKey: string | null;
   votesLeft: number;
   votesRight: number;
@@ -20,7 +21,8 @@ export interface Item {
 export interface DeckCard {
   id: number;
   label: string;
-  categoryKey: string | null;
+  /** Empty array when the item has no category. */
+  categoryKeys: string[];
   imageUrl: string | null;
 }
 

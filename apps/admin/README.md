@@ -18,17 +18,19 @@ A sidebar-navigated SPA, all talking to the API with a bearer token:
 - **Modération** (`/items`) — all/pending/approved/rejected queue with image
   thumbnails, category and status badges. Quick actions (approve, reject, reset
   to pending) plus a full **edit modal**: replace the image, rename the label,
-  change category, override vote counts, and set status.
+  toggle categories (an item can have several), override vote counts, and set
+  status.
 - **Créer un item** (`/add-item`) — create an item with a French label,
-  category, and drag-and-drop image (uploaded to R2); goes live immediately.
+  categories, and drag-and-drop image (uploaded to R2); goes live immediately.
 - **Catégories** (`/categories`) — create categories (key + French name) and
   add/edit/delete per-language translations.
 - **Signalements** (`/reports`) — reported items, most-reported first.
 
 Editing is backed by `PATCH /admin/items/:id` (partial: `label`, `status`,
-`votes_left`, `votes_right`, `categoryKey`) and `PATCH /admin/items/:id/image`
-(multipart image replace). `GET /admin/items` returns `category_key` /
-`category_name` for display. The edit modal also manages non-French labels via
+`votes_left`, `votes_right`, `categoryKeys` — the array replaces the item's
+whole category set) and `PATCH /admin/items/:id/image` (multipart image
+replace). `GET /admin/items` returns `category_keys` as a CSV of keys, parsed
+client-side and resolved to display names via `GET /categories`. The edit modal also manages non-French labels via
 `GET/PUT/DELETE /admin/items/:id/translations/:lang` (saved immediately,
 independent of the modal's Save button).
 

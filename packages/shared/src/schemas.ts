@@ -31,7 +31,7 @@ export type SearchQuery = z.infer<typeof searchQuerySchema>;
 export const submitItemSchema = z.object({
   label: z.string().trim().min(1).max(80),
   lang: langSchema.default('fr'),
-  categoryKey: z.string().trim().max(50).optional(),
+  categoryKeys: z.array(z.string().trim().min(1).max(50)).max(10).optional(),
   turnstileToken: z.string().min(1),
 });
 export type SubmitItemInput = z.infer<typeof submitItemSchema>;

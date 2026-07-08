@@ -6,13 +6,18 @@ INSERT INTO category_translations (category_id, lang, name) VALUES
   (2, 'fr', 'Culture'),
   (3, 'fr', 'Vie quotidienne');
 
-INSERT INTO items (category_id, status, created_at) VALUES
-  (1, 'approved', unixepoch('now') * 1000),
-  (1, 'approved', unixepoch('now') * 1000),
-  (2, 'approved', unixepoch('now') * 1000),
-  (2, 'approved', unixepoch('now') * 1000),
-  (3, 'approved', unixepoch('now') * 1000),
-  (3, 'approved', unixepoch('now') * 1000);
+INSERT INTO items (status, created_at) VALUES
+  ('approved', unixepoch('now') * 1000),
+  ('approved', unixepoch('now') * 1000),
+  ('approved', unixepoch('now') * 1000),
+  ('approved', unixepoch('now') * 1000),
+  ('approved', unixepoch('now') * 1000),
+  ('approved', unixepoch('now') * 1000);
+
+INSERT INTO item_categories (item_id, category_id) VALUES
+  (1, 1), (2, 1), (3, 2), (4, 2), (5, 3), (6, 3),
+  -- Le vélo cargo is both daily-life and culture: exercises multi-category.
+  (5, 2);
 
 INSERT INTO item_translations (item_id, lang, label) VALUES
   (1, 'fr', 'Le quinoa'),

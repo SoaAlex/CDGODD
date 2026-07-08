@@ -24,6 +24,15 @@ const STATUS_STYLES: Record<ItemStatus, string> = {
   rejected: 'bg-red-100 text-red-800',
 };
 
+// The API aggregates an item's category keys into one CSV column.
+type RawItem = Omit<AdminItem, 'category_keys'> & {
+  category_keys: string | null;
+};
+const parseItem = (r: RawItem): AdminItem => ({
+  ...r,
+  category_keys: r.category_keys ? r.category_keys.split(',') : [],
+});
+
 export function Items() {
   const { token } = useAuth();
   const [status, setStatus] = useState<Filter>('all');
@@ -41,19 +50,19 @@ export function Items() {
         // API has no "all" filter — merge the three status queues.
         const lists = await Promise.all(
           (['pending', 'approved', 'rejected'] as ItemStatus[]).map((s) =>
-            apiGet<{ items: AdminItem[] }>(`/admin/items?status=${s}`, token),
+            apiGet<{ items: RawItem[] }>(`/admin/items?status=${s}`, token),
           ),
         );
         const merged = lists
-          .flatMap((l) => l.items)
+          .flatMap((l) => l.items.map(parseItem))
           .sort((a, b) => b.created_at - a.created_at);
         setItems(merged);
       } else {
-        const data = await apiGet<{ items: AdminItem[] }>(
+        const data = await apiGet<{ items: RawItem[] }>(
           `/admin/items?status=${status}`,
           token,
         );
-        setItems(data.items);
+        setItems(data.items.map(parseItem));
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur');
@@ -155,10 +164,17 @@ export function Items() {
                     )}
                   </td>
                   <td className="table-cell">
-                    {it.category_name ? (
-                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
-                        {it.category_name}
-                      </span>
+                    {it.category_keys.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {it.category_keys.map((key) => (
+                          <span
+                            key={key}
+                            className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800"
+                          >
+                            {categories.find((c) => c.key === key)?.name ?? key}
+                          </span>
+                        ))}
+                      </div>
                     ) : (
                       <span className="text-gray-400">—</span>
                     )}

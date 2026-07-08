@@ -130,9 +130,9 @@ export default function SearchScreen() {
                 ]}
               >
                 <ThemedText>{item.label}</ThemedText>
-                {item.categoryKey && (
+                {item.categoryKeys.length > 0 && (
                   <ThemedText type="small" themeColor="textSecondary">
-                    {categoryName(item.categoryKey)}
+                    {item.categoryKeys.map(categoryName).join(' · ')}
                   </ThemedText>
                 )}
               </Pressable>
