@@ -3,7 +3,7 @@ import { DefaultTheme, ThemeProvider } from 'expo-router';
 import { Stack as NativeStack } from 'expo-router';
 import JsStack from 'expo-router/js-stack';
 import { useEffect } from 'react';
-import { Platform } from 'react-native';
+import { Animated, Easing, Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { GradientBackground } from '@/components/gradient-background';
 import { t } from '@/lib/i18n';
@@ -15,6 +15,69 @@ import { startBackgroundMusic } from '@/lib/music';
  */
 const Stack =
   Platform.OS === 'web' ? (JsStack as unknown as typeof NativeStack) : NativeStack;
+
+/** Shape of the JS stack's card interpolation props (not publicly exported). */
+interface CardInterpolation {
+  current: { progress: Animated.AnimatedInterpolation<number> };
+  next?: { progress: Animated.AnimatedInterpolation<number> };
+  inverted: Animated.AnimatedInterpolation<number>;
+  layouts: { screen: { width: number; height: number } };
+}
+
+/**
+ * Web transition: the leaving screen slides out to the left while fading,
+ * the incoming one slides in from the right. Cards are transparent over one
+ * shared gradient, so BOTH sides must fade — an incoming screen simply
+ * drawn on top of a still-opaque one reads as a laggy double exposure.
+ */
+function forSlideFade({
+  current,
+  next,
+  inverted,
+  layouts: { screen },
+}: CardInterpolation) {
+  const travel = screen.width * 0.3;
+  const translateFocused = Animated.multiply(
+    current.progress.interpolate({
+      inputRange: [0, 1],
+      outputRange: [travel, 0],
+      extrapolate: 'clamp',
+    }),
+    inverted,
+  );
+  const translateUnfocused = next
+    ? Animated.multiply(
+        next.progress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, -travel],
+          extrapolate: 'clamp',
+        }),
+        inverted,
+      )
+    : 0;
+  const opacity = next
+    ? Animated.multiply(
+        current.progress,
+        next.progress.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),
+      )
+    : current.progress;
+
+  return {
+    cardStyle: {
+      opacity,
+      transform: [
+        { translateX: translateFocused },
+        { translateX: translateUnfocused },
+      ],
+    },
+  };
+}
+
+/** Quick, decelerating push — the old screen darts off to the left. */
+const SNAPPY_TRANSITION = {
+  animation: 'timing' as const,
+  config: { duration: 200, easing: Easing.out(Easing.cubic) },
+};
 
 /** Navigation theme that lets the gradient show through and keeps chrome white. */
 const NavTheme = {
@@ -51,12 +114,20 @@ export default function RootLayout() {
               headerShadowVisible: false,
               headerTintColor: '#fff',
               headerTitleStyle: { color: '#fff' },
-              // Screens share one gradient background, so a cross-fade reads
-              // as a seamless transition; only needed on web (see Stack above).
-              // The overlay must stay off: cards are transparent, so the fade
-              // preset's dim overlay would permanently darken the gradient.
+              // Web-only (see Stack above). `animation` just switches the JS
+              // stack's animation on; forSlideFade defines the actual motion.
+              // The overlay stays off: cards are transparent, so the preset's
+              // dim overlay would permanently darken the gradient.
               ...(Platform.OS === 'web'
-                ? { animation: 'fade' as const, cardOverlayEnabled: false }
+                ? {
+                    animation: 'fade' as const,
+                    cardOverlayEnabled: false,
+                    cardStyleInterpolator: forSlideFade,
+                    transitionSpec: {
+                      open: SNAPPY_TRANSITION,
+                      close: SNAPPY_TRANSITION,
+                    },
+                  }
                 : null),
             }}
           >
