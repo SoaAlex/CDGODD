@@ -14,6 +14,7 @@ import { LEFT_COLOR, RIGHT_COLOR, SwipeCard } from '@/components/swipe-card';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { t } from '@/lib/i18n';
+import { playSwipeSound } from '@/lib/sfx';
 
 /** Horizontal travel (as a fraction of screen width) that commits a vote. */
 const COMMIT_RATIO = 0.35;
@@ -61,6 +62,7 @@ export const SwipeDeck = forwardRef<SwipeDeckHandle, Props>(function SwipeDeck(
 
   const swipeOut = (side: Side) => {
     const id = ++swipeId.current;
+    playSwipeSound(side);
     tx.value = withTiming((side === 'right' ? 1 : -1) * width * 1.5, {
       duration: EXIT_MS,
     });

@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   },
   voteChipText: {
     color: '#fff',
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 14,
+    lineHeight: 18,
   },
 });

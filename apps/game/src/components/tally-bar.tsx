@@ -22,10 +22,10 @@ export function TallyBar({ tally }: { tally: VoteTally }) {
         />
       </View>
       <View style={styles.labels}>
-        <ThemedText type="smallBold" style={{ color: LEFT_COLOR }}>
+        <ThemedText type="smallBold" style={[styles.pct, { color: LEFT_COLOR }]}>
           {leftPct}%
         </ThemedText>
-        <ThemedText type="smallBold" style={{ color: RIGHT_COLOR }}>
+        <ThemedText type="smallBold" style={[styles.pct, { color: RIGHT_COLOR }]}>
           {rightPct}%
         </ThemedText>
       </View>
@@ -49,5 +49,9 @@ const styles = StyleSheet.create({
   labels: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  pct: {
+    fontSize: 20,
+    lineHeight: 26,
   },
 });
