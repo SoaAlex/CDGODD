@@ -11,6 +11,7 @@ import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { Items } from './pages/Items';
 import { AddItem } from './pages/AddItem';
+import { Categories } from './pages/Categories';
 import { Reports } from './pages/Reports';
 
 function Protected({ children }: { children: React.ReactNode }) {
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="/" element={<Protected><Dashboard /></Protected>} />
           <Route path="/items" element={<Protected><Items /></Protected>} />
           <Route path="/add-item" element={<Protected><AddItem /></Protected>} />
+          <Route path="/categories" element={<Protected><Categories /></Protected>} />
           <Route path="/reports" element={<Protected><Reports /></Protected>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

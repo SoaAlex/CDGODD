@@ -40,7 +40,10 @@ Public (game):
 - `GET  /items/search?q=&lang=fr` — free-search lookup
 - `GET  /items/tallies?ids=1,2,3` — current global tallies (history page)
 - `GET  /categories?lang=fr`
-- `POST /submissions` `{ label, lang, categoryKey?, turnstileToken }` — propose an item (moderated)
+- `POST /submissions` `{ label, lang, categoryKey?, turnstileToken }` — propose an item (moderated).
+  Returns `status: 'duplicate'` (no insert) when the normalized label already
+  exists in that lang — case/accents folded, leading French determiner dropped
+  ("quinoa" matches "Le quinoa"); see `normalizeLabel` in `@cdgodd/shared`
 - `POST /items/:id/report` `{ reason?, turnstileToken }`
 - `GET  /img/*` — serve an R2 object (dev origin; prod uses the R2 domain)
 
@@ -56,6 +59,10 @@ Admin (bearer `ADMIN_TOKEN`):
 
 - `GET /admin/items?status=` · `PATCH /admin/items/:id` (approve/reject)
 - `POST /admin/items` (multipart, image → R2) · `PATCH /admin/items/:id/image`
+- `GET /admin/items/:id/translations` · `PUT|DELETE /admin/items/:id/translations/:lang`
+- `GET /admin/categories` (with all translations) · `POST /admin/categories`
+  `{ key, translations?: { fr: "…" } }`
+- `PUT|DELETE /admin/categories/:key/translations/:lang`
 - `GET /admin/reports` · `GET /admin/stats`
 
 ## Database

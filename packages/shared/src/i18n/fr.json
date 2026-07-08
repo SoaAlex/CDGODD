@@ -12,7 +12,8 @@
     "searchPlaceholder": "Chercher un objet, un concept…",
     "notFound": "Introuvable ? Proposez-le !",
     "submit": "Proposer",
-    "submitted": "Envoyé pour validation"
+    "submitted": "Envoyé pour validation",
+    "duplicate": "Déjà proposé ! Cet item existe ou attend sa validation."
   },
   "game": {
     "left": "Gauche",

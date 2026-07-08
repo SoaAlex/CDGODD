@@ -1,5 +1,9 @@
 import { Hono } from 'hono';
-import { submitItemSchema, type SubmissionResponse } from '@cdgodd/shared';
+import {
+  normalizeLabel,
+  submitItemSchema,
+  type SubmissionResponse,
+} from '@cdgodd/shared';
 import type { AppContext } from '../env';
 import { verifyTurnstile } from '../security';
 import { isBlocked } from '../moderation';
@@ -27,6 +31,25 @@ submissions.post('/submissions', async (c) => {
 
   if (isBlocked(label)) {
     return c.json({ status: 'rejected' } satisfies SubmissionResponse, 200);
+  }
+
+  // Duplicate check: same normalized label already exists in this lang,
+  // whatever its status. Normalization folds case/accents and drops a
+  // leading French determiner, so "quinoa" matches "Le quinoa". Comparison
+  // happens in JS (a scan of one lang's labels — small table, rare endpoint)
+  // because SQLite can't fold accents or strip determiners.
+  const wanted = normalizeLabel(label);
+  const { results: existing } = await c.env.DB.prepare(
+    `SELECT item_id, label FROM item_translations WHERE lang = ?1`,
+  )
+    .bind(lang)
+    .all<{ item_id: number; label: string }>();
+  const duplicate = existing.find((r) => normalizeLabel(r.label) === wanted);
+  if (duplicate) {
+    return c.json({
+      status: 'duplicate',
+      itemId: duplicate.item_id,
+    } satisfies SubmissionResponse);
   }
 
   const category = categoryKey

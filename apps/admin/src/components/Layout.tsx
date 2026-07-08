@@ -4,6 +4,7 @@ import {
   HomeIcon,
   TableCellsIcon,
   PlusIcon,
+  TagIcon,
   FlagIcon,
   Bars3Icon,
   XMarkIcon,
@@ -15,6 +16,7 @@ const navigation = [
   { name: 'Dashboard', href: '/', icon: HomeIcon },
   { name: 'Modération', href: '/items', icon: TableCellsIcon },
   { name: 'Créer un item', href: '/add-item', icon: PlusIcon },
+  { name: 'Catégories', href: '/categories', icon: TagIcon },
   { name: 'Signalements', href: '/reports', icon: FlagIcon },
 ];
 

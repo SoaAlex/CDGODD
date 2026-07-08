@@ -5,6 +5,9 @@ import { adminAuth } from '../security';
 const admin = new Hono<AppContext>();
 admin.use('*', adminAuth);
 
+const CATEGORY_KEY_RE = /^[a-z0-9-]{1,50}$/;
+const LANG_RE = /^[a-z]{2}$/;
+
 /** GET /admin/items?status=pending — moderation queue / item list. */
 admin.get('/items', async (c) => {
   const status = c.req.query('status') ?? 'pending';
@@ -179,6 +182,166 @@ admin.patch('/items/:id/image', async (c) => {
     .bind(itemId, imageKey)
     .run();
   return c.json({ ok: true, imageKey });
+});
+
+/** GET /admin/items/:id/translations — all labels of one item, by lang. */
+admin.get('/items/:id/translations', async (c) => {
+  const itemId = Number(c.req.param('id'));
+  const { results } = await c.env.DB.prepare(
+    `SELECT lang, label FROM item_translations
+      WHERE item_id = ?1 ORDER BY lang`,
+  )
+    .bind(itemId)
+    .all<{ lang: string; label: string }>();
+  return c.json({ translations: results });
+});
+
+/** PUT /admin/items/:id/translations/:lang — add or update one label. */
+admin.put('/items/:id/translations/:lang', async (c) => {
+  const itemId = Number(c.req.param('id'));
+  const lang = c.req.param('lang');
+  if (!LANG_RE.test(lang)) return c.json({ error: 'bad lang' }, 400);
+
+  const body = (await c.req.json().catch(() => ({}))) as { label?: string };
+  const label = body.label?.trim() ?? '';
+  if (!label || label.length > 80) return c.json({ error: 'bad label' }, 400);
+
+  const item = await c.env.DB.prepare(`SELECT id FROM items WHERE id = ?1`)
+    .bind(itemId)
+    .first();
+  if (!item) return c.json({ error: 'unknown item' }, 404);
+
+  await c.env.DB.prepare(
+    `INSERT INTO item_translations (item_id, lang, label)
+     VALUES (?1, ?2, ?3)
+     ON CONFLICT(item_id, lang) DO UPDATE SET label = excluded.label`,
+  )
+    .bind(itemId, lang, label)
+    .run();
+  return c.json({ ok: true });
+});
+
+/** DELETE /admin/items/:id/translations/:lang — remove one label. */
+admin.delete('/items/:id/translations/:lang', async (c) => {
+  const itemId = Number(c.req.param('id'));
+  const lang = c.req.param('lang');
+  await c.env.DB.prepare(
+    `DELETE FROM item_translations WHERE item_id = ?1 AND lang = ?2`,
+  )
+    .bind(itemId, lang)
+    .run();
+  return c.json({ ok: true });
+});
+
+/** GET /admin/categories — all categories with every translation. */
+admin.get('/categories', async (c) => {
+  const { results } = await c.env.DB.prepare(
+    `SELECT c.id, c.key, ct.lang, ct.name
+       FROM categories c
+       LEFT JOIN category_translations ct ON ct.category_id = c.id
+      ORDER BY c.key, ct.lang`,
+  ).all<{ id: number; key: string; lang: string | null; name: string | null }>();
+
+  const byKey = new Map<
+    string,
+    { id: number; key: string; translations: Record<string, string> }
+  >();
+  for (const row of results) {
+    let cat = byKey.get(row.key);
+    if (!cat) {
+      cat = { id: row.id, key: row.key, translations: {} };
+      byKey.set(row.key, cat);
+    }
+    if (row.lang && row.name) cat.translations[row.lang] = row.name;
+  }
+  return c.json({ categories: [...byKey.values()] });
+});
+
+/**
+ * POST /admin/categories — create a category.
+ * Body: { key, translations?: { fr: "Nourriture", ... } }.
+ */
+admin.post('/categories', async (c) => {
+  const body = (await c.req.json().catch(() => ({}))) as {
+    key?: string;
+    translations?: Record<string, string>;
+  };
+  const key = body.key?.trim().toLowerCase() ?? '';
+  if (!CATEGORY_KEY_RE.test(key)) {
+    return c.json({ error: 'bad key (a-z, 0-9, dashes, max 50)' }, 400);
+  }
+  const translations = Object.entries(body.translations ?? {}).map(
+    ([lang, name]) => [lang, name?.trim() ?? ''] as const,
+  );
+  for (const [lang, name] of translations) {
+    if (!LANG_RE.test(lang) || !name || name.length > 80) {
+      return c.json({ error: `bad translation for lang "${lang}"` }, 400);
+    }
+  }
+
+  const existing = await c.env.DB.prepare(
+    `SELECT id FROM categories WHERE key = ?1`,
+  )
+    .bind(key)
+    .first();
+  if (existing) return c.json({ error: 'category already exists' }, 409);
+
+  const cat = await c.env.DB.prepare(
+    `INSERT INTO categories (key) VALUES (?1) RETURNING id`,
+  )
+    .bind(key)
+    .first<{ id: number }>();
+  for (const [lang, name] of translations) {
+    await c.env.DB.prepare(
+      `INSERT INTO category_translations (category_id, lang, name)
+       VALUES (?1, ?2, ?3)`,
+    )
+      .bind(cat!.id, lang, name)
+      .run();
+  }
+  return c.json({ ok: true, id: cat!.id, key });
+});
+
+/** PUT /admin/categories/:key/translations/:lang — add or update one name. */
+admin.put('/categories/:key/translations/:lang', async (c) => {
+  const key = c.req.param('key');
+  const lang = c.req.param('lang');
+  if (!LANG_RE.test(lang)) return c.json({ error: 'bad lang' }, 400);
+
+  const body = (await c.req.json().catch(() => ({}))) as { name?: string };
+  const name = body.name?.trim() ?? '';
+  if (!name || name.length > 80) return c.json({ error: 'bad name' }, 400);
+
+  const cat = await c.env.DB.prepare(`SELECT id FROM categories WHERE key = ?1`)
+    .bind(key)
+    .first<{ id: number }>();
+  if (!cat) return c.json({ error: 'unknown category' }, 404);
+
+  await c.env.DB.prepare(
+    `INSERT INTO category_translations (category_id, lang, name)
+     VALUES (?1, ?2, ?3)
+     ON CONFLICT(category_id, lang) DO UPDATE SET name = excluded.name`,
+  )
+    .bind(cat.id, lang, name)
+    .run();
+  return c.json({ ok: true });
+});
+
+/** DELETE /admin/categories/:key/translations/:lang — remove one name. */
+admin.delete('/categories/:key/translations/:lang', async (c) => {
+  const key = c.req.param('key');
+  const lang = c.req.param('lang');
+  const cat = await c.env.DB.prepare(`SELECT id FROM categories WHERE key = ?1`)
+    .bind(key)
+    .first<{ id: number }>();
+  if (!cat) return c.json({ error: 'unknown category' }, 404);
+
+  await c.env.DB.prepare(
+    `DELETE FROM category_translations WHERE category_id = ?1 AND lang = ?2`,
+  )
+    .bind(cat.id, lang)
+    .run();
+  return c.json({ ok: true });
 });
 
 /** GET /admin/reports — recent reports with item labels, most reported first. */

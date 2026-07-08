@@ -21,12 +21,16 @@ A sidebar-navigated SPA, all talking to the API with a bearer token:
   change category, override vote counts, and set status.
 - **Créer un item** (`/add-item`) — create an item with a French label,
   category, and drag-and-drop image (uploaded to R2); goes live immediately.
+- **Catégories** (`/categories`) — create categories (key + French name) and
+  add/edit/delete per-language translations.
 - **Signalements** (`/reports`) — reported items, most-reported first.
 
 Editing is backed by `PATCH /admin/items/:id` (partial: `label`, `status`,
 `votes_left`, `votes_right`, `categoryKey`) and `PATCH /admin/items/:id/image`
 (multipart image replace). `GET /admin/items` returns `category_key` /
-`category_name` for display.
+`category_name` for display. The edit modal also manages non-French labels via
+`GET/PUT/DELETE /admin/items/:id/translations/:lang` (saved immediately,
+independent of the modal's Save button).
 
 Auth is v1-simple: paste the API's `ADMIN_TOKEN` on the `/login` screen. It is
 verified against `GET /admin/stats`, kept in `sessionStorage`, and sent as

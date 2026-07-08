@@ -1,7 +1,13 @@
-import { useState } from 'react';
-import { XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
-import { API, authHeaders, imageUrl } from '../lib/api';
-import type { AdminItem, Category, ItemStatus } from '../types';
+import { useEffect, useState } from 'react';
+import {
+  XMarkIcon,
+  PhotoIcon,
+  PlusIcon,
+  TrashIcon,
+  CheckIcon,
+} from '@heroicons/react/24/outline';
+import { API, apiGet, authHeaders, imageUrl } from '../lib/api';
+import type { AdminItem, Category, ItemStatus, ItemTranslation } from '../types';
 
 const STATUSES: ItemStatus[] = ['pending', 'approved', 'rejected'];
 const STATUS_LABELS: Record<ItemStatus, string> = {
@@ -34,6 +40,88 @@ export function ItemEditModal({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Translations other than fr (fr is the main "Label" field above).
+  const [translations, setTranslations] = useState<ItemTranslation[]>([]);
+  const [newLang, setNewLang] = useState('');
+  const [newTransLabel, setNewTransLabel] = useState('');
+  const [transBusy, setTransBusy] = useState(false);
+
+  useEffect(() => {
+    apiGet<{ translations: ItemTranslation[] }>(
+      `/admin/items/${item.id}/translations`,
+      token,
+    )
+      .then((d) => setTranslations(d.translations.filter((t) => t.lang !== 'fr')))
+      .catch(() => setTranslations([]));
+  }, [item.id, token]);
+
+  async function saveTranslation(
+    lang: string,
+    transLabel: string,
+  ): Promise<boolean> {
+    const value = transLabel.trim();
+    if (!value) {
+      setError(`Label ${lang} requis`);
+      return false;
+    }
+    setTransBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(
+        `${API}/admin/items/${item.id}/translations/${lang}`,
+        {
+          method: 'PUT',
+          headers: { ...authHeaders(token), 'content-type': 'application/json' },
+          body: JSON.stringify({ label: value }),
+        },
+      );
+      const data = (await res.json()) as { ok?: boolean; error?: string };
+      if (!data.ok) throw new Error(data.error ?? `API ${res.status}`);
+      setTranslations((list) =>
+        list.some((t) => t.lang === lang)
+          ? list.map((t) => (t.lang === lang ? { lang, label: value } : t))
+          : [...list, { lang, label: value }],
+      );
+      return true;
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Erreur');
+      return false;
+    } finally {
+      setTransBusy(false);
+    }
+  }
+
+  async function deleteTranslation(lang: string) {
+    setTransBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(
+        `${API}/admin/items/${item.id}/translations/${lang}`,
+        { method: 'DELETE', headers: authHeaders(token) },
+      );
+      if (!res.ok) throw new Error(`API ${res.status}`);
+      setTranslations((list) => list.filter((t) => t.lang !== lang));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Erreur');
+    } finally {
+      setTransBusy(false);
+    }
+  }
+
+  function addTranslation() {
+    const lang = newLang.trim().toLowerCase();
+    if (!/^[a-z]{2}$/.test(lang) || lang === 'fr') {
+      setError('Langue : code ISO à 2 lettres (en, es…), fr est géré au-dessus');
+      return;
+    }
+    void saveTranslation(lang, newTransLabel).then((ok) => {
+      if (ok) {
+        setNewLang('');
+        setNewTransLabel('');
+      }
+    });
+  }
 
   function pickFile(f: File | undefined) {
     if (!f) return;
@@ -160,6 +248,82 @@ export function ItemEditModal({
               maxLength={80}
               className="input-field"
             />
+          </div>
+
+          {/* Other translations — saved immediately, independent of Save. */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Autres traductions
+            </label>
+            <div className="space-y-2">
+              {translations.map((tr) => (
+                <div key={tr.lang} className="flex items-center gap-2">
+                  <span className="w-10 shrink-0 text-center text-xs font-semibold uppercase text-gray-500">
+                    {tr.lang}
+                  </span>
+                  <input
+                    type="text"
+                    value={tr.label}
+                    maxLength={80}
+                    onChange={(e) =>
+                      setTranslations((list) =>
+                        list.map((t) =>
+                          t.lang === tr.lang
+                            ? { ...t, label: e.target.value }
+                            : t,
+                        ),
+                      )
+                    }
+                    className="input-field flex-1"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void saveTranslation(tr.lang, tr.label)}
+                    disabled={transBusy}
+                    className="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 p-2 rounded transition-colors disabled:opacity-40"
+                    title="Enregistrer la traduction"
+                  >
+                    <CheckIcon className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void deleteTranslation(tr.lang)}
+                    disabled={transBusy}
+                    className="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 p-2 rounded transition-colors disabled:opacity-40"
+                    title="Supprimer la traduction"
+                  >
+                    <TrashIcon className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={newLang}
+                  onChange={(e) => setNewLang(e.target.value)}
+                  maxLength={2}
+                  placeholder="en"
+                  className="input-field w-16 text-center"
+                />
+                <input
+                  type="text"
+                  value={newTransLabel}
+                  onChange={(e) => setNewTransLabel(e.target.value)}
+                  maxLength={80}
+                  placeholder="Label traduit"
+                  className="input-field flex-1"
+                />
+                <button
+                  type="button"
+                  onClick={addTranslation}
+                  disabled={transBusy}
+                  className="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 p-2 rounded transition-colors disabled:opacity-40"
+                  title="Ajouter une traduction"
+                >
+                  <PlusIcon className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Category */}

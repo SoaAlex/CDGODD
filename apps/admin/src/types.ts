@@ -28,6 +28,19 @@ export interface Category {
   name: string;
 }
 
+/** GET /admin/categories row: category with all its translations. */
+export interface AdminCategory {
+  id: number;
+  key: string;
+  translations: Record<string, string>;
+}
+
+/** GET /admin/items/:id/translations row. */
+export interface ItemTranslation {
+  lang: string;
+  label: string;
+}
+
 export interface Stats {
   items: number;
   votesLeft: number;

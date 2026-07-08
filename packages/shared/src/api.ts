@@ -25,7 +25,8 @@ export interface SearchResponse {
 
 /** POST /submissions */
 export interface SubmissionResponse {
-  status: 'pending' | 'rejected';
+  /** 'duplicate' = an item with the same normalized label already exists. */
+  status: 'pending' | 'rejected' | 'duplicate';
   itemId?: number;
 }
 

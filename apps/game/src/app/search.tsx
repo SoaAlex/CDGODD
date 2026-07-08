@@ -33,7 +33,9 @@ export default function SearchScreen() {
   const [searching, setSearching] = useState(false);
   const [selected, setSelected] = useState<DeckCard | null>(null);
   const [tally, setTally] = useState<VoteTally | null>(null);
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState<false | 'sent' | 'duplicate'>(
+    false,
+  );
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -78,7 +80,9 @@ export default function SearchScreen() {
 
   function propose() {
     submitItem(query.trim())
-      .then(() => setSubmitted(true))
+      .then((r) =>
+        setSubmitted(r.status === 'duplicate' ? 'duplicate' : 'sent'),
+      )
       .catch(() => setSubmitted(false));
   }
 
@@ -158,7 +162,9 @@ export default function SearchScreen() {
               ) : submitted ? (
                 <View style={styles.notFound}>
                   <ThemedText testID="submitted">
-                    ✅ {t('solo.submitted')}
+                    {submitted === 'duplicate'
+                      ? `👀 ${t('solo.duplicate')}`
+                      : `✅ ${t('solo.submitted')}`}
                   </ThemedText>
                 </View>
               ) : null
