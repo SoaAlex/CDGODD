@@ -1,7 +1,9 @@
 name: Deploy
 
-# main -> production (cestdegaucheoudedroite.com)
-# any other branch -> dev (dev.cestdegaucheoudedroite.com), isolated D1/R2
+# main -> production deploy (custom domains).
+# any other branch -> preview version upload: same Workers, no traffic change,
+# preview URL on *-<worker>.cestdegaucheoudedroite.workers.dev.
+# Previews share PROD bindings (D1/R2) — no migrations run outside main.
 on:
   push:
     branches: ['**']
@@ -14,6 +16,7 @@ concurrency:
 env:
   CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
   CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+  IS_MAIN: ${{ github.ref == 'refs/heads/main' }}
 
 jobs:
   deploy:
@@ -34,49 +37,53 @@ jobs:
       - name: Typecheck
         run: pnpm turbo typecheck
 
-      # Select target: main -> prod, everything else -> dev ([env.dev] in
-      # each wrangler.toml; separate D1/R2, *.dev.cestdegaucheoudedroite.com).
-      - name: Select environment
-        id: target
-        run: |
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "wrangler_env_flag=" >> "$GITHUB_OUTPUT"
-            echo "d1_name=cdgodd" >> "$GITHUB_OUTPUT"
-            echo "api_url=https://api.cestdegaucheoudedroite.com" >> "$GITHUB_OUTPUT"
-          else
-            echo "wrangler_env_flag=--env dev" >> "$GITHUB_OUTPUT"
-            echo "d1_name=cdgodd-dev" >> "$GITHUB_OUTPUT"
-            echo "api_url=https://api.dev.cestdegaucheoudedroite.com" >> "$GITHUB_OUTPUT"
-          fi
-
       # --- API ---
       - name: Apply D1 migrations
+        if: env.IS_MAIN == 'true'
         working-directory: apps/api
-        run: pnpm exec wrangler d1 migrations apply ${{ steps.target.outputs.d1_name }} --remote ${{ steps.target.outputs.wrangler_env_flag }}
+        run: pnpm exec wrangler d1 migrations apply cdgodd --remote
 
       - name: Deploy API worker
+        if: env.IS_MAIN == 'true'
         working-directory: apps/api
-        run: pnpm exec wrangler deploy ${{ steps.target.outputs.wrangler_env_flag }}
+        run: pnpm exec wrangler deploy
+
+      - name: Upload API preview version
+        if: env.IS_MAIN != 'true'
+        working-directory: apps/api
+        run: pnpm exec wrangler versions upload
 
       # --- Admin ---
       - name: Build admin
         working-directory: apps/admin
         run: pnpm build
         env:
-          VITE_API_URL: ${{ steps.target.outputs.api_url }}
+          VITE_API_URL: https://api.cestdegaucheoudedroite.com
 
       - name: Deploy admin
+        if: env.IS_MAIN == 'true'
         working-directory: apps/admin
-        run: pnpm exec wrangler deploy ${{ steps.target.outputs.wrangler_env_flag }}
+        run: pnpm exec wrangler deploy
+
+      - name: Upload admin preview version
+        if: env.IS_MAIN != 'true'
+        working-directory: apps/admin
+        run: pnpm exec wrangler versions upload
 
       # --- Game web ---
       - name: Build game web
         working-directory: apps/game
         run: pnpm build:web
         env:
-          EXPO_PUBLIC_API_URL: ${{ steps.target.outputs.api_url }}
+          EXPO_PUBLIC_API_URL: https://api.cestdegaucheoudedroite.com
           EXPO_PUBLIC_TURNSTILE_SITEKEY: 0x4AAAAAADxcifQdjBeiuVUB
 
       - name: Deploy game
+        if: env.IS_MAIN == 'true'
         working-directory: apps/game
-        run: pnpm exec wrangler deploy ${{ steps.target.outputs.wrangler_env_flag }}
+        run: pnpm exec wrangler deploy
+
+      - name: Upload game preview version
+        if: env.IS_MAIN != 'true'
+        working-directory: apps/game
+        run: pnpm exec wrangler versions upload

@@ -6,6 +6,11 @@ routes = [
   { pattern = "api.cestdegaucheoudedroite.com", custom_domain = true },
 ]
 
+# Preview URLs for non-prod branches: CI runs `wrangler versions upload`,
+# version gets *-cdgodd-api.cestdegaucheoudedroite.workers.dev. Previews use
+# PROD bindings (D1/R2) — schema-changing branches will 500 until merged.
+preview_urls = true
+
 [observability]
 enabled = true
 
@@ -35,39 +40,3 @@ CDN_BASE = "https://images.cestdegaucheoudedroite.com"
 #   TURNSTILE_SECRET  - Cloudflare Turnstile secret key
 #   IP_HASH_SALT      - random salt for ip_hash (rotate periodically)
 #   ADMIN_TOKEN       - bearer token for /admin routes (v1 auth)
-
-# ---------------------------------------------------------------------------
-# Dev environment  (deploy: `wrangler deploy --env dev`, worker `cdgodd-api-dev`)
-# Isolated D1 + R2 so dev traffic never touches prod data.
-# Named environments do NOT inherit top-level config — everything is repeated.
-# Set dev secrets with `wrangler secret put <NAME> --env dev`.
-# ---------------------------------------------------------------------------
-[env.dev]
-routes = [
-  { pattern = "api.dev.cestdegaucheoudedroite.com", custom_domain = true },
-]
-
-[env.dev.observability]
-enabled = true
-
-[[env.dev.d1_databases]]
-binding = "DB"
-database_name = "cdgodd-dev"
-database_id = "0fe3f8db-fee4-4faf-968e-83e3a2b6d554"
-
-[[env.dev.r2_buckets]]
-binding = "IMAGES"
-bucket_name = "cdgodd-images-dev" # `wrangler r2 bucket create cdgodd-images-dev`
-
-[[env.dev.durable_objects.bindings]]
-name = "ROOMS"
-class_name = "Room"
-
-[[env.dev.migrations]]
-tag = "v1"
-new_sqlite_classes = ["Room"]
-
-[env.dev.vars]
-# Add custom domain `images.dev.cestdegaucheoudedroite.com` to the
-# cdgodd-images-dev bucket in the Cloudflare dashboard (R2 > Settings).
-CDN_BASE = "https://images.dev.cestdegaucheoudedroite.com"
