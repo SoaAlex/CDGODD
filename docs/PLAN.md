@@ -166,8 +166,8 @@ CREATE INDEX idx_votes_iphash ON votes(item_id, ip_hash);
 All write endpoints carry a **Cloudflare Turnstile token** (privacy-friendly, no PII) and an anonymous `session_id` header; the Worker rate-limits by `ip_hash` before touching the DB.
 
 **Public (game):**
-- `GET  /deck?lang=fr&cursor=…&limit=25` → next batch of approved items (label + image URL)
-- `POST /items/:id/vote` `{ side, turnstileToken }` → upserts into `votes`, updates counters, returns tallies
+- `GET  /deck?lang=fr&cursor=…&limit=25` → next batch of approved items (label + image URL + current tallies, so the client can show results optimistically)
+- `POST /items/:id/vote` `{ side, turnstileToken }` → single batched D1 transaction: insert vote (no-op on dupe), bump counters, return tallies
 - `GET  /items/search?q=…&lang=fr` → free-search mode lookup
 - `POST /submissions` `{ label, categoryKeys, image, turnstileToken }` → moderation → `pending` or auto-reject
 - `POST /items/:id/report` `{ reason, turnstileToken }` → increments report_count, inserts report row
@@ -192,7 +192,7 @@ Admin auth: simplest viable = Cloudflare Access in front of the admin routes/Pag
 
 **Image pipeline**: admin uploads → Worker puts object in R2 → store `image_key`. Client builds URL as `${CDN_BASE}/${image_key}` (optionally via Cloudflare Images variant for size/WebP). Swapping CDN never requires a DB migration.
 
-**Preloading**: `useDeck` fetches 25 items per call; `useImagePreload` prefetches the next 3–5 card images (`Image.prefetch`) while the top card is shown. Refetch when ~5 cards remain.
+**Preloading**: `useDeck` fetches 25 items per call; `useImagePreload` prefetches the next 3–5 card images (`Image.prefetch`) while the top card is shown. Refetch when ~5 cards remain. Deck cards carry their global tallies, so vote results render instantly (own vote added optimistically, reconciled by the vote response); on web, a Turnstile token is pre-minted in the background so votes never wait on the challenge.
 
 **Multiplayer (Durable Object `Room`)**: one instance per short code. Holds player list + current card + in-memory vote tally. Two modes:
 - *Batch (build first)*: players vote through N cards, DO reveals aggregated results at the end.

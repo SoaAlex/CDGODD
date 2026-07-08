@@ -24,6 +24,13 @@ export interface DeckCard {
   /** Empty array when the item has no category. */
   categoryKeys: string[];
   imageUrl: string | null;
+  /**
+   * Global tally at deck-fetch time. Lets the client show the previous
+   * card's result instantly (own vote added optimistically) instead of
+   * waiting for the vote round trip; reconciled by the vote response.
+   */
+  votesLeft: number;
+  votesRight: number;
 }
 
 export interface VoteTally {

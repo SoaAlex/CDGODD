@@ -13,7 +13,6 @@ import type { LastVote } from '@/hooks/use-deck';
 export function LastVoteBar({ lastVote }: { lastVote: LastVote }) {
   const theme = useTheme();
   const { card, tally } = lastVote;
-  if (!tally) return null;
 
   return (
     <View style={[styles.row, { backgroundColor: theme.backgroundElement }]}>

@@ -8,3 +8,6 @@
 export function getTurnstileToken(): Promise<string> {
   return Promise.resolve('dev');
 }
+
+/** No-op on native — tokens are the free dev placeholder. */
+export function prewarmTurnstileToken(): void {}

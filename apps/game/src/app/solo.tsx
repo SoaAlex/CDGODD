@@ -50,13 +50,21 @@ export default function SoloScreen() {
   }
 
   // Real-time mode: live global tally of the card currently on screen.
+  // Seeded instantly from the counts the deck fetch already carries, then
+  // refreshed with live numbers in the background.
   const [currentTally, setCurrentTally] = useState<VoteTally | null>(null);
-  const topId = top?.id;
   useEffect(() => {
-    setCurrentTally(null);
-    if (!showResults || topId === undefined) return;
+    if (!showResults || !top) {
+      setCurrentTally(null);
+      return;
+    }
+    setCurrentTally({
+      itemId: top.id,
+      votesLeft: top.votesLeft,
+      votesRight: top.votesRight,
+    });
     let alive = true;
-    fetchTallies([topId])
+    fetchTallies([top.id])
       .then(({ tallies }) => {
         if (alive) setCurrentTally(tallies[0] ?? null);
       })
@@ -64,7 +72,7 @@ export default function SoloScreen() {
     return () => {
       alive = false;
     };
-  }, [showResults, topId]);
+  }, [showResults, top]);
 
   // Web: vote with the keyboard arrows.
   useEffect(() => {

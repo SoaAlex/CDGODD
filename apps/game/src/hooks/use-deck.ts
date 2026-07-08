@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { DeckCard, Side, VoteTally } from '@cdgodd/shared';
 import { castVote, fetchDeck } from '@/lib/api';
 import { recordVote } from '@/lib/history';
+import { prewarmTurnstileToken } from '@/lib/turnstile';
 
 /** Refetch a new batch when this few cards remain. */
 const REFILL_THRESHOLD = 5;
@@ -13,7 +14,8 @@ const PREFETCH_AHEAD = 5;
 export interface LastVote {
   card: DeckCard;
   side: Side;
-  tally: VoteTally | null; // null until the server responds
+  /** Optimistic (deck counts + own vote) until the server response replaces it. */
+  tally: VoteTally;
 }
 
 interface DeckState {
@@ -66,6 +68,9 @@ export function useDeck() {
 
   useEffect(() => {
     void refill();
+    // Mint a Turnstile token ahead of the first vote (web prod only);
+    // getTurnstileToken re-warms the pool after each use.
+    prewarmTurnstileToken();
   }, [refill]);
 
   // Preload upcoming card images so swiping never waits on the network.
@@ -88,7 +93,15 @@ export function useDeck() {
       setState((s) => ({
         ...s,
         cards: snapshot,
-        lastVote: { card: top, side, tally: null },
+        lastVote: {
+          card: top,
+          side,
+          tally: {
+            itemId: top.id,
+            votesLeft: top.votesLeft + (side === 'left' ? 1 : 0),
+            votesRight: top.votesRight + (side === 'right' ? 1 : 0),
+          },
+        },
       }));
 
       void recordVote({

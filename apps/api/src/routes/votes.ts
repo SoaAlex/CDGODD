@@ -28,36 +28,29 @@ votes.post('/items/:id/vote', async (c) => {
     return c.json({ error: 'turnstile failed' }, 403);
   }
 
-  const item = await c.env.DB.prepare(
-    `SELECT id FROM items WHERE id = ?1 AND status = 'approved'`,
-  )
-    .bind(itemId)
-    .first();
-  if (!item) return c.json({ error: 'item not found' }, 404);
+  // One D1 round trip. batch() runs sequentially on one connection inside a
+  // transaction, so statement 2 can read changes() from statement 1: the
+  // counter only moves when the INSERT actually landed (not a dupe, item
+  // approved). Unique (item_id, session_id) makes re-votes no-ops.
+  const [, , tallyRes] = await c.env.DB.batch([
+    c.env.DB.prepare(
+      `INSERT OR IGNORE INTO votes (item_id, side, session_id, ip_hash, created_at)
+       SELECT ?1, ?2, ?3, ?4, ?5
+        WHERE EXISTS (SELECT 1 FROM items WHERE id = ?1 AND status = 'approved')`,
+    ).bind(itemId, side, sessionId, c.get('ipHash'), Date.now()),
+    c.env.DB.prepare(
+      `UPDATE items
+          SET votes_left  = votes_left  + (?2 = 'left') * changes(),
+              votes_right = votes_right + (?2 = 'right') * changes()
+        WHERE id = ?1`,
+    ).bind(itemId, side),
+    c.env.DB.prepare(
+      `SELECT id AS itemId, votes_left AS votesLeft, votes_right AS votesRight
+         FROM items WHERE id = ?1 AND status = 'approved'`,
+    ).bind(itemId),
+  ]);
 
-  // Insert vote row; unique (item_id, session_id) makes re-votes no-ops.
-  const inserted = await c.env.DB.prepare(
-    `INSERT OR IGNORE INTO votes (item_id, side, session_id, ip_hash, created_at)
-     VALUES (?1, ?2, ?3, ?4, ?5)`,
-  )
-    .bind(itemId, side, sessionId, c.get('ipHash'), Date.now())
-    .run();
-
-  if (inserted.meta.changes > 0) {
-    const column = side === 'left' ? 'votes_left' : 'votes_right';
-    await c.env.DB.prepare(
-      `UPDATE items SET ${column} = ${column} + 1 WHERE id = ?1`,
-    )
-      .bind(itemId)
-      .run();
-  }
-
-  const tally = await c.env.DB.prepare(
-    `SELECT id AS itemId, votes_left AS votesLeft, votes_right AS votesRight
-       FROM items WHERE id = ?1`,
-  )
-    .bind(itemId)
-    .first<VoteResponse['tally']>();
+  const tally = tallyRes!.results[0] as VoteResponse['tally'] | undefined;
   if (!tally) return c.json({ error: 'item not found' }, 404);
 
   return c.json({ tally } satisfies VoteResponse);

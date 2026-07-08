@@ -39,13 +39,8 @@ function loadScript(): Promise<void> {
   return scriptLoading;
 }
 
-/**
- * Web: invisible Turnstile challenge — a fresh token per protected call
- * (they're single-use server-side). Without a configured sitekey (local
- * dev), returns the dev placeholder that the API accepts when no
- * TURNSTILE_SECRET is set.
- */
-export async function getTurnstileToken(): Promise<string> {
+/** Run one invisible challenge and resolve with its token. */
+async function mintToken(): Promise<string> {
   if (!SITE_KEY) return 'dev';
   await loadScript();
   return new Promise<string>((resolve, reject) => {
@@ -69,4 +64,42 @@ export async function getTurnstileToken(): Promise<string> {
     });
     window.turnstile!.execute(widgetId);
   });
+}
+
+// Single-slot token pool. Tokens are single-use server-side and expire after
+// ~5 minutes; keep one pre-minted so a vote never waits on the challenge.
+const TOKEN_MAX_AGE_MS = 4 * 60_000; // refresh margin under the ~5 min expiry
+let pooled: Promise<string> | null = null;
+let pooledAt = 0;
+
+/**
+ * Start minting a token in the background so the next protected call
+ * (vote, submission) doesn't pay the challenge round trip. Safe to call
+ * often — a fresh pooled token is kept, not re-minted.
+ */
+export function prewarmTurnstileToken(): void {
+  if (!SITE_KEY) return;
+  if (pooled && Date.now() - pooledAt < TOKEN_MAX_AGE_MS) return;
+  pooledAt = Date.now();
+  const minting = mintToken();
+  pooled = minting;
+  // Drop a failed mint so the next call retries instead of rejecting.
+  minting.catch(() => {
+    if (pooled === minting) pooled = null;
+  });
+}
+
+/**
+ * Web: invisible Turnstile challenge token, served from the pre-warmed pool
+ * when available (a replacement starts minting immediately). Without a
+ * configured sitekey (local dev), returns the dev placeholder that the API
+ * accepts when no TURNSTILE_SECRET is set.
+ */
+export async function getTurnstileToken(): Promise<string> {
+  if (!SITE_KEY) return 'dev';
+  const fresh =
+    pooled && Date.now() - pooledAt < TOKEN_MAX_AGE_MS ? pooled : mintToken();
+  pooled = null;
+  prewarmTurnstileToken();
+  return fresh;
 }
