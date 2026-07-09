@@ -10,11 +10,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { DeckCard, Side, VoteTally } from '@cdgodd/shared';
-import { LEFT_COLOR, RIGHT_COLOR, SwipeCard } from '@/components/swipe-card';
+import { SwipeCard } from '@/components/swipe-card';
 import { TallyBar } from '@/components/tally-bar';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { castVote, searchItems, submitItem } from '@/lib/api';
 import { recordVote } from '@/lib/history';

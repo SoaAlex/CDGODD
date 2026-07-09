@@ -1,17 +1,24 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import Head from 'expo-router/head';
-import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AdSlot } from '@/ads/ad-slot';
 import { MuteButton } from '@/components/mute-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { ACCENT_COLOR, MaxContentWidth, Spacing } from '@/constants/theme';
+import {
+  ACCENT_COLOR,
+  Fonts,
+  LEFT_COLOR,
+  LEFT_TEXT_COLOR,
+  MaxContentWidth,
+  RIGHT_COLOR,
+  RIGHT_TEXT_COLOR,
+  Spacing,
+  TEXT_SHADOW,
+} from '@/constants/theme';
 import { t } from '@/lib/i18n';
-
-const logo = require('../../assets/images/home_logo.png');
 
 function MenuButton({
   label,
@@ -63,51 +70,51 @@ export default function MenuScreen() {
       </Head>
       <SafeAreaView style={styles.safeArea}>
         {/* Mobile: banner pinned to the top of the menu. */}
-        {Platform.OS !== 'web' && (
-          <View style={styles.adHeader}>
-            <AdSlot />
-          </View>
-        )}
+        {Platform.OS !== 'web' && <AdSlot />}
         <View style={styles.topBar}>
           <MuteButton />
         </View>
-        <View style={styles.hero}>
-          <Image
-            source={logo}
-            style={styles.logo}
-            contentFit="contain"
-            accessibilityLabel={t('menu.title')}
-          />
-        </View>
-
-        <View style={styles.menu}>
-          <MenuButton
-            label={t('menu.play')}
-            href="/solo"
-            icon="play"
-            color="#e2523a"
-          />
-          <MenuButton
-            label={t('menu.multiplayer')}
-            href="/multiplayer"
-            icon="people"
-            color="#6db0f8"
-          />
-          <MenuButton label={t('solo.search')} href="/search" icon="search" />
-          <MenuButton label={t('menu.history')} href="/history" icon="time" />
-          <MenuButton
-            label={t('menu.settings')}
-            href="/settings"
-            icon="settings"
-          />
-        </View>
-
-        {/* Web: banner pinned to the bottom of the page. */}
-        {Platform.OS === 'web' && (
-          <View style={styles.adFooter}>
-            <AdSlot />
+        {/* Centered between the (possibly empty) ad slots. */}
+        <View style={styles.content}>
+          <View style={styles.hero}>
+            <Text
+              style={styles.logo}
+              accessibilityLabel={t('menu.title')}
+              allowFontScaling={false}
+            >
+              <Text style={styles.logoWhite}>C’EST DE{'\n'}</Text>
+              <Text style={styles.logoGauche}>GAUCHE{'\n'}</Text>
+              <Text style={styles.logoWhite}>OU DE{'\n'}</Text>
+              <Text style={styles.logoDroite}>DROITE</Text>
+              <Text style={styles.logoWhite}> ?</Text>
+            </Text>
           </View>
-        )}
+
+          <View style={styles.menu}>
+            <MenuButton
+              label={t('menu.play')}
+              href="/solo"
+              icon="play"
+              color={LEFT_COLOR}
+            />
+            <MenuButton
+              label={t('menu.multiplayer')}
+              href="/multiplayer"
+              icon="people"
+              color={RIGHT_COLOR}
+            />
+            <MenuButton label={t('solo.search')} href="/search" icon="search" />
+            <MenuButton label={t('menu.history')} href="/history" icon="time" />
+            <MenuButton
+              label={t('menu.settings')}
+              href="/settings"
+              icon="settings"
+            />
+          </View>
+        </View>
+
+        {/* Web: banner at the bottom of the page. */}
+        {Platform.OS === 'web' && <AdSlot />}
       </SafeAreaView>
     </ThemedView>
   );
@@ -123,6 +130,11 @@ const styles = StyleSheet.create({
     flex: 1,
     maxWidth: MaxContentWidth,
     paddingHorizontal: Spacing.four,
+  },
+  content: {
+    // Fills the space between the ad slots so hero + menu stay centered
+    // whether or not an ad actually renders.
+    flex: 1,
     justifyContent: 'center',
     gap: Spacing.six,
   },
@@ -136,20 +148,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: '100%',
-    maxWidth: 300,
-    aspectRatio: 1,
+    fontFamily: Fonts.display,
+    fontWeight: '700',
+    fontSize: 52,
+    lineHeight: 56,
+    letterSpacing: 1,
+    textAlign: 'center',
+    ...TEXT_SHADOW,
+  },
+  logoWhite: {
+    color: '#ffffff',
+  },
+  logoGauche: {
+    color: LEFT_TEXT_COLOR,
+  },
+  logoDroite: {
+    color: RIGHT_TEXT_COLOR,
   },
   menu: {
     gap: Spacing.three,
-  },
-  adHeader: {
-    // Pins the banner to the page top despite justifyContent: 'center'.
-    marginBottom: 'auto',
-  },
-  adFooter: {
-    // Pins the banner to the page bottom despite justifyContent: 'center'.
-    marginTop: 'auto',
   },
   button: {
     flexDirection: 'row',

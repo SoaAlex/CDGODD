@@ -1,6 +1,11 @@
 import { StyleSheet, Text } from 'react-native';
 
-import { Fonts } from '@/constants/theme';
+import {
+  Fonts,
+  LEFT_TEXT_COLOR,
+  RIGHT_TEXT_COLOR,
+  TEXT_SHADOW,
+} from '@/constants/theme';
 
 /**
  * Horizontal wordmark used as the header title on every screen except home.
@@ -24,14 +29,15 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 16,
     letterSpacing: 0.5,
+    ...TEXT_SHADOW,
   },
   white: {
     color: '#ffffff',
   },
   gauche: {
-    color: '#e2523a',
+    color: LEFT_TEXT_COLOR,
   },
   droite: {
-    color: '#6db0f8',
+    color: RIGHT_TEXT_COLOR,
   },
 });

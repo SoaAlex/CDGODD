@@ -10,9 +10,9 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import type { DeckCard, Side } from '@cdgodd/shared';
-import { LEFT_COLOR, RIGHT_COLOR, SwipeCard } from '@/components/swipe-card';
+import { SwipeCard } from '@/components/swipe-card';
 import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
+import { LEFT_COLOR, RIGHT_COLOR, Spacing } from '@/constants/theme';
 import { t } from '@/lib/i18n';
 import { playSwipeSound } from '@/lib/sfx';
 

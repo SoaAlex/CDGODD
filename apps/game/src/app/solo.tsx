@@ -9,13 +9,12 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CategoryFilter } from '@/components/category-filter';
-import { LEFT_COLOR, RIGHT_COLOR } from '@/components/swipe-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { SwipeDeck, type SwipeDeckHandle } from '@/components/swipe-deck';
 import { LastVoteBar } from '@/components/last-vote-bar';
 import { TallyBar } from '@/components/tally-bar';
-import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/theme';
 import { AdRails } from '@/ads/ad-rails';
 import { AdSlot } from '@/ads/ad-slot';
 import { useInterstitial } from '@/ads/use-interstitial';

@@ -2,9 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, View } from 'react-native';
 import type { RoomMode } from '@cdgodd/shared';
 import { CategoryFilter } from '@/components/category-filter';
-import { RIGHT_COLOR } from '@/components/swipe-card';
 import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
+import { RIGHT_COLOR, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { t } from '@/lib/i18n';
 

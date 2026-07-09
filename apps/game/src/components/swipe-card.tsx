@@ -6,10 +6,6 @@ import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { categoryName, t } from '@/lib/i18n';
 
-/** French political colors: gauche = red, droite = blue (from the web app). */
-export const LEFT_COLOR = '#e2523a';
-export const RIGHT_COLOR = '#6db0f8';
-
 /** Solid card colors — the card is an opaque white surface on the gradient. */
 const CARD_TEXT = '#1b1b2f';
 const CARD_TEXT_SECONDARY = 'rgba(27, 27, 47, 0.55)';

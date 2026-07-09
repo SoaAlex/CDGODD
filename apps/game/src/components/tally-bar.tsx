@@ -1,8 +1,14 @@
 import { StyleSheet, View } from 'react-native';
 import type { VoteTally } from '@cdgodd/shared';
-import { LEFT_COLOR, RIGHT_COLOR } from '@/components/swipe-card';
 import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
+import {
+  LEFT_COLOR,
+  LEFT_TEXT_COLOR,
+  RIGHT_COLOR,
+  RIGHT_TEXT_COLOR,
+  Spacing,
+  TEXT_SHADOW,
+} from '@/constants/theme';
 
 /** Community result of the last card voted on: proportional gauche/droite bar. */
 export function TallyBar({ tally }: { tally: VoteTally }) {
@@ -22,10 +28,16 @@ export function TallyBar({ tally }: { tally: VoteTally }) {
         />
       </View>
       <View style={styles.labels}>
-        <ThemedText type="smallBold" style={[styles.pct, { color: LEFT_COLOR }]}>
+        <ThemedText
+          type="smallBold"
+          style={[styles.pct, { color: LEFT_TEXT_COLOR }]}
+        >
           {leftPct}%
         </ThemedText>
-        <ThemedText type="smallBold" style={[styles.pct, { color: RIGHT_COLOR }]}>
+        <ThemedText
+          type="smallBold"
+          style={[styles.pct, { color: RIGHT_TEXT_COLOR }]}
+        >
           {rightPct}%
         </ThemedText>
       </View>
@@ -53,5 +65,6 @@ const styles = StyleSheet.create({
   pct: {
     fontSize: 20,
     lineHeight: 26,
+    ...TEXT_SHADOW,
   },
 });

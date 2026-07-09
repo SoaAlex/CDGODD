@@ -14,6 +14,29 @@ export const Gradient = ['#667eea', '#764ba2'] as const;
 export const ACCENT_COLOR = '#667eea';
 
 /**
+ * French political colors: gauche = red, droite = blue (from the original web
+ * app). Fill variants are dark enough that white text/icons on top pass
+ * WCAG AA (≥ 4.5:1); use them for buttons, chips and bar segments.
+ */
+export const LEFT_COLOR = '#d0442c';
+export const RIGHT_COLOR = '#2e6fd0';
+
+/**
+ * Light tints of the brand colors for *text* sitting directly on the purple
+ * gradient — the saturated fills have nearly the same luminance as the
+ * gradient (≈1:1 contrast) and disappear. Pair with {@link TEXT_SHADOW}.
+ */
+export const LEFT_TEXT_COLOR = '#ffb4a2';
+export const RIGHT_TEXT_COLOR = '#a9d3ff';
+
+/** Subtle dark halo that lifts tinted text off the mid-tone gradient. */
+export const TEXT_SHADOW = {
+  textShadowColor: 'rgba(0, 0, 0, 0.35)',
+  textShadowOffset: { width: 0, height: 1 },
+  textShadowRadius: 4,
+} as const;
+
+/**
  * Single fixed palette tuned to sit on top of {@link Gradient}: transparent
  * screen backgrounds so the gradient shows through, white text, and frosted
  * "glass" surfaces. Light and dark point to the same values — the app keeps the
