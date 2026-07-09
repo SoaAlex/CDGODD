@@ -15,19 +15,19 @@ export const ACCENT_COLOR = '#667eea';
 
 /**
  * French political colors: gauche = red, droite = blue (from the original web
- * app). Fill variants are dark enough that white text/icons on top pass
- * WCAG AA (≥ 4.5:1); use them for buttons, chips and bar segments.
+ * app). Used as fills for buttons, chips and bar segments — brand look is
+ * deliberately kept over strict WCAG ratios for white content on top.
  */
-export const LEFT_COLOR = '#d0442c';
-export const RIGHT_COLOR = '#2e6fd0';
+export const LEFT_COLOR = '#e2523a';
+export const RIGHT_COLOR = '#6db0f8';
 
 /**
- * Light tints of the brand colors for *text* sitting directly on the purple
- * gradient — the saturated fills have nearly the same luminance as the
- * gradient (≈1:1 contrast) and disappear. Pair with {@link TEXT_SHADOW}.
+ * Slightly lightened tints of the brand colors for *text* sitting directly on
+ * the purple gradient — the saturated fills have nearly the same luminance as
+ * the gradient (≈1:1 contrast) and disappear. Pair with {@link TEXT_SHADOW}.
  */
-export const LEFT_TEXT_COLOR = '#ffb4a2';
-export const RIGHT_TEXT_COLOR = '#a9d3ff';
+export const LEFT_TEXT_COLOR = '#f47b66';
+export const RIGHT_TEXT_COLOR = '#85c2ff';
 
 /** Subtle dark halo that lifts tinted text off the mid-tone gradient. */
 export const TEXT_SHADOW = {
