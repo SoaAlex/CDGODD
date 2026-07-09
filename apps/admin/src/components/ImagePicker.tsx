@@ -3,21 +3,31 @@ import { MagnifyingGlassIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { API, apiGet, authHeaders } from '../lib/api';
 import type { ImageCandidate } from '../types';
 
+/** Deferred pick for the create page: applied after the item exists. */
+export type ImageChoice =
+  | { kind: 'candidate'; candidate: ImageCandidate }
+  | { kind: 'ai' };
+
 interface Props {
-  itemId: number;
+  /** Apply mode: image endpoints are called on this item immediately. */
+  itemId?: number;
   /** Prefills the search field (usually the item's fr label). */
   initialQuery: string;
   token: string;
   onError: (message: string | null) => void;
-  /** Called with the new image key + license once the server applied it. */
-  onImageSet: (imageKey: string, license: string) => void;
+  /** Apply mode: called with the new image key + license once applied. */
+  onImageSet?: (imageKey: string, license: string) => void;
+  /** Select mode (no itemId): called with the choice, nothing is fetched. */
+  onSelect?: (choice: ImageChoice) => void;
 }
 
 /**
  * Free-license image finder: searches Wikimedia Commons + Pixabay via the
  * API, shows a candidate grid (source + license badge), one click copies
  * the image to R2 with its attribution. "Générer par IA" is the fallback
- * for items with no good match. Both apply immediately, like translations.
+ * for items with no good match. With an `itemId` both apply immediately
+ * (edit modal); without one the choice is handed to `onSelect` so the
+ * create page can apply it after `POST /admin/items` returns the id.
  */
 export function ImagePicker({
   itemId,
@@ -25,6 +35,7 @@ export function ImagePicker({
   token,
   onError,
   onImageSet,
+  onSelect,
 }: Props) {
   const [query, setQuery] = useState(initialQuery);
   const [candidates, setCandidates] = useState<ImageCandidate[]>([]);
@@ -56,6 +67,10 @@ export function ImagePicker({
   }
 
   async function pick(candidate: ImageCandidate) {
+    if (itemId === undefined) {
+      onSelect?.({ kind: 'candidate', candidate });
+      return;
+    }
     setApplyingUrl(candidate.fullUrl);
     onError(null);
     try {
@@ -77,7 +92,7 @@ export function ImagePicker({
       if (!data.ok || !data.imageKey) {
         throw new Error(data.error ?? `API ${res.status}`);
       }
-      onImageSet(data.imageKey, candidate.license);
+      onImageSet?.(data.imageKey, candidate.license);
     } catch (e) {
       onError(e instanceof Error ? e.message : 'Erreur');
     } finally {
@@ -86,6 +101,10 @@ export function ImagePicker({
   }
 
   async function generateAi() {
+    if (itemId === undefined) {
+      onSelect?.({ kind: 'ai' });
+      return;
+    }
     setAiBusy(true);
     onError(null);
     try {
@@ -98,7 +117,7 @@ export function ImagePicker({
       if (!data.ok || !data.imageKey) {
         throw new Error(data.error ?? `API ${res.status}`);
       }
-      onImageSet(data.imageKey, 'ai-generated');
+      onImageSet?.(data.imageKey, 'ai-generated');
     } catch (e) {
       onError(e instanceof Error ? e.message : 'Erreur');
     } finally {

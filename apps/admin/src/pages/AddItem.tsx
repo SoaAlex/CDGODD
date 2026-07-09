@@ -6,10 +6,13 @@ import {
   XMarkIcon,
   PlusIcon,
   TrashIcon,
+  MagnifyingGlassIcon,
+  SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../hooks/useAuth';
 import { API, authHeaders } from '../lib/api';
 import { CategoryPicker } from '../components/CategoryPicker';
+import { ImagePicker, type ImageChoice } from '../components/ImagePicker';
 import type { Category, ItemTranslation } from '../types';
 
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -35,6 +38,9 @@ export function AddItem() {
   const [newTransLabel, setNewTransLabel] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  // Free-license candidate or AI generation, applied after the create call.
+  const [imageChoice, setImageChoice] = useState<ImageChoice | null>(null);
+  const [showPicker, setShowPicker] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,6 +65,7 @@ export function AddItem() {
     setError(null);
     setFile(f);
     setPreviewUrl(URL.createObjectURL(f));
+    setImageChoice(null); // upload replaces a picked candidate
   }
 
   function removeFile() {
@@ -122,17 +129,67 @@ export function AddItem() {
         headers: authHeaders(token),
         body: form,
       });
-      const data = (await res.json()) as { ok?: boolean; error?: string };
-      if (data.ok) {
-        setSuccess('Item créé (publié directement).');
-        setTimeout(() => navigate('/items'), 1200);
-      } else {
+      const data = (await res.json()) as {
+        ok?: boolean;
+        itemId?: number;
+        error?: string;
+      };
+      if (!data.ok || data.itemId === undefined) {
         setError(data.error ?? `API ${res.status}`);
+        return;
       }
+
+      // Picked candidate / AI generation: apply now that the item exists.
+      if (imageChoice) {
+        const applied = await applyImageChoice(data.itemId, imageChoice);
+        if (!applied) {
+          // Item exists — send the admin to the list to fix it, not resubmit.
+          setError(
+            `Item #${data.itemId} créé, mais image non appliquée — utilisez Modifier.`,
+          );
+          setTimeout(() => navigate('/items'), 2500);
+          return;
+        }
+      }
+
+      setSuccess('Item créé (publié directement).');
+      setTimeout(() => navigate('/items'), 1200);
     } catch {
       setError('Erreur réseau');
     } finally {
       setLoading(false);
+    }
+  }
+
+  /** POST the deferred picker choice onto the freshly created item. */
+  async function applyImageChoice(
+    itemId: number,
+    choice: ImageChoice,
+  ): Promise<boolean> {
+    try {
+      const url =
+        choice.kind === 'ai'
+          ? `${API}/admin/items/${itemId}/ai-image`
+          : `${API}/admin/items/${itemId}/image-from-source`;
+      const body =
+        choice.kind === 'ai'
+          ? {}
+          : {
+              fullUrl: choice.candidate.fullUrl,
+              source: choice.candidate.source,
+              author: choice.candidate.author,
+              license: choice.candidate.license,
+              sourcePageUrl: choice.candidate.sourcePageUrl,
+            };
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { ...authHeaders(token), 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = (await res.json()) as { ok?: boolean };
+      return data.ok === true;
+    } catch {
+      return false;
     }
   }
 
@@ -266,7 +323,58 @@ export function AddItem() {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Image
             </label>
-            {!file ? (
+            {imageChoice?.kind === 'candidate' ? (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <img
+                    src={imageChoice.candidate.thumbUrl}
+                    alt="Aperçu"
+                    className="h-16 w-16 object-cover rounded-lg"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">
+                      Image libre sélectionnée
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {imageChoice.candidate.source === 'wikimedia'
+                        ? 'Wikimedia'
+                        : 'Pixabay'}{' '}
+                      · {imageChoice.candidate.license}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setImageChoice(null)}
+                  className="text-red-600 hover:text-red-800"
+                >
+                  <XMarkIcon className="h-5 w-5" />
+                </button>
+              </div>
+            ) : imageChoice?.kind === 'ai' ? (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-purple-50 text-purple-600">
+                    <SparklesIcon className="h-8 w-8" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">
+                      Image générée par IA
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Générée à la création, d’après le label
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setImageChoice(null)}
+                  className="text-red-600 hover:text-red-800"
+                >
+                  <XMarkIcon className="h-5 w-5" />
+                </button>
+              </div>
+            ) : !file ? (
               <div
                 className={`border-2 border-dashed rounded-lg p-8 text-center ${
                   isDragOver
@@ -334,6 +442,29 @@ export function AddItem() {
                 >
                   <XMarkIcon className="h-5 w-5" />
                 </button>
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setShowPicker((v) => !v)}
+              className="btn-secondary mt-3 flex items-center gap-1"
+            >
+              <MagnifyingGlassIcon className="h-4 w-4" />
+              Chercher une image libre
+            </button>
+            {showPicker && (
+              <div className="mt-3">
+                <ImagePicker
+                  initialQuery={label}
+                  token={token}
+                  onError={setError}
+                  onSelect={(choice) => {
+                    removeFile(); // picker choice replaces an upload
+                    setImageChoice(choice);
+                    setShowPicker(false);
+                  }}
+                />
               </div>
             )}
           </div>

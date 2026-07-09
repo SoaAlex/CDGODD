@@ -26,6 +26,9 @@ A sidebar-navigated SPA, all talking to the API with a bearer token:
   IA" button generates a Workers AI image (`POST /admin/items/:id/ai-image`).
 - **Créer un item** (`/add-item`) — create an item with a French label,
   categories, and drag-and-drop image (uploaded to R2); goes live immediately.
+  The same free-license picker is available in **select mode**: the choice
+  (candidate or "Générer par IA") is kept locally and applied right after
+  `POST /admin/items` returns the new item id.
 - **Catégories** (`/categories`) — create categories (key + French name) and
   add/edit/delete per-language translations.
 - **Signalements** (`/reports`) — reported items, most-reported first.
