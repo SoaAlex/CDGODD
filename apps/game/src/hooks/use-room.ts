@@ -103,8 +103,12 @@ export function useRoom(code: string, name: string | null) {
   const start = useCallback(() => send({ type: 'start' }), [send]);
 
   const restart = useCallback(
-    (settings?: { mode: RoomMode; roundSize: number; categoryKeys: string[] }) =>
-      send({ type: 'restart', ...settings }),
+    (settings?: {
+      mode: RoomMode;
+      roundSize: number;
+      categoryKeys: string[];
+      categoryMatch: 'any' | 'all';
+    }) => send({ type: 'restart', ...settings }),
     [send],
   );
 

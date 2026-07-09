@@ -19,10 +19,15 @@ const SHEET_BG = '#565393';
 export function CategoryFilter({
   selected,
   onChange,
+  matchAll = false,
+  onMatchAllChange,
   centered = false,
 }: {
   selected: string[];
   onChange: (keys: string[]) => void;
+  /** Items must belong to every selected category (default: at least one). */
+  matchAll?: boolean;
+  onMatchAllChange?: (matchAll: boolean) => void;
   /** Center the trigger (solo header); default left-aligns (settings forms). */
   centered?: boolean;
 }) {
@@ -110,6 +115,23 @@ export function CategoryFilter({
                 row(selected.includes(key), key, name),
               )}
             </ScrollView>
+            {/* AND/OR switch — only meaningful once 2+ categories combine. */}
+            {onMatchAllChange && selected.length >= 2 && (
+              <Pressable
+                testID="category-filter-match-all"
+                onPress={() => onMatchAllChange(!matchAll)}
+                style={styles.matchAllRow}
+              >
+                <Ionicons
+                  name={matchAll ? 'checkbox' : 'square-outline'}
+                  size={18}
+                  color="#fff"
+                />
+                <ThemedText type="small" style={styles.matchAllText}>
+                  {t('filter.matchAll')}
+                </ThemedText>
+              </Pressable>
+            )}
             <Pressable
               testID="category-filter-done"
               onPress={() => setOpen(false)}
@@ -176,6 +198,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.two,
     paddingVertical: Spacing.two,
     borderRadius: Spacing.two,
+  },
+  matchAllRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+    paddingHorizontal: Spacing.two,
+    paddingVertical: Spacing.one,
+  },
+  matchAllText: {
+    flexShrink: 1,
   },
   doneButton: {
     paddingVertical: Spacing.two,

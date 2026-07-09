@@ -68,6 +68,7 @@
   "filter": {
     "categoriesLabel": "Catégories",
     "allCategories": "Toutes",
+    "matchAll": "Uniquement les items dans toutes ces catégories",
     "done": "OK"
   },
   "consent": {

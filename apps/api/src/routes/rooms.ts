@@ -28,6 +28,7 @@ rooms.post('/rooms', async (c) => {
       mode: parsed.data.mode,
       roundSize: String(parsed.data.roundSize),
       categories: parsed.data.categoryKeys.join(','),
+      match: parsed.data.categoryMatch,
     });
     const res = await stub.fetch(`https://room.internal/create?${params}`, {
       method: 'POST',

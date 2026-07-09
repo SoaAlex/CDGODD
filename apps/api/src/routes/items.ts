@@ -33,14 +33,25 @@ export const CATEGORY_KEYS_SQL = `
 /**
  * `AND i.id IN (…)` clause restricting items to a set of category keys.
  * Keys are bound as ?N, ?N+1, … — pass them to .bind() in the same order.
+ * matchAll = items must belong to every key (default: at least one).
  */
-export function categoryFilterSql(keys: string[], firstParam: number): string {
+export function categoryFilterSql(
+  keys: string[],
+  firstParam: number,
+  matchAll = false,
+): string {
   if (keys.length === 0) return '';
   const placeholders = keys.map((_, i) => `?${firstParam + i}`).join(',');
+  // keys.length is a trusted integer (never user text) — safe to inline.
+  const having = matchAll
+    ? `GROUP BY ic.item_id
+                       HAVING COUNT(DISTINCT c.key) = ${keys.length}`
+    : '';
   return `AND i.id IN (SELECT ic.item_id
                          FROM item_categories ic
                          JOIN categories c ON c.id = ic.category_id
-                        WHERE c.key IN (${placeholders}))`;
+                        WHERE c.key IN (${placeholders})
+                        ${having})`;
 }
 
 function toCard(row: DeckRow, cdnBase: string): DeckCard {
@@ -69,7 +80,7 @@ function toCard(row: DeckRow, cdnBase: string): DeckCard {
 items.get('/deck', async (c) => {
   const parsed = deckQuerySchema.safeParse(c.req.query());
   if (!parsed.success) return c.json({ error: 'bad query' }, 400);
-  const { lang, cursor = 0, limit, categories = [] } = parsed.data;
+  const { lang, cursor = 0, limit, categories = [], match } = parsed.data;
 
   const { results } = await c.env.DB.prepare(
     `SELECT i.id, t.label, i.image_key, i.image_author, i.image_license,
@@ -77,7 +88,7 @@ items.get('/deck', async (c) => {
        FROM items i
        JOIN item_translations t ON t.item_id = i.id AND t.lang = ?1
       WHERE i.status = 'approved' AND i.id > ?2
-      ${categoryFilterSql(categories, 4)}
+      ${categoryFilterSql(categories, 4, match === 'all')}
       ORDER BY i.id
       LIMIT ?3`,
   )

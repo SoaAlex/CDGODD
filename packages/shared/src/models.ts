@@ -74,6 +74,8 @@ export interface RoomState {
   roundSize: number;
   /** Category filter the round was dealt from; empty = all categories. */
   categoryKeys: string[];
+  /** 'all' = cards belong to every category in the filter; default 'any'. */
+  categoryMatch: 'any' | 'all';
   playerCount: number;
   /** Currently connected players with their chosen nicknames. */
   players: RoomPlayer[];

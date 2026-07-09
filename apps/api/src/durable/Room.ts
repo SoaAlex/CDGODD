@@ -1,4 +1,5 @@
 import type {
+  CategoryMatch,
   DeckCard,
   RoomCardResult,
   RoomClientMessage,
@@ -16,6 +17,8 @@ interface RoomConfig {
   cards: DeckCard[];
   /** Category filter the cards are dealt from; empty = all categories. */
   categoryKeys: string[];
+  /** 'all' = cards must belong to every key; absent (pre-existing rooms) = 'any'. */
+  categoryMatch?: CategoryMatch;
 }
 
 const CATEGORY_KEY_RE = /^[a-z0-9-]{1,50}$/;
@@ -79,6 +82,7 @@ export class Room implements DurableObject {
       phase: this.phase,
       roundSize: this.config?.cards.length ?? 0,
       categoryKeys: this.config?.categoryKeys ?? [],
+      categoryMatch: this.config?.categoryMatch ?? 'any',
       playerCount: sessions.size,
       players,
       currentCardIndex: this.currentCardIndex,
@@ -120,13 +124,15 @@ export class Room implements DurableObject {
     const categoryKeys = sanitizeCategoryKeys(
       (url.searchParams.get('categories') ?? '').split(',').filter(Boolean),
     );
+    const categoryMatch: CategoryMatch =
+      url.searchParams.get('match') === 'all' ? 'all' : 'any';
 
-    const cards = await this.dealCards(roundSize, categoryKeys);
+    const cards = await this.dealCards(roundSize, categoryKeys, categoryMatch);
     if (cards.length === 0) {
       return Response.json({ error: 'no items available' }, { status: 503 });
     }
 
-    this.config = { code, mode, cards, categoryKeys };
+    this.config = { code, mode, cards, categoryKeys, categoryMatch };
     await this.ctx.storage.put('config', this.config);
     // Rooms are ephemeral: self-destruct after 24h so codes can be reused.
     await this.ctx.storage.setAlarm(Date.now() + 24 * 60 * 60 * 1000);
@@ -138,12 +144,20 @@ export class Room implements DurableObject {
   private async dealCards(
     roundSize: number,
     categoryKeys: string[],
+    categoryMatch: CategoryMatch = 'any',
   ): Promise<DeckCard[]> {
+    // categoryKeys.length is a trusted integer — safe to inline.
+    const having =
+      categoryMatch === 'all'
+        ? `GROUP BY ic.item_id
+                      HAVING COUNT(DISTINCT c.key) = ${categoryKeys.length}`
+        : '';
     const categoryFilter = categoryKeys.length
       ? `AND i.id IN (SELECT ic.item_id
                         FROM item_categories ic
                         JOIN categories c ON c.id = ic.category_id
-                       WHERE c.key IN (${categoryKeys.map((_, i) => `?${i + 2}`).join(',')}))`
+                       WHERE c.key IN (${categoryKeys.map((_, i) => `?${i + 2}`).join(',')})
+                       ${having})`
       : '';
     const { results } = await this.env.DB.prepare(
       `SELECT i.id, t.label, i.image_key, i.image_author, i.image_license,
@@ -315,15 +329,19 @@ export class Room implements DurableObject {
           msg.categoryKeys !== undefined
             ? sanitizeCategoryKeys(msg.categoryKeys)
             : (this.config.categoryKeys ?? []);
+        const categoryMatch: CategoryMatch =
+          msg.categoryMatch === 'all' || msg.categoryMatch === 'any'
+            ? msg.categoryMatch
+            : (this.config.categoryMatch ?? 'any');
 
-        const cards = await this.dealCards(roundSize, categoryKeys);
+        const cards = await this.dealCards(roundSize, categoryKeys, categoryMatch);
         // Guard against a duplicate restart racing across the await.
         if (this.phase !== 'results') return;
         if (cards.length === 0) {
           this.send(ws, { type: 'error', message: 'no items available' });
           return;
         }
-        this.config = { ...this.config, mode, cards, categoryKeys };
+        this.config = { ...this.config, mode, cards, categoryKeys, categoryMatch };
         await this.ctx.storage.put('config', this.config);
 
         this.votes.clear();

@@ -28,8 +28,11 @@ import type { Side, VoteTally } from '@cdgodd/shared';
 export default function SoloScreen() {
   // Category filter: empty = all categories. Session-only by design.
   const [categoryKeys, setCategoryKeys] = useState<string[]>([]);
-  const { cards, loading, error, lastVote, swipe, retry, exhausted } =
-    useDeck(categoryKeys);
+  const [matchAll, setMatchAll] = useState(false);
+  const { cards, loading, error, lastVote, swipe, retry, exhausted } = useDeck(
+    categoryKeys,
+    matchAll,
+  );
   const deck = useRef<SwipeDeckHandle>(null);
   const theme = useTheme();
   const countSwipeForAds = useInterstitial();
@@ -96,6 +99,8 @@ export default function SoloScreen() {
           <CategoryFilter
             selected={categoryKeys}
             onChange={setCategoryKeys}
+            matchAll={matchAll}
+            onMatchAllChange={setMatchAll}
             centered
           />
           <View style={styles.deckZone}>

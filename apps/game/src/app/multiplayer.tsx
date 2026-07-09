@@ -17,6 +17,7 @@ export default function MultiplayerScreen() {
   const [mode, setMode] = useState<'batch' | 'live'>('batch');
   const [roundSize, setRoundSize] = useState<number>(10);
   const [categoryKeys, setCategoryKeys] = useState<string[]>([]);
+  const [categoryMatchAll, setCategoryMatchAll] = useState(false);
   const [nickname, setNickname] = useState('');
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
@@ -29,7 +30,12 @@ export default function MultiplayerScreen() {
     setBusy(true);
     setError(null);
     try {
-      const { room } = await createRoom(mode, roundSize, categoryKeys);
+      const { room } = await createRoom(
+        mode,
+        roundSize,
+        categoryKeys,
+        categoryMatchAll ? 'all' : 'any',
+      );
       router.push(`/room/${room.code}${nameParam}` as never);
     } catch {
       setError(t('errors.network'));
@@ -72,9 +78,11 @@ export default function MultiplayerScreen() {
             mode={mode}
             roundSize={roundSize}
             categoryKeys={categoryKeys}
+            categoryMatchAll={categoryMatchAll}
             onModeChange={setMode}
             onRoundSizeChange={setRoundSize}
             onCategoryKeysChange={setCategoryKeys}
+            onCategoryMatchAllChange={setCategoryMatchAll}
           />
 
           <Pressable

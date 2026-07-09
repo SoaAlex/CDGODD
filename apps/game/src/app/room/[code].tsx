@@ -45,6 +45,7 @@ export default function RoomScreen() {
   const [replayMode, setReplayMode] = useState<RoomMode>('batch');
   const [replayRoundSize, setReplayRoundSize] = useState(10);
   const [replayCategoryKeys, setReplayCategoryKeys] = useState<string[]>([]);
+  const [replayCategoryMatchAll, setReplayCategoryMatchAll] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const {
     room,
@@ -168,9 +169,11 @@ export default function RoomScreen() {
           mode={replayMode}
           roundSize={replayRoundSize}
           categoryKeys={replayCategoryKeys}
+          categoryMatchAll={replayCategoryMatchAll}
           onModeChange={setReplayMode}
           onRoundSizeChange={setReplayRoundSize}
           onCategoryKeysChange={setReplayCategoryKeys}
+          onCategoryMatchAllChange={setReplayCategoryMatchAll}
         />
         <Pressable
           testID="restart-round"
@@ -179,6 +182,7 @@ export default function RoomScreen() {
               mode: replayMode,
               roundSize: replayRoundSize,
               categoryKeys: replayCategoryKeys,
+              categoryMatch: replayCategoryMatchAll ? 'all' : 'any',
             })
           }
           style={({ pressed }) => [
@@ -296,6 +300,7 @@ export default function RoomScreen() {
                 // fewer items than requested; snap back into the valid range.
                 setReplayRoundSize(Math.max(MIN_ROUND_SIZE, room.roundSize));
                 setReplayCategoryKeys(room.categoryKeys);
+                setReplayCategoryMatchAll(room.categoryMatch === 'all');
                 setConfiguring(true);
               }}
               style={({ pressed }) => [

@@ -19,16 +19,21 @@ export function RoomSettings({
   mode,
   roundSize,
   categoryKeys,
+  categoryMatchAll,
   onModeChange,
   onRoundSizeChange,
   onCategoryKeysChange,
+  onCategoryMatchAllChange,
 }: {
   mode: RoomMode;
   roundSize: number;
   categoryKeys: string[];
+  /** Items must belong to every selected category (default: at least one). */
+  categoryMatchAll: boolean;
   onModeChange: (mode: RoomMode) => void;
   onRoundSizeChange: (roundSize: number) => void;
   onCategoryKeysChange: (keys: string[]) => void;
+  onCategoryMatchAllChange: (matchAll: boolean) => void;
 }) {
   const theme = useTheme();
   const chip = (selected: boolean) => ({
@@ -94,7 +99,12 @@ export function RoomSettings({
       <ThemedText type="small" themeColor="textSecondary">
         {t('filter.categoriesLabel')}
       </ThemedText>
-      <CategoryFilter selected={categoryKeys} onChange={onCategoryKeysChange} />
+      <CategoryFilter
+        selected={categoryKeys}
+        onChange={onCategoryKeysChange}
+        matchAll={categoryMatchAll}
+        onMatchAllChange={onCategoryMatchAllChange}
+      />
     </>
   );
 }

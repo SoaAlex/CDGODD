@@ -34,11 +34,15 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export function fetchDeck(
   cursor?: number,
   categories: string[] = [],
+  matchAll = false,
   limit = 25,
 ): Promise<DeckResponse> {
   const params = new URLSearchParams({ lang: 'fr', limit: String(limit) });
   if (cursor !== undefined) params.set('cursor', String(cursor));
-  if (categories.length > 0) params.set('categories', categories.join(','));
+  if (categories.length > 0) {
+    params.set('categories', categories.join(','));
+    if (matchAll) params.set('match', 'all');
+  }
   return request<DeckResponse>(`/deck?${params}`);
 }
 
@@ -91,9 +95,10 @@ export function createRoom(
   mode: 'batch' | 'live',
   roundSize: number,
   categoryKeys: string[] = [],
+  categoryMatch: 'any' | 'all' = 'any',
 ): Promise<CreateRoomResponse> {
   return request<CreateRoomResponse>('/rooms', {
     method: 'POST',
-    body: JSON.stringify({ mode, roundSize, categoryKeys }),
+    body: JSON.stringify({ mode, roundSize, categoryKeys, categoryMatch }),
   });
 }

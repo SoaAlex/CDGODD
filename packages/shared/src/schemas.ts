@@ -18,16 +18,22 @@ export type CastVoteInput = z.infer<typeof castVoteSchema>;
 /** Category key as stored in the DB: lowercase slug. */
 export const categoryKeySchema = z.string().regex(/^[a-z0-9-]{1,50}$/);
 
+/** 'any' = item in at least one selected category; 'all' = in every one. */
+export const categoryMatchSchema = z.enum(['any', 'all']);
+export type CategoryMatch = z.infer<typeof categoryMatchSchema>;
+
 export const deckQuerySchema = z.object({
   lang: langSchema.default('fr'),
   cursor: z.coerce.number().int().nonnegative().optional(),
   limit: z.coerce.number().int().min(1).max(50).default(25),
-  /** CSV of category keys; only items in at least one of them are dealt. */
+  /** CSV of category keys; items must match them per `match`. */
   categories: z
     .string()
     .transform((s) => s.split(',').filter(Boolean))
     .pipe(z.array(categoryKeySchema).max(20))
     .optional(),
+  /** How `categories` combine; ignored when the filter is empty. */
+  match: categoryMatchSchema.default('any'),
 });
 export type DeckQuery = z.infer<typeof deckQuerySchema>;
 
@@ -56,6 +62,8 @@ export const createRoomSchema = z.object({
   roundSize: z.coerce.number().int().min(5).max(50).default(10),
   /** Empty/absent = deal from every category. */
   categoryKeys: z.array(categoryKeySchema).max(20).default([]),
+  /** How `categoryKeys` combine; ignored when the filter is empty. */
+  categoryMatch: categoryMatchSchema.default('any'),
 });
 export type CreateRoomInput = z.infer<typeof createRoomSchema>;
 

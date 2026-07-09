@@ -25,7 +25,7 @@ interface DeckState {
   lastVote: LastVote | null;
 }
 
-export function useDeck(categories: string[] = []) {
+export function useDeck(categories: string[] = [], matchAll = false) {
   const [state, setState] = useState<DeckState>({
     cards: [],
     loading: true,
@@ -53,7 +53,11 @@ export function useDeck(categories: string[] = []) {
     const gen = generation.current;
     try {
       const wanted = categoriesKey ? categoriesKey.split(',') : [];
-      const { cards, nextCursor } = await fetchDeck(cursor.current, wanted);
+      const { cards, nextCursor } = await fetchDeck(
+        cursor.current,
+        wanted,
+        matchAll,
+      );
       if (generation.current !== gen) return; // stale filter
       cursor.current = nextCursor;
       if (nextCursor === undefined) exhausted.current = true;
@@ -77,7 +81,7 @@ export function useDeck(categories: string[] = []) {
       // Filter changed while we were fetching: fetch the fresh deck now.
       if (generation.current !== gen) void refillRef.current();
     }
-  }, [categoriesKey]);
+  }, [categoriesKey, matchAll]);
   refillRef.current = refill;
 
   // Initial load + full reset whenever the category filter changes.

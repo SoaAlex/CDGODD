@@ -55,6 +55,7 @@ export type RoomClientMessage =
       mode?: RoomMode;
       roundSize?: number;
       categoryKeys?: string[];
+      categoryMatch?: 'any' | 'all';
     };
 
 /** WebSocket messages: room -> client */
