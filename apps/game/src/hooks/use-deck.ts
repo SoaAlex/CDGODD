@@ -25,7 +25,7 @@ interface DeckState {
   lastVote: LastVote | null;
 }
 
-export function useDeck() {
+export function useDeck(categories: string[] = []) {
   const [state, setState] = useState<DeckState>({
     cards: [],
     loading: true,
@@ -39,12 +39,22 @@ export function useDeck() {
   // Synchronous mirror of state.cards, so swipe() can read/advance the top
   // card outside the setState updater (updaters must stay pure).
   const queue = useRef<DeckCard[]>([]);
+  // Bumped when the category filter changes: in-flight fetches from the
+  // previous filter are discarded instead of polluting the fresh queue.
+  const generation = useRef(0);
+  const refillRef = useRef<() => Promise<void>>(async () => {});
+
+  // Join for a stable dependency; keys are [a-z0-9-] so ',' is safe.
+  const categoriesKey = categories.join(',');
 
   const refill = useCallback(async () => {
     if (fetching.current || exhausted.current) return;
     fetching.current = true;
+    const gen = generation.current;
     try {
-      const { cards, nextCursor } = await fetchDeck(cursor.current);
+      const wanted = categoriesKey ? categoriesKey.split(',') : [];
+      const { cards, nextCursor } = await fetchDeck(cursor.current, wanted);
+      if (generation.current !== gen) return; // stale filter
       cursor.current = nextCursor;
       if (nextCursor === undefined) exhausted.current = true;
       queue.current = [...queue.current, ...cards];
@@ -56,6 +66,7 @@ export function useDeck() {
         error: null,
       }));
     } catch (e) {
+      if (generation.current !== gen) return;
       setState((s) => ({
         ...s,
         loading: false,
@@ -63,15 +74,27 @@ export function useDeck() {
       }));
     } finally {
       fetching.current = false;
+      // Filter changed while we were fetching: fetch the fresh deck now.
+      if (generation.current !== gen) void refillRef.current();
     }
-  }, []);
+  }, [categoriesKey]);
+  refillRef.current = refill;
+
+  // Initial load + full reset whenever the category filter changes.
+  useEffect(() => {
+    generation.current += 1;
+    cursor.current = undefined;
+    exhausted.current = false;
+    queue.current = [];
+    setState({ cards: [], loading: true, error: null, lastVote: null });
+    void refill();
+  }, [refill]);
 
   useEffect(() => {
-    void refill();
     // Mint a Turnstile token ahead of the first vote (web prod only);
     // getTurnstileToken re-warms the pool after each use.
     prewarmTurnstileToken();
-  }, [refill]);
+  }, []);
 
   // Preload upcoming card images so swiping never waits on the network.
   useEffect(() => {

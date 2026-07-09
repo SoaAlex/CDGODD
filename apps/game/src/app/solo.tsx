@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { CategoryFilter } from '@/components/category-filter';
 import { LEFT_COLOR, RIGHT_COLOR } from '@/components/swipe-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -26,8 +27,10 @@ import { useShowResults } from '@/lib/prefs';
 import type { Side, VoteTally } from '@cdgodd/shared';
 
 export default function SoloScreen() {
+  // Category filter: empty = all categories. Session-only by design.
+  const [categoryKeys, setCategoryKeys] = useState<string[]>([]);
   const { cards, loading, error, lastVote, swipe, retry, exhausted } =
-    useDeck();
+    useDeck(categoryKeys);
   const deck = useRef<SwipeDeckHandle>(null);
   const theme = useTheme();
   const countSwipeForAds = useInterstitial();
@@ -91,6 +94,11 @@ export default function SoloScreen() {
         <SafeAreaView style={styles.safeArea} edges={['bottom']}>
           {/* Mobile: banner at the top; web gets side rails instead. */}
           {Platform.OS !== 'web' && <AdSlot />}
+          <CategoryFilter
+            selected={categoryKeys}
+            onChange={setCategoryKeys}
+            centered
+          />
           <View style={styles.deckZone}>
             {loading && <ActivityIndicator size="large" color="#fff" />}
 

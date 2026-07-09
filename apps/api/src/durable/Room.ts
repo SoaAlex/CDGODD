@@ -14,6 +14,18 @@ interface RoomConfig {
   code: string;
   mode: RoomMode;
   cards: DeckCard[];
+  /** Category filter the cards are dealt from; empty = all categories. */
+  categoryKeys: string[];
+}
+
+const CATEGORY_KEY_RE = /^[a-z0-9-]{1,50}$/;
+
+/** Keep only well-formed category keys (defense in depth; API validates too). */
+function sanitizeCategoryKeys(keys: unknown): string[] {
+  if (!Array.isArray(keys)) return [];
+  return keys
+    .filter((k): k is string => typeof k === 'string' && CATEGORY_KEY_RE.test(k))
+    .slice(0, 20);
 }
 
 /**
@@ -66,6 +78,7 @@ export class Room implements DurableObject {
       mode: this.config?.mode ?? 'batch',
       phase: this.phase,
       roundSize: this.config?.cards.length ?? 0,
+      categoryKeys: this.config?.categoryKeys ?? [],
       playerCount: sessions.size,
       players,
       currentCardIndex: this.currentCardIndex,
@@ -101,16 +114,19 @@ export class Room implements DurableObject {
     const code = url.searchParams.get('code') ?? '';
     const mode = (url.searchParams.get('mode') === 'live' ? 'live' : 'batch') as RoomMode;
     const roundSize = Math.min(
-      Math.max(Number(url.searchParams.get('roundSize')) || 10, 1),
+      Math.max(Number(url.searchParams.get('roundSize')) || 10, 5),
       50,
     );
+    const categoryKeys = sanitizeCategoryKeys(
+      (url.searchParams.get('categories') ?? '').split(',').filter(Boolean),
+    );
 
-    const cards = await this.dealCards(roundSize);
+    const cards = await this.dealCards(roundSize, categoryKeys);
     if (cards.length === 0) {
       return Response.json({ error: 'no items available' }, { status: 503 });
     }
 
-    this.config = { code, mode, cards };
+    this.config = { code, mode, cards, categoryKeys };
     await this.ctx.storage.put('config', this.config);
     // Rooms are ephemeral: self-destruct after 24h so codes can be reused.
     await this.ctx.storage.setAlarm(Date.now() + 24 * 60 * 60 * 1000);
@@ -119,7 +135,16 @@ export class Room implements DurableObject {
   }
 
   /** Draw a fresh random hand of approved cards from D1. */
-  private async dealCards(roundSize: number): Promise<DeckCard[]> {
+  private async dealCards(
+    roundSize: number,
+    categoryKeys: string[],
+  ): Promise<DeckCard[]> {
+    const categoryFilter = categoryKeys.length
+      ? `AND i.id IN (SELECT ic.item_id
+                        FROM item_categories ic
+                        JOIN categories c ON c.id = ic.category_id
+                       WHERE c.key IN (${categoryKeys.map((_, i) => `?${i + 2}`).join(',')}))`
+      : '';
     const { results } = await this.env.DB.prepare(
       `SELECT i.id, t.label, i.image_key, i.image_author, i.image_license,
               i.image_source_url, i.votes_left, i.votes_right,
@@ -130,10 +155,11 @@ export class Room implements DurableObject {
          FROM items i
          JOIN item_translations t ON t.item_id = i.id AND t.lang = 'fr'
         WHERE i.status = 'approved'
+        ${categoryFilter}
         ORDER BY RANDOM()
         LIMIT ?1`,
     )
-      .bind(roundSize)
+      .bind(roundSize, ...categoryKeys)
       .all<{
         id: number;
         label: string;
@@ -283,17 +309,21 @@ export class Room implements DurableObject {
             ? msg.mode
             : this.config.mode;
         const roundSize = Number.isInteger(msg.roundSize)
-          ? Math.min(Math.max(msg.roundSize as number, 1), 50)
+          ? Math.min(Math.max(msg.roundSize as number, 5), 50)
           : this.config.cards.length;
+        const categoryKeys =
+          msg.categoryKeys !== undefined
+            ? sanitizeCategoryKeys(msg.categoryKeys)
+            : (this.config.categoryKeys ?? []);
 
-        const cards = await this.dealCards(roundSize);
+        const cards = await this.dealCards(roundSize, categoryKeys);
         // Guard against a duplicate restart racing across the await.
         if (this.phase !== 'results') return;
         if (cards.length === 0) {
           this.send(ws, { type: 'error', message: 'no items available' });
           return;
         }
-        this.config = { ...this.config, mode, cards };
+        this.config = { ...this.config, mode, cards, categoryKeys };
         await this.ctx.storage.put('config', this.config);
 
         this.votes.clear();

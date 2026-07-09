@@ -1,4 +1,5 @@
 import type {
+  CategoriesResponse,
   CreateRoomResponse,
   DeckResponse,
   SearchResponse,
@@ -30,10 +31,19 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export function fetchDeck(cursor?: number, limit = 25): Promise<DeckResponse> {
+export function fetchDeck(
+  cursor?: number,
+  categories: string[] = [],
+  limit = 25,
+): Promise<DeckResponse> {
   const params = new URLSearchParams({ lang: 'fr', limit: String(limit) });
   if (cursor !== undefined) params.set('cursor', String(cursor));
+  if (categories.length > 0) params.set('categories', categories.join(','));
   return request<DeckResponse>(`/deck?${params}`);
+}
+
+export function fetchCategories(): Promise<CategoriesResponse> {
+  return request<CategoriesResponse>('/categories?lang=fr');
 }
 
 export async function castVote(
@@ -80,9 +90,10 @@ export function fetchTallies(
 export function createRoom(
   mode: 'batch' | 'live',
   roundSize: number,
+  categoryKeys: string[] = [],
 ): Promise<CreateRoomResponse> {
   return request<CreateRoomResponse>('/rooms', {
     method: 'POST',
-    body: JSON.stringify({ mode, roundSize }),
+    body: JSON.stringify({ mode, roundSize, categoryKeys }),
   });
 }

@@ -24,6 +24,11 @@ export interface SearchResponse {
   results: DeckCard[];
 }
 
+/** GET /categories — localized category list. */
+export interface CategoriesResponse {
+  categories: { key: string; name: string }[];
+}
+
 /** POST /submissions */
 export interface SubmissionResponse {
   /** 'duplicate' = an item with the same normalized label already exists. */
@@ -45,7 +50,12 @@ export type RoomClientMessage =
    * Host only, from the results phase: deal fresh cards and replay.
    * New settings are optional; omitted fields keep the room's current ones.
    */
-  | { type: 'restart'; mode?: RoomMode; roundSize?: number };
+  | {
+      type: 'restart';
+      mode?: RoomMode;
+      roundSize?: number;
+      categoryKeys?: string[];
+    };
 
 /** WebSocket messages: room -> client */
 export type RoomServerMessage =

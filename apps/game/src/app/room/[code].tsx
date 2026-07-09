@@ -14,7 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RoomMode, Side } from '@cdgodd/shared';
 import { AdRails } from '@/ads/ad-rails';
 import { AdSlot } from '@/ads/ad-slot';
-import { RoomSettings } from '@/components/room-settings';
+import { MIN_ROUND_SIZE, RoomSettings } from '@/components/room-settings';
 import { LEFT_COLOR, RIGHT_COLOR } from '@/components/swipe-card';
 import { SwipeDeck, type SwipeDeckHandle } from '@/components/swipe-deck';
 import { TallyBar } from '@/components/tally-bar';
@@ -23,7 +23,7 @@ import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useRoom } from '@/hooks/use-room';
-import { t } from '@/lib/i18n';
+import { categoryName, t } from '@/lib/i18n';
 
 export default function RoomScreen() {
   const { code } = useLocalSearchParams<{ code: string }>();
@@ -37,6 +37,7 @@ export default function RoomScreen() {
   const [configuring, setConfiguring] = useState(false);
   const [replayMode, setReplayMode] = useState<RoomMode>('batch');
   const [replayRoundSize, setReplayRoundSize] = useState(10);
+  const [replayCategoryKeys, setReplayCategoryKeys] = useState<string[]>([]);
   const {
     room,
     deck,
@@ -140,13 +141,19 @@ export default function RoomScreen() {
         <RoomSettings
           mode={replayMode}
           roundSize={replayRoundSize}
+          categoryKeys={replayCategoryKeys}
           onModeChange={setReplayMode}
           onRoundSizeChange={setReplayRoundSize}
+          onCategoryKeysChange={setReplayCategoryKeys}
         />
         <Pressable
           testID="restart-round"
           onPress={() =>
-            restart({ mode: replayMode, roundSize: replayRoundSize })
+            restart({
+              mode: replayMode,
+              roundSize: replayRoundSize,
+              categoryKeys: replayCategoryKeys,
+            })
           }
           style={({ pressed }) => [
             styles.startButton,
@@ -259,7 +266,10 @@ export default function RoomScreen() {
               testID="replay-settings"
               onPress={() => {
                 setReplayMode(room.mode);
-                setReplayRoundSize(room.roundSize);
+                // roundSize can be below the minimum when the filter had
+                // fewer items than requested; snap back into the valid range.
+                setReplayRoundSize(Math.max(MIN_ROUND_SIZE, room.roundSize));
+                setReplayCategoryKeys(room.categoryKeys);
                 setConfiguring(true);
               }}
               style={({ pressed }) => [
@@ -302,6 +312,16 @@ export default function RoomScreen() {
             ? t('multiplayer.modeLive')
             : t('multiplayer.modeBatch')}
         </ThemedText>
+        {room.categoryKeys.length > 0 && (
+          <ThemedText
+            type="small"
+            themeColor="textSecondary"
+            style={styles.centerText}
+          >
+            {t('filter.categoriesLabel')} :{' '}
+            {room.categoryKeys.map(categoryName).join(' · ')}
+          </ThemedText>
+        )}
         <View style={styles.playerList}>
           {room.players.map((p) => (
             <View

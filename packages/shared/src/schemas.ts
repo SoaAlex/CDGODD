@@ -15,10 +15,19 @@ export const castVoteSchema = z.object({
 });
 export type CastVoteInput = z.infer<typeof castVoteSchema>;
 
+/** Category key as stored in the DB: lowercase slug. */
+export const categoryKeySchema = z.string().regex(/^[a-z0-9-]{1,50}$/);
+
 export const deckQuerySchema = z.object({
   lang: langSchema.default('fr'),
   cursor: z.coerce.number().int().nonnegative().optional(),
   limit: z.coerce.number().int().min(1).max(50).default(25),
+  /** CSV of category keys; only items in at least one of them are dealt. */
+  categories: z
+    .string()
+    .transform((s) => s.split(',').filter(Boolean))
+    .pipe(z.array(categoryKeySchema).max(20))
+    .optional(),
 });
 export type DeckQuery = z.infer<typeof deckQuerySchema>;
 
@@ -44,7 +53,9 @@ export type ReportItemInput = z.infer<typeof reportItemSchema>;
 
 export const createRoomSchema = z.object({
   mode: z.enum(['batch', 'live']).default('batch'),
-  roundSize: z.coerce.number().int().min(1).max(50).default(10),
+  roundSize: z.coerce.number().int().min(5).max(50).default(10),
+  /** Empty/absent = deal from every category. */
+  categoryKeys: z.array(categoryKeySchema).max(20).default([]),
 });
 export type CreateRoomInput = z.infer<typeof createRoomSchema>;
 

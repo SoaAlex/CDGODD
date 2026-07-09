@@ -72,6 +72,8 @@ export interface RoomState {
   phase: RoomPhase;
   /** Number of cards in the round. */
   roundSize: number;
+  /** Category filter the round was dealt from; empty = all categories. */
+  categoryKeys: string[];
   playerCount: number;
   /** Currently connected players with their chosen nicknames. */
   players: RoomPlayer[];

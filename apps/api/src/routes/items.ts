@@ -30,6 +30,19 @@ export const CATEGORY_KEYS_SQL = `
      JOIN categories c ON c.id = ic.category_id
     WHERE ic.item_id = i.id) AS category_keys`;
 
+/**
+ * `AND i.id IN (…)` clause restricting items to a set of category keys.
+ * Keys are bound as ?N, ?N+1, … — pass them to .bind() in the same order.
+ */
+export function categoryFilterSql(keys: string[], firstParam: number): string {
+  if (keys.length === 0) return '';
+  const placeholders = keys.map((_, i) => `?${firstParam + i}`).join(',');
+  return `AND i.id IN (SELECT ic.item_id
+                         FROM item_categories ic
+                         JOIN categories c ON c.id = ic.category_id
+                        WHERE c.key IN (${placeholders}))`;
+}
+
 function toCard(row: DeckRow, cdnBase: string): DeckCard {
   return {
     id: row.id,
@@ -56,7 +69,7 @@ function toCard(row: DeckRow, cdnBase: string): DeckCard {
 items.get('/deck', async (c) => {
   const parsed = deckQuerySchema.safeParse(c.req.query());
   if (!parsed.success) return c.json({ error: 'bad query' }, 400);
-  const { lang, cursor = 0, limit } = parsed.data;
+  const { lang, cursor = 0, limit, categories = [] } = parsed.data;
 
   const { results } = await c.env.DB.prepare(
     `SELECT i.id, t.label, i.image_key, i.image_author, i.image_license,
@@ -64,10 +77,11 @@ items.get('/deck', async (c) => {
        FROM items i
        JOIN item_translations t ON t.item_id = i.id AND t.lang = ?1
       WHERE i.status = 'approved' AND i.id > ?2
+      ${categoryFilterSql(categories, 4)}
       ORDER BY i.id
       LIMIT ?3`,
   )
-    .bind(lang, cursor, limit)
+    .bind(lang, cursor, limit, ...categories)
     .all<DeckRow>();
 
   const cards = results.map((r) => toCard(r, c.env.CDN_BASE));

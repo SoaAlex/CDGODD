@@ -23,10 +23,15 @@ rooms.post('/rooms', async (c) => {
   for (let attempt = 0; attempt < 5; attempt++) {
     const code = randomCode();
     const stub = c.env.ROOMS.get(c.env.ROOMS.idFromName(code));
-    const res = await stub.fetch(
-      `https://room.internal/create?code=${code}&mode=${parsed.data.mode}&roundSize=${parsed.data.roundSize}`,
-      { method: 'POST' },
-    );
+    const params = new URLSearchParams({
+      code,
+      mode: parsed.data.mode,
+      roundSize: String(parsed.data.roundSize),
+      categories: parsed.data.categoryKeys.join(','),
+    });
+    const res = await stub.fetch(`https://room.internal/create?${params}`, {
+      method: 'POST',
+    });
     if (res.status !== 409) return new Response(res.body, res);
   }
   return c.json({ error: 'could not allocate room code' }, 503);

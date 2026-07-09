@@ -39,7 +39,8 @@ For local dev, copy `.dev.vars.example` → `.dev.vars`.
 
 Public (game):
 
-- `GET  /deck?lang=fr&cursor=&limit=` — next batch of approved cards
+- `GET  /deck?lang=fr&cursor=&limit=&categories=` — next batch of approved
+  cards; `categories` is an optional CSV of category keys to filter by
 - `POST /items/:id/vote` `{ side, turnstileToken }` — anonymous vote (dedupe by session)
 - `GET  /items/search?q=&lang=fr` — free-search lookup
 - `GET  /items/tallies?ids=1,2,3` — current global tallies (history page)
@@ -53,11 +54,14 @@ Public (game):
 
 Multiplayer (Durable Object):
 
-- `POST /rooms` `{ mode, roundSize }` — create a room, returns a 6-char code
+- `POST /rooms` `{ mode, roundSize (5-50), categoryKeys? }` — create a room,
+  returns a 6-char code; cards are dealt from the chosen categories (empty =
+  all)
 - `GET  /rooms/:code` — room state · `WS /rooms/:code/ws` — join & play
 - WS: players join with an ephemeral nickname (shown to the room, never
   persisted); after the reveal the room stays open and the host can send
-  `restart` to replay with the same players and a fresh hand
+  `restart` to replay with the same players and a fresh hand (optionally new
+  mode/roundSize/categoryKeys)
 
 Admin (bearer `ADMIN_TOKEN`):
 

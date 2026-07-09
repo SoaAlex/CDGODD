@@ -40,6 +40,8 @@
     "modeLive": "Résultats en direct",
     "cards": "cartes",
     "shareCode": "Partage ce code avec tes amis",
+    "copyLink": "Copier le lien",
+    "linkCopied": "Lien copié !",
     "nickname": "Choisis ton pseudo",
     "nicknamePlaceholder": "Ton pseudo",
     "playAgain": "Rejouer",
@@ -62,6 +64,10 @@
     "food": "Nourriture",
     "culture": "Culture",
     "daily-life": "Vie quotidienne"
+  },
+  "filter": {
+    "categoriesLabel": "Catégories",
+    "allCategories": "Toutes"
   },
   "consent": {
     "title": "Publicités",

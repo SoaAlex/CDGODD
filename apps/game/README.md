@@ -14,12 +14,14 @@ Android**. The web export is served as an assets-only Cloudflare Worker.
   previous card's result and, when on, the live tally of the current card.
   Cards with a free-license image show a small ⓘ badge — tap for the credit
   strip (author · license, links to the source page); AI-generated images get
-  a static "IA" badge (driven by `DeckCard.imageAttribution`).
+  a static "IA" badge (driven by `DeckCard.imageAttribution`). Category chips
+  at the top filter the deck (multi-select; "Toutes" resets).
 - **Free search** — find an item and vote on it, or propose a new one (moderated).
 - **Multiplayer** — create/join a room by 6-char code; everyone gets the same
-  deck and swipes it at their own pace. Batch mode reveals all results at the
-  end; live mode returns each voter their card's running tally. Rooms are
-  Durable Objects on the API.
+  deck and swipes it at their own pace. The host picks the mode, the number of
+  cards (5–50 stepper) and the categories to deal from — both at creation and
+  on replay. Batch mode reveals all results at the end; live mode returns each
+  voter their card's running tally. Rooms are Durable Objects on the API.
 - **History** — device-local record of your votes with fresh global tallies.
 - **Anonymous** — a resettable device `session_id`, no account. Only ads collect
   data, behind a consent flow.
