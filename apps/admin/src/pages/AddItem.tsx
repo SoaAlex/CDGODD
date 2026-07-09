@@ -13,6 +13,7 @@ import { useAuth } from '../hooks/useAuth';
 import { API, authHeaders } from '../lib/api';
 import { CategoryPicker } from '../components/CategoryPicker';
 import { ImagePicker, type ImageChoice } from '../components/ImagePicker';
+import { ITEM_FLAGS } from '../lib/flags';
 import type { Category, ItemTranslation } from '../types';
 
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -36,6 +37,10 @@ export function AddItem() {
   const [label, setLabel] = useState('');
   const [categoryKeys, setCategoryKeys] = useState<Set<string>>(new Set());
   const [categories, setCategories] = useState<Category[]>([]);
+  const [flags, setFlags] = useState<Record<'not_mobile' | 'nsfw', boolean>>({
+    not_mobile: false,
+    nsfw: false,
+  });
   // Extra labels sent with the create call (fr is the main field above).
   const [translations, setTranslations] = useState<ItemTranslation[]>([]);
   const [newLang, setNewLang] = useState('');
@@ -44,7 +49,6 @@ export function AddItem() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   // Free-license candidate or AI generation, applied after the create call.
   const [imageChoice, setImageChoice] = useState<ImageChoice | null>(null);
-  const [showPicker, setShowPicker] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -125,6 +129,8 @@ export function AddItem() {
       );
     }
     for (const key of categoryKeys) form.append('categoryKeys', key);
+    if (flags.not_mobile) form.set('not_mobile', '1');
+    if (flags.nsfw) form.set('nsfw', '1');
     if (file) form.set('image', file);
 
     try {
@@ -179,7 +185,6 @@ export function AddItem() {
     setNewTransLabel('');
     removeFile();
     setImageChoice(null);
-    setShowPicker(false);
     labelInputRef.current?.focus();
   }
 
@@ -344,6 +349,27 @@ export function AddItem() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
+              Drapeaux
+            </label>
+            <div className="space-y-2">
+              {ITEM_FLAGS.map((flag) => (
+                <label key={flag.key} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={flags[flag.key]}
+                    onChange={(e) =>
+                      setFlags((f) => ({ ...f, [flag.key]: e.target.checked }))
+                    }
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                  <span className="text-sm text-gray-700">{flag.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Image
             </label>
             {imageChoice?.kind === 'candidate' ? (
@@ -468,28 +494,21 @@ export function AddItem() {
               </div>
             )}
 
-            <button
-              type="button"
-              onClick={() => setShowPicker((v) => !v)}
-              className="btn-secondary mt-3 flex items-center gap-1"
-            >
-              <MagnifyingGlassIcon className="h-4 w-4" />
-              Chercher une image libre
-            </button>
-            {showPicker && (
-              <div className="mt-3">
-                <ImagePicker
-                  initialQuery={label}
-                  token={token}
-                  onError={setError}
-                  onSelect={(choice) => {
-                    removeFile(); // picker choice replaces an upload
-                    setImageChoice(choice);
-                    setShowPicker(false);
-                  }}
-                />
-              </div>
-            )}
+            <div className="mt-3">
+              <p className="mb-2 flex items-center gap-1 text-sm font-medium text-gray-700">
+                <MagnifyingGlassIcon className="h-4 w-4" />
+                Chercher une image libre
+              </p>
+              <ImagePicker
+                initialQuery={label}
+                token={token}
+                onError={setError}
+                onSelect={(choice) => {
+                  removeFile(); // picker choice replaces an upload
+                  setImageChoice(choice);
+                }}
+              />
+            </div>
           </div>
 
           <div className="flex items-center justify-between gap-3">

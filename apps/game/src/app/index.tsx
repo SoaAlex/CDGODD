@@ -45,7 +45,7 @@ function MenuButton({
         },
       ]}
     >
-      <Ionicons name={icon} size={24} color={contentColor} />
+      <Ionicons name={icon} size={22} color={contentColor} />
       <ThemedText
         type="subtitle"
         style={[styles.buttonText, { color: contentColor }]}
@@ -170,12 +170,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     gap: Spacing.two,
-    paddingVertical: Spacing.three,
+    paddingVertical: 12,
     borderRadius: Spacing.six,
     alignItems: 'center',
   },
   buttonText: {
-    fontSize: 22,
-    lineHeight: 30,
+    fontSize: 20,
+    lineHeight: 28,
   },
 });
