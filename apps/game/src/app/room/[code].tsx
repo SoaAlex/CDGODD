@@ -27,12 +27,19 @@ import { useRoom } from '@/hooks/use-room';
 import { categoryName, t } from '@/lib/i18n';
 
 export default function RoomScreen() {
-  const { code } = useLocalSearchParams<{ code: string }>();
+  const { code, name: nameParam } = useLocalSearchParams<{
+    code: string;
+    name?: string;
+  }>();
   const theme = useTheme();
   const deckRef = useRef<SwipeDeckHandle>(null);
   // Nickname lives only in this screen's state: gone when the room closes.
+  // It arrives as a route param from the multiplayer screen; the inline
+  // prompt below only covers direct links (shared /room/CODE URLs).
   const [nameInput, setNameInput] = useState('');
-  const [name, setName] = useState<string | null>(null);
+  const [name, setName] = useState<string | null>(
+    () => nameParam?.trim().slice(0, 24) || null,
+  );
   // Host replay: "Rejouer" first opens this settings step (same form as
   // room creation), then restarts the round with the chosen settings.
   const [configuring, setConfiguring] = useState(false);

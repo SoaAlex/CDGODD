@@ -18,16 +18,20 @@ export default function MultiplayerScreen() {
   const [mode, setMode] = useState<'batch' | 'live'>('batch');
   const [roundSize, setRoundSize] = useState<number>(10);
   const [categoryKeys, setCategoryKeys] = useState<string[]>([]);
+  const [nickname, setNickname] = useState('');
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const cleanNickname = nickname.trim();
+  const nameParam = `?name=${encodeURIComponent(cleanNickname)}`;
 
   async function onCreate() {
     setBusy(true);
     setError(null);
     try {
       const { room } = await createRoom(mode, roundSize, categoryKeys);
-      router.push(`/room/${room.code}` as never);
+      router.push(`/room/${room.code}${nameParam}` as never);
     } catch {
       setError(t('errors.network'));
     } finally {
@@ -37,12 +41,30 @@ export default function MultiplayerScreen() {
 
   function onJoin() {
     const clean = code.trim().toUpperCase();
-    if (clean.length === 6) router.push(`/room/${clean}` as never);
+    if (clean.length === 6) router.push(`/room/${clean}${nameParam}` as never);
   }
 
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+        {/* Nickname (shared by create & join, passed along to the room) */}
+        <View style={styles.section}>
+          <ThemedText type="subtitle">{t('multiplayer.nickname')}</ThemedText>
+          <TextInput
+            testID="nickname-input"
+            value={nickname}
+            onChangeText={setNickname}
+            placeholder={t('multiplayer.nicknamePlaceholder')}
+            placeholderTextColor={theme.textSecondary}
+            autoCorrect={false}
+            maxLength={24}
+            style={[
+              styles.input,
+              { backgroundColor: theme.backgroundElement, color: theme.text },
+            ]}
+          />
+        </View>
+
         {/* Create */}
         <View style={styles.section}>
           <ThemedText type="subtitle">{t('multiplayer.create')}</ThemedText>
@@ -59,10 +81,13 @@ export default function MultiplayerScreen() {
           <Pressable
             testID="create-room"
             onPress={onCreate}
-            disabled={busy}
+            disabled={busy || !cleanNickname}
             style={({ pressed }) => [
               styles.primaryButton,
-              { backgroundColor: RIGHT_COLOR, opacity: busy || pressed ? 0.7 : 1 },
+              {
+                backgroundColor: RIGHT_COLOR,
+                opacity: !cleanNickname ? 0.4 : busy || pressed ? 0.7 : 1,
+              },
             ]}
           >
             <View style={styles.buttonContent}>
@@ -94,12 +119,17 @@ export default function MultiplayerScreen() {
           <Pressable
             testID="join-room"
             onPress={onJoin}
-            disabled={code.trim().length !== 6}
+            disabled={code.trim().length !== 6 || !cleanNickname}
             style={({ pressed }) => [
               styles.primaryButton,
               {
                 backgroundColor: LEFT_COLOR,
-                opacity: code.trim().length !== 6 ? 0.4 : pressed ? 0.7 : 1,
+                opacity:
+                  code.trim().length !== 6 || !cleanNickname
+                    ? 0.4
+                    : pressed
+                      ? 0.7
+                      : 1,
               },
             ]}
           >
