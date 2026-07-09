@@ -60,12 +60,12 @@ export default function MultiplayerScreen() {
             value={nickname}
             onChangeText={setNickname}
             placeholder={t('multiplayer.nicknamePlaceholder')}
-            placeholderTextColor={theme.textSecondary}
+            placeholderTextColor={theme.textSecondaryOnSurface}
             autoCorrect={false}
             maxLength={24}
             style={[
               styles.input,
-              { backgroundColor: theme.backgroundElement, color: theme.text },
+              { backgroundColor: theme.surface, color: theme.textOnSurface },
             ]}
           />
         </View>
@@ -114,13 +114,13 @@ export default function MultiplayerScreen() {
             value={code}
             onChangeText={setCode}
             placeholder={t('multiplayer.codePlaceholder')}
-            placeholderTextColor={theme.textSecondary}
+            placeholderTextColor={theme.textSecondaryOnSurface}
             autoCapitalize="characters"
             autoCorrect={false}
             maxLength={6}
             style={[
               styles.input,
-              { backgroundColor: theme.backgroundElement, color: theme.text },
+              { backgroundColor: theme.surface, color: theme.textOnSurface },
             ]}
           />
           <Pressable

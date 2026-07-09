@@ -120,13 +120,13 @@ export default function RoomScreen() {
           value={nameInput}
           onChangeText={setNameInput}
           placeholder={t('multiplayer.nicknamePlaceholder')}
-          placeholderTextColor={theme.textSecondary}
+          placeholderTextColor={theme.textSecondaryOnSurface}
           autoCorrect={false}
           maxLength={24}
           onSubmitEditing={() => clean && setName(clean)}
           style={[
             styles.nameInput,
-            { backgroundColor: theme.backgroundElement, color: theme.text },
+            { backgroundColor: theme.surface, color: theme.textOnSurface },
           ]}
         />
         <Pressable
@@ -219,10 +219,14 @@ export default function RoomScreen() {
                 <View
                   style={[
                     styles.resultRow,
-                    { backgroundColor: theme.backgroundElement },
+                    { backgroundColor: theme.surface },
                   ]}
                 >
-                  <ThemedText type="subtitle" numberOfLines={2}>
+                  <ThemedText
+                    type="subtitle"
+                    themeColor="textOnSurface"
+                    numberOfLines={2}
+                  >
                     {item.card.label}
                   </ThemedText>
                   <View style={styles.resultBar}>
@@ -236,7 +240,7 @@ export default function RoomScreen() {
                   </View>
                   {myVote && (
                     <View style={styles.myVoteRow}>
-                      <ThemedText type="small" themeColor="textSecondary">
+                      <ThemedText type="small" themeColor="textSecondaryOnSurface">
                         {t('history.yourVote')}
                       </ThemedText>
                       <View
@@ -616,7 +620,8 @@ const styles = StyleSheet.create({
     gap: Spacing.one,
   },
   resultsList: {
-    gap: Spacing.three,
+    gap: Spacing.four,
+    paddingVertical: Spacing.two,
   },
   resultRow: {
     borderRadius: Spacing.three,

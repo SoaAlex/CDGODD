@@ -63,7 +63,7 @@ export default function HistoryScreen() {
             const sideColor = item.side === 'left' ? LEFT_COLOR : RIGHT_COLOR;
             return (
               <View
-                style={[styles.row, { backgroundColor: theme.backgroundElement }]}
+                style={[styles.row, { backgroundColor: theme.surface }]}
               >
                 {item.imageUrl ? (
                   <Image
@@ -78,10 +78,15 @@ export default function HistoryScreen() {
                 )}
                 <View style={styles.body}>
                   <View style={styles.titleRow}>
-                    <ThemedText type="smallBold" numberOfLines={1} style={styles.label}>
+                    <ThemedText
+                      type="smallBold"
+                      themeColor="textOnSurface"
+                      numberOfLines={1}
+                      style={styles.label}
+                    >
                       {item.label}
                     </ThemedText>
-                    <ThemedText type="small" themeColor="textSecondary">
+                    <ThemedText type="small" themeColor="textSecondaryOnSurface">
                       {t('history.yourVote')}
                     </ThemedText>
                     <View style={[styles.voteChip, { backgroundColor: sideColor }]}>
@@ -92,7 +97,7 @@ export default function HistoryScreen() {
                   </View>
                   {tally && (
                     <View style={styles.tallyBlock}>
-                      <ThemedText type="small" themeColor="textSecondary">
+                      <ThemedText type="small" themeColor="textSecondaryOnSurface">
                         {t('game.globalVotes')}
                       </ThemedText>
                       <TallyBar tally={tally} />
@@ -125,7 +130,7 @@ const styles = StyleSheet.create({
     padding: Spacing.four,
   },
   list: {
-    gap: Spacing.two,
+    gap: Spacing.three,
   },
   empty: {
     alignItems: 'center',
@@ -136,8 +141,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.three,
-    borderRadius: Spacing.two,
-    padding: Spacing.two,
+    borderRadius: Spacing.three,
+    padding: Spacing.three,
   },
   thumb: {
     width: 44,
@@ -147,6 +152,7 @@ const styles = StyleSheet.create({
   thumbFallback: {
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#eef0f6',
   },
   body: {
     flex: 1,

@@ -44,6 +44,11 @@ const palette = {
   backgroundElement: 'rgba(255, 255, 255, 0.16)',
   backgroundSelected: 'rgba(255, 255, 255, 0.28)',
   textSecondary: 'rgba(255, 255, 255, 0.75)',
+  /** Opaque white surface (inputs, list rows) — pair with textOnSurface. */
+  surface: '#ffffff',
+  surfacePressed: '#e9ebf3',
+  textOnSurface: '#1b1b2f',
+  textSecondaryOnSurface: 'rgba(27, 27, 47, 0.55)',
 } as const;
 
 export const Colors = {

@@ -102,11 +102,11 @@ export default function SearchScreen() {
             setTally(null);
           }}
           placeholder={t('solo.searchPlaceholder')}
-          placeholderTextColor={theme.textSecondary}
+          placeholderTextColor={theme.textSecondaryOnSurface}
           autoFocus
           style={[
             styles.input,
-            { backgroundColor: theme.backgroundElement, color: theme.text },
+            { backgroundColor: theme.surface, color: theme.textOnSurface },
           ]}
         />
 
@@ -124,14 +124,14 @@ export default function SearchScreen() {
                   styles.resultRow,
                   {
                     backgroundColor: pressed
-                      ? theme.backgroundSelected
-                      : theme.backgroundElement,
+                      ? theme.surfacePressed
+                      : theme.surface,
                   },
                 ]}
               >
-                <ThemedText>{item.label}</ThemedText>
+                <ThemedText themeColor="textOnSurface">{item.label}</ThemedText>
                 {item.categoryKeys.length > 0 && (
-                  <ThemedText type="small" themeColor="textSecondary">
+                  <ThemedText type="small" themeColor="textSecondaryOnSurface">
                     {item.categoryKeys.map(categoryName).join(' · ')}
                   </ThemedText>
                 )}
