@@ -67,7 +67,8 @@
   },
   "filter": {
     "categoriesLabel": "Catégories",
-    "allCategories": "Toutes"
+    "allCategories": "Toutes",
+    "done": "OK"
   },
   "consent": {
     "title": "Publicités",
