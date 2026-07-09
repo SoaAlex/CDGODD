@@ -73,6 +73,18 @@ admin.get('/items', async (c) => {
   return c.json({ items: results });
 });
 
+/** GET /admin/items/counts — item count per status, for the moderation tabs. */
+admin.get('/items/counts', async (c) => {
+  const { results } = await c.env.DB.prepare(
+    `SELECT status, COUNT(*) AS n FROM items GROUP BY status`,
+  ).all<{ status: string; n: number }>();
+  const counts = { pending: 0, approved: 0, rejected: 0 };
+  for (const r of results) {
+    if (r.status in counts) counts[r.status as keyof typeof counts] = r.n;
+  }
+  return c.json({ counts });
+});
+
 /**
  * PATCH /admin/items/:id — partial edit.
  * Any subset of: status, label (fr), votes_left, votes_right, categoryKeys

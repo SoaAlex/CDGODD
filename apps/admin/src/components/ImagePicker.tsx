@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MagnifyingGlassIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { API, apiGet, authHeaders } from '../lib/api';
 import type { ImageCandidate } from '../types';
@@ -38,6 +38,12 @@ export function ImagePicker({
   onSelect,
 }: Props) {
   const [query, setQuery] = useState(initialQuery);
+  // Mirror the item label into the search field until the admin types their
+  // own term, so creating an item and finding its image is one click.
+  const [queryEdited, setQueryEdited] = useState(false);
+  useEffect(() => {
+    if (!queryEdited) setQuery(initialQuery);
+  }, [initialQuery, queryEdited]);
   const [candidates, setCandidates] = useState<ImageCandidate[]>([]);
   const [searched, setSearched] = useState(false);
   const [searching, setSearching] = useState(false);
@@ -131,7 +137,10 @@ export function ImagePicker({
         <input
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            setQueryEdited(true);
+            setQuery(e.target.value);
+          }}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();

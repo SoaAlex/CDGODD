@@ -49,6 +49,8 @@ export function AddItem() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   // Free-license candidate or AI generation, applied after the create call.
   const [imageChoice, setImageChoice] = useState<ImageChoice | null>(null);
+  // Bumped after each bulk create to remount the picker (fresh query/results).
+  const [pickerNonce, setPickerNonce] = useState(0);
   const [isDragOver, setIsDragOver] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -185,6 +187,7 @@ export function AddItem() {
     setNewTransLabel('');
     removeFile();
     setImageChoice(null);
+    setPickerNonce((n) => n + 1);
     labelInputRef.current?.focus();
   }
 
@@ -500,6 +503,7 @@ export function AddItem() {
                 Chercher une image libre
               </p>
               <ImagePicker
+                key={pickerNonce}
                 initialQuery={label}
                 token={token}
                 onError={setError}

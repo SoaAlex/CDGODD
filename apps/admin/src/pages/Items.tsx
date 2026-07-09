@@ -121,6 +121,18 @@ export function Items() {
   const [catEditing, setCatEditing] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [counts, setCounts] = useState<Record<ItemStatus, number> | null>(null);
+
+  const loadCounts = useCallback(async () => {
+    try {
+      const { counts } = await apiGet<{
+        counts: Record<ItemStatus, number>;
+      }>('/admin/items/counts', token);
+      setCounts(counts);
+    } catch {
+      setCounts(null);
+    }
+  }, [token]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -154,6 +166,10 @@ export function Items() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    void loadCounts();
+  }, [loadCounts]);
 
   useEffect(() => {
     fetch(`${API}/categories?lang=fr`)
@@ -194,7 +210,9 @@ export function Items() {
   }
 
   function setItemStatus(id: number, next: ItemStatus) {
-    void patchItem(id, { status: next }, { status: next });
+    void patchItem(id, { status: next }, { status: next }).then((ok) => {
+      if (ok) void loadCounts();
+    });
   }
 
   async function saveLabel(it: AdminItem, raw: string): Promise<boolean> {
@@ -247,6 +265,7 @@ export function Items() {
       headers: authHeaders(token),
     });
     void load();
+    void loadCounts();
   }
 
   return (
@@ -264,19 +283,37 @@ export function Items() {
       {/* Status tabs */}
       <div className="card">
         <div className="flex gap-2">
-          {TABS.map((s) => (
-            <button
-              key={s}
-              onClick={() => setStatus(s)}
-              className={`px-4 py-2 rounded-lg border text-sm font-medium transition-colors ${
-                s === status
-                  ? 'bg-blue-50 border-blue-500 text-blue-700'
-                  : 'bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100'
-              }`}
-            >
-              {TAB_LABELS[s]}
-            </button>
-          ))}
+          {TABS.map((s) => {
+            const count = counts
+              ? s === 'all'
+                ? counts.pending + counts.approved + counts.rejected
+                : counts[s]
+              : null;
+            return (
+              <button
+                key={s}
+                onClick={() => setStatus(s)}
+                className={`px-4 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                  s === status
+                    ? 'bg-blue-50 border-blue-500 text-blue-700'
+                    : 'bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                {TAB_LABELS[s]}
+                {count !== null && (
+                  <span
+                    className={`ml-2 rounded-full px-2 py-0.5 text-xs ${
+                      s === status
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'bg-gray-200 text-gray-600'
+                    }`}
+                  >
+                    {count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
