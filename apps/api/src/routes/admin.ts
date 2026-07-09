@@ -147,6 +147,36 @@ admin.patch('/items/:id', async (c) => {
 });
 
 /**
+ * DELETE /admin/items/:id — permanently remove an item: its votes, reports,
+ * category links, translations, the row itself, then its R2 image.
+ */
+admin.delete('/items/:id', async (c) => {
+  const itemId = Number(c.req.param('id'));
+  const item = await c.env.DB.prepare(
+    `SELECT image_key FROM items WHERE id = ?1`,
+  )
+    .bind(itemId)
+    .first<{ image_key: string | null }>();
+  if (!item) return c.json({ error: 'item not found' }, 404);
+
+  // Children first: D1 enforces the REFERENCES constraints.
+  await c.env.DB.batch([
+    c.env.DB.prepare(`DELETE FROM votes WHERE item_id = ?1`).bind(itemId),
+    c.env.DB.prepare(`DELETE FROM reports WHERE item_id = ?1`).bind(itemId),
+    c.env.DB.prepare(`DELETE FROM item_categories WHERE item_id = ?1`).bind(
+      itemId,
+    ),
+    c.env.DB.prepare(`DELETE FROM item_translations WHERE item_id = ?1`).bind(
+      itemId,
+    ),
+    c.env.DB.prepare(`DELETE FROM items WHERE id = ?1`).bind(itemId),
+  ]);
+
+  if (item.image_key) await c.env.IMAGES.delete(item.image_key);
+  return c.json({ ok: true });
+});
+
+/**
  * POST /admin/items — create an item with its image (multipart form).
  * Fields: label (required), lang (default fr), categoryKeys (repeatable),
  * image (file). Admin-created items go live immediately (status=approved).

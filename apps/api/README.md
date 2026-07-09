@@ -63,6 +63,8 @@ Admin (bearer `ADMIN_TOKEN`):
 
 - `GET /admin/items?status=` · `PATCH /admin/items/:id` (approve/reject;
   `categoryKeys` replaces the item's whole category set)
+- `DELETE /admin/items/:id` — permanent delete: votes, reports, category
+  links, translations, the item row, then the R2 image
 - `POST /admin/items` (multipart, image → R2, repeatable `categoryKeys`
   fields) · `PATCH /admin/items/:id/image`
 - `GET /admin/image-candidates?q=` — free-license image search (Wikimedia

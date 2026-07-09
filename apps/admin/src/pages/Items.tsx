@@ -4,6 +4,7 @@ import {
   XCircleIcon,
   ArrowUturnLeftIcon,
   PencilSquareIcon,
+  TrashIcon,
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../hooks/useAuth';
 import { API, apiGet, authHeaders, imageUrl } from '../lib/api';
@@ -87,6 +88,22 @@ export function Items() {
       method: 'PATCH',
       headers: { ...authHeaders(token), 'content-type': 'application/json' },
       body: JSON.stringify({ status: next }),
+    });
+    void load();
+  }
+
+  async function deleteItem(item: AdminItem) {
+    const name = item.label ?? `item #${item.id}`;
+    if (
+      !window.confirm(
+        `Supprimer définitivement « ${name} » ?\nVotes, signalements et image seront aussi supprimés. Action irréversible.`,
+      )
+    ) {
+      return;
+    }
+    await fetch(`${API}/admin/items/${item.id}`, {
+      method: 'DELETE',
+      headers: authHeaders(token),
     });
     void load();
   }
@@ -233,6 +250,13 @@ export function Items() {
                           <ArrowUturnLeftIcon className="h-4 w-4" />
                         </button>
                       )}
+                      <button
+                        onClick={() => void deleteItem(it)}
+                        className="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 p-1 rounded transition-colors"
+                        title="Supprimer définitivement"
+                      >
+                        <TrashIcon className="h-4 w-4" />
+                      </button>
                     </div>
                   </td>
                 </tr>
