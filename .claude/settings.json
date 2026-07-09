@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install)",
+      "Bash(pnpm turbo typecheck)",
+      "Bash(pnpm turbo build)",
+      "Bash(pnpm turbo lint)",
+      "Bash(pnpm --dir apps/* typecheck)",
+      "Bash(pnpm --dir apps/* lint)",
+      "Bash(pnpm --dir apps/* build)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(rtk git status:*)",
+      "Bash(rtk git diff:*)",
+      "Bash(rtk git log:*)"
+    ],
+    "deny": [
+      "Bash(wrangler d1 migrations apply * --remote)",
+      "Bash(wrangler d1 execute * --remote)",
+      "Bash(pnpm --dir apps/* deploy)"
+    ]
+  }
+}

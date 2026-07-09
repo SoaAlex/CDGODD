@@ -1,0 +1,13 @@
+#!/bin/sh
+# Harness sensor: block commits that don't typecheck.
+# Typecheck is the real correctness gate (see AGENTS.md). Turbo caches, so this
+# is near-instant when nothing relevant changed.
+#
+# Bypass for a deliberate WIP commit: git commit --no-verify
+
+echo "pre-commit: pnpm turbo typecheck"
+if ! pnpm turbo typecheck; then
+  echo
+  echo "✗ typecheck failed — commit blocked. Fix, or use --no-verify to skip."
+  exit 1
+fi
