@@ -5,6 +5,7 @@ import JsStack from 'expo-router/js-stack';
 import { useEffect } from 'react';
 import { Animated, Easing, Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GameTitle } from '@/components/game-title';
 import { GradientBackground } from '@/components/gradient-background';
 import { t } from '@/lib/i18n';
 import { startBackgroundMusic } from '@/lib/music';
@@ -114,6 +115,10 @@ export default function RootLayout() {
               headerShadowVisible: false,
               headerTintColor: '#fff',
               headerTitleStyle: { color: '#fff' },
+              // Every screen except home shows the game wordmark; each
+              // screen's `title` still names the browser tab on web.
+              headerTitle: () => <GameTitle />,
+              headerTitleAlign: 'center',
               // Web-only (see Stack above). `animation` just switches the JS
               // stack's animation on; forSlideFade defines the actual motion.
               // The overlay stays off: cards are transparent, so the preset's
