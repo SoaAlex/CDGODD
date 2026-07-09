@@ -28,7 +28,11 @@ export function AddItem() {
   const navigate = useNavigate();
   const { token } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const labelInputRef = useRef<HTMLInputElement>(null);
 
+  // Bulk mode: stay on the page after a create, keep categories,
+  // clear label + image so the next item can be typed immediately.
+  const [bulkMode, setBulkMode] = useState(false);
   const [label, setLabel] = useState('');
   const [categoryKeys, setCategoryKeys] = useState<Set<string>>(new Set());
   const [categories, setCategories] = useState<Category[]>([]);
@@ -147,18 +151,36 @@ export function AddItem() {
           setError(
             `Item #${data.itemId} créé, mais image non appliquée — utilisez Modifier.`,
           );
-          setTimeout(() => navigate('/items'), 2500);
+          if (bulkMode) resetForNextItem();
+          else setTimeout(() => navigate('/items'), 2500);
           return;
         }
       }
 
-      setSuccess('Item créé (publié directement).');
-      setTimeout(() => navigate('/items'), 1200);
+      if (bulkMode) {
+        setSuccess(`Item « ${label.trim()} » créé — au suivant.`);
+        resetForNextItem();
+      } else {
+        setSuccess('Item créé (publié directement).');
+        setTimeout(() => navigate('/items'), 1200);
+      }
     } catch {
       setError('Erreur réseau');
     } finally {
       setLoading(false);
     }
+  }
+
+  /** Bulk mode: clear per-item fields, keep categories for the next one. */
+  function resetForNextItem() {
+    setLabel('');
+    setTranslations([]);
+    setNewLang('');
+    setNewTransLabel('');
+    removeFile();
+    setImageChoice(null);
+    setShowPicker(false);
+    labelInputRef.current?.focus();
   }
 
   /** POST the deferred picker choice onto the freshly created item. */
@@ -220,6 +242,7 @@ export function AddItem() {
               Label (fr) *
             </label>
             <input
+              ref={labelInputRef}
               type="text"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
@@ -469,18 +492,29 @@ export function AddItem() {
             )}
           </div>
 
-          <div className="flex justify-end space-x-3">
-            <button
-              type="button"
-              onClick={() => navigate('/items')}
-              className="btn-secondary"
-              disabled={loading}
-            >
-              Annuler
-            </button>
-            <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Création…' : 'Créer l’item'}
-            </button>
+          <div className="flex items-center justify-between gap-3">
+            <label className="flex items-center gap-2 text-sm text-gray-700">
+              <input
+                type="checkbox"
+                checked={bulkMode}
+                onChange={(e) => setBulkMode(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300"
+              />
+              Mode rapide — rester sur la page après création
+            </label>
+            <div className="flex space-x-3">
+              <button
+                type="button"
+                onClick={() => navigate('/items')}
+                className="btn-secondary"
+                disabled={loading}
+              >
+                Annuler
+              </button>
+              <button type="submit" className="btn-primary" disabled={loading}>
+                {loading ? 'Création…' : 'Créer l’item'}
+              </button>
+            </div>
           </div>
         </form>
       </div>

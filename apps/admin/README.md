@@ -28,7 +28,10 @@ A sidebar-navigated SPA, all talking to the API with a bearer token:
   categories, and drag-and-drop image (uploaded to R2); goes live immediately.
   The same free-license picker is available in **select mode**: the choice
   (candidate or "Générer par IA") is kept locally and applied right after
-  `POST /admin/items` returns the new item id.
+  `POST /admin/items` returns the new item id. A **"Mode rapide"** checkbox
+  keeps you on the page after each create (label/translations/image reset,
+  categories kept, label input refocused) for rapid bulk entry; unchecked,
+  the page redirects to the items list as before.
 - **Catégories** (`/categories`) — create categories (key + French name) and
   add/edit/delete per-language translations.
 - **Signalements** (`/reports`) — reported items, most-reported first.
@@ -39,7 +42,9 @@ whole category set) and `PATCH /admin/items/:id/image` (multipart image
 replace). `GET /admin/items` returns `category_keys` as a CSV of keys, parsed
 client-side and resolved to display names via `GET /categories`. The edit modal also manages non-French labels via
 `GET/PUT/DELETE /admin/items/:id/translations/:lang` (saved immediately,
-independent of the modal's Save button).
+independent of the modal's Save button). Each row also has a delete button
+(`DELETE /admin/items/:id`, behind a confirm dialog) that permanently removes
+the item with its votes, reports and image.
 
 Auth is v1-simple: paste the API's `ADMIN_TOKEN` on the `/login` screen. It is
 verified against `GET /admin/stats`, kept in `sessionStorage`, and sent as
