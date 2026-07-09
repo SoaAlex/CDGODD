@@ -24,7 +24,9 @@ export default defineConfig({
         .map((s) => s.trim())
         .filter(Boolean);
       return {
-        wrangler: { configPath: './wrangler.toml' },
+        // 'test' env = prod bindings minus AI (remote-only; would force a
+        // remote proxy session needing credentials). Tests mock env.AI.
+        wrangler: { configPath: './wrangler.toml', environment: 'test' },
         miniflare: {
           bindings: {
             TEST_MIGRATIONS: migrations,

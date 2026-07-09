@@ -43,3 +43,25 @@ CDN_BASE = "https://images.cestdegaucheoudedroite.com"
 #   TURNSTILE_SECRET  - Cloudflare Turnstile secret key
 #   IP_HASH_SALT      - random salt for ip_hash (rotate periodically)
 #   ADMIN_TOKEN       - bearer token for /admin routes (v1 auth)
+
+# Test-only environment used by vitest (@cloudflare/vitest-pool-workers).
+# Same bindings as prod EXCEPT the AI binding: AI is remote-only, and its
+# mere presence makes the test pool open a remote proxy session (needs
+# Cloudflare credentials, bills usage). Tests mock env.AI instead.
+[env.test]
+
+[[env.test.d1_databases]]
+binding = "DB"
+database_name = "cdgodd"
+database_id = "70625d39-d78a-4dcc-8507-d9ad6660269a"
+
+[[env.test.r2_buckets]]
+binding = "IMAGES"
+bucket_name = "cdgodd-images"
+
+[[env.test.durable_objects.bindings]]
+name = "ROOMS"
+class_name = "Room"
+
+[env.test.vars]
+CDN_BASE = "https://cdn.test"
