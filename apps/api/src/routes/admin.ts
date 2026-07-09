@@ -86,11 +86,24 @@ admin.patch('/items/:id', async (c) => {
     label?: string;
     votes_left?: number;
     votes_right?: number;
+    not_mobile?: boolean;
+    nsfw?: boolean;
     categoryKeys?: string[];
   };
 
   const sets: string[] = [];
   const binds: unknown[] = [];
+
+  for (const key of ['not_mobile', 'nsfw'] as const) {
+    const value = body[key];
+    if (value !== undefined) {
+      if (typeof value !== 'boolean') {
+        return c.json({ error: `bad ${key}` }, 400);
+      }
+      sets.push(`${key} = ?`);
+      binds.push(value ? 1 : 0);
+    }
+  }
 
   if (body.status !== undefined) {
     if (!['approved', 'rejected', 'pending'].includes(body.status)) {
@@ -189,6 +202,8 @@ admin.post('/items', async (c) => {
   const lang = String(form.get('lang') ?? 'fr');
   const categoryKeys = form.getAll('categoryKeys').map(String);
   const image = form.get('image');
+  const notMobile = form.get('not_mobile') === '1' ? 1 : 0;
+  const nsfw = form.get('nsfw') === '1' ? 1 : 0;
   if (!label) return c.json({ error: 'label required' }, 400);
 
   // Optional extra labels: JSON object { "en": "Coffee", ... }.
@@ -234,10 +249,10 @@ admin.post('/items', async (c) => {
   }
 
   const item = await c.env.DB.prepare(
-    `INSERT INTO items (image_key, status, created_at)
-     VALUES (?1, 'approved', ?2) RETURNING id`,
+    `INSERT INTO items (image_key, status, not_mobile, nsfw, created_at)
+     VALUES (?1, 'approved', ?2, ?3, ?4) RETURNING id`,
   )
-    .bind(imageKey, Date.now())
+    .bind(imageKey, notMobile, nsfw, Date.now())
     .first<{ id: number }>();
 
   await c.env.DB.prepare(

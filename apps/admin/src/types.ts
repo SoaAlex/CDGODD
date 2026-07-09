@@ -12,6 +12,9 @@ export interface AdminItem {
   votes_left: number;
   votes_right: number;
   report_count: number;
+  /** Boolean flags stored 0/1 (see lib/flags.ts). */
+  not_mobile: number;
+  nsfw: number;
   created_at: number;
   /** Parsed client-side from the API's CSV `category_keys` column. */
   category_keys: string[];

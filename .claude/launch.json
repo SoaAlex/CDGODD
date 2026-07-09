@@ -2,6 +2,24 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "api-verify",
+      "runtimeExecutable": "zsh",
+      "runtimeArgs": [
+        "-c",
+        "export PATH=\"$HOME/.nvm/versions/node/v22.15.0/bin:$PATH\"; exec pnpm --dir apps/api exec wrangler dev --local --port 8788 --var ADMIN_TOKEN:cdgodd-verify-token"
+      ],
+      "port": 8788
+    },
+    {
+      "name": "admin-verify",
+      "runtimeExecutable": "zsh",
+      "runtimeArgs": [
+        "-c",
+        "export PATH=\"$HOME/.nvm/versions/node/v22.15.0/bin:$PATH\"; export VITE_API_URL=http://localhost:8788; exec pnpm --dir apps/admin exec vite --port 5176"
+      ],
+      "port": 5176
+    },
+    {
       "name": "api",
       "runtimeExecutable": "zsh",
       "runtimeArgs": [
@@ -15,9 +33,28 @@
       "runtimeExecutable": "zsh",
       "runtimeArgs": [
         "-c",
-        "export PATH=\"$HOME/.nvm/versions/node/v22.15.0/bin:$PATH\"; exec pnpm --dir apps/admin exec vite --port 5173"
+        "export PATH=\"$HOME/.nvm/versions/node/v22.15.0/bin:$PATH\"; exec pnpm --dir apps/admin exec vite --port \"${PORT:-5173}\""
       ],
-      "port": 5173
+      "port": 5173,
+      "autoPort": true
+    },
+    {
+      "name": "admin-alt",
+      "runtimeExecutable": "zsh",
+      "runtimeArgs": [
+        "-c",
+        "export PATH=\"$HOME/.nvm/versions/node/v22.15.0/bin:$PATH\"; exec pnpm --dir apps/admin exec vite --port 5175"
+      ],
+      "port": 5175
+    },
+    {
+      "name": "admin-alt2",
+      "runtimeExecutable": "zsh",
+      "runtimeArgs": [
+        "-c",
+        "export PATH=\"$HOME/.nvm/versions/node/v22.15.0/bin:$PATH\"; exec pnpm --dir apps/admin exec vite --port 5176"
+      ],
+      "port": 5176
     },
     {
       "name": "api-local",

@@ -8,6 +8,7 @@ import {
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import { API, apiGet, authHeaders, imageUrl } from '../lib/api';
+import { ITEM_FLAGS } from '../lib/flags';
 import { CategoryPicker } from './CategoryPicker';
 import { ImagePicker } from './ImagePicker';
 import type { AdminItem, Category, ItemStatus, ItemTranslation } from '../types';
@@ -41,6 +42,10 @@ export function ItemEditModal({
   const [categoryKeys, setCategoryKeys] = useState<Set<string>>(
     () => new Set(item.category_keys),
   );
+  const [flags, setFlags] = useState<Record<'not_mobile' | 'nsfw', boolean>>({
+    not_mobile: item.not_mobile === 1,
+    nsfw: item.nsfw === 1,
+  });
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [showPicker, setShowPicker] = useState(false);
@@ -176,6 +181,8 @@ export function ItemEditModal({
           status,
           votes_left: left,
           votes_right: right,
+          not_mobile: flags.not_mobile,
+          nsfw: flags.nsfw,
           categoryKeys: [...categoryKeys],
         }),
       });
@@ -404,6 +411,28 @@ export function ItemEditModal({
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Flags */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Drapeaux
+            </label>
+            <div className="space-y-2">
+              {ITEM_FLAGS.map((flag) => (
+                <label key={flag.key} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={flags[flag.key]}
+                    onChange={(e) =>
+                      setFlags((f) => ({ ...f, [flag.key]: e.target.checked }))
+                    }
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                  <span className="text-sm text-gray-700">{flag.label}</span>
+                </label>
+              ))}
+            </div>
           </div>
 
           {/* Votes */}
