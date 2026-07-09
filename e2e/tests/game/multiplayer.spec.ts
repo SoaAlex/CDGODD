@@ -3,11 +3,16 @@ import { expect, test, type Page } from '@playwright/test';
 /** Swipe every card until this player's hand is done (buttons disappear). */
 async function voteAllCards(page: Page, side: 'vote-left' | 'vote-right') {
   const button = page.getByTestId(side);
-  // Bounded loop: rooms cap at 50 cards; seed yields at most 6.
-  for (let i = 0; i < 60; i++) {
-    if (!(await button.isVisible().catch(() => false))) break;
-    await button.click();
-    await page.waitForTimeout(150);
+  // Bounded loop: seed yields at most 6 cards. Each click gets a short
+  // actionability budget — on slow CI runners a hidden/animating button must
+  // end the loop, not wedge the whole test until its timeout.
+  for (let i = 0; i < 15; i++) {
+    try {
+      await button.click({ timeout: 5_000 });
+    } catch {
+      break; // hand done (button gone) or waiting/results screen
+    }
+    await page.waitForTimeout(200);
   }
 }
 
