@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef } from 'react';
+import { forwardRef, useImperativeHandle, useLayoutEffect, useRef } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -42,9 +42,23 @@ export const SwipeDeck = forwardRef<SwipeDeckHandle, Props>(function SwipeDeck(
   const { width } = useWindowDimensions();
   const tx = useSharedValue(0);
   const ty = useSharedValue(0);
+  // True while an exit animation is in flight; blocks gestures and repeat
+  // swipeOut calls (button mashing) so one visual swipe = one vote.
+  const busy = useSharedValue(false);
 
   const top = cards[0];
   const next = cards[1];
+
+  // Reset the drag in the same commit that promotes the next card — never
+  // from the vote callback. Resetting there races the re-render: the exited
+  // card gets one painted frame back at center (visible blink). A layout
+  // effect runs after the tree update but before paint, so the promoted card
+  // is never painted with the exited card's offset.
+  const topId = top?.id;
+  useLayoutEffect(() => {
+    tx.value = 0;
+    ty.value = 0;
+  }, [topId, tx, ty]);
 
   // Each exit animation gets an id; commit runs at most once per id
   // (reanimated completion callbacks can fire more than once on web dev,
@@ -55,12 +69,13 @@ export const SwipeDeck = forwardRef<SwipeDeckHandle, Props>(function SwipeDeck(
   const commit = (side: Side, id: number) => {
     if (committedId.current >= id) return;
     committedId.current = id;
+    busy.value = false;
     onSwipe(side);
-    tx.value = 0;
-    ty.value = 0;
   };
 
   const swipeOut = (side: Side) => {
+    if (busy.value) return;
+    busy.value = true;
     const id = ++swipeId.current;
     playSwipeSound(side);
     tx.value = withTiming((side === 'right' ? 1 : -1) * width * 1.5, {
@@ -77,10 +92,12 @@ export const SwipeDeck = forwardRef<SwipeDeckHandle, Props>(function SwipeDeck(
 
   const pan = Gesture.Pan()
     .onChange((e) => {
+      if (busy.value) return;
       tx.value += e.changeX;
       ty.value += e.changeY;
     })
     .onEnd((e) => {
+      if (busy.value) return;
       const threshold = width * COMMIT_RATIO;
       const flung = Math.abs(e.velocityX) > 800;
       if (Math.abs(tx.value) > threshold || flung) {
@@ -95,7 +112,11 @@ export const SwipeDeck = forwardRef<SwipeDeckHandle, Props>(function SwipeDeck(
       }
     });
 
+  // Explicit opacity: the promoted card previously carried nextStyle, whose
+  // inline opacity would otherwise linger on web. (transform is replaced
+  // wholesale, so scale needs no such reset.)
   const topStyle = useAnimatedStyle(() => ({
+    opacity: 1,
     transform: [
       { translateX: tx.value },
       { translateY: ty.value },
@@ -120,15 +141,20 @@ export const SwipeDeck = forwardRef<SwipeDeckHandle, Props>(function SwipeDeck(
 
   if (!top) return null;
 
+  // Both slots share one parent and are keyed by card id, so when the deck
+  // shifts React *moves* the next card's subtree to the top slot instead of
+  // re-rendering a reused instance with a new card — the expo-image never
+  // remounts or swaps sources, which is what caused the post-swipe blink
+  // (a 100ms cross-fade over the white card background).
   return (
-    <View style={styles.stack}>
-      {next && (
-        <Animated.View style={[styles.cardSlot, nextStyle]}>
-          <SwipeCard card={next} />
-        </Animated.View>
-      )}
-      <GestureDetector gesture={pan}>
-        <Animated.View style={[styles.cardSlot, topStyle]}>
+    <GestureDetector gesture={pan}>
+      <View style={styles.stack}>
+        {next && (
+          <Animated.View key={next.id} style={[styles.cardSlot, nextStyle]}>
+            <SwipeCard card={next} />
+          </Animated.View>
+        )}
+        <Animated.View key={top.id} style={[styles.cardSlot, topStyle]}>
           <SwipeCard card={top} />
           <Animated.View
             style={[styles.badge, styles.badgeLeft, leftBadge, styles.noPointer]}
@@ -145,8 +171,8 @@ export const SwipeDeck = forwardRef<SwipeDeckHandle, Props>(function SwipeDeck(
             </ThemedText>
           </Animated.View>
         </Animated.View>
-      </GestureDetector>
-    </View>
+      </View>
+    </GestureDetector>
   );
 });
 
