@@ -26,3 +26,7 @@ root rules in [`../../AGENTS.md`](../../AGENTS.md) apply.
 
 `pnpm --dir apps/admin dev` (port 5173, proxies `/api` → 8787; run the API too),
 drive with `preview_*`. Typecheck: `pnpm --dir apps/admin typecheck`.
+
+Playwright e2e (`e2e/tests/admin/`, run with `pnpm test:e2e`) covers login and
+item moderation. There are no test ids here — specs select by French labels
+and roles, so renaming visible text (tabs, buttons, nav) can break them.

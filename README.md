@@ -66,6 +66,22 @@ Run the three dev servers (each in its own terminal, or via the Claude
 
 Useful root scripts: `pnpm turbo typecheck`, `pnpm turbo build`.
 
+## Testing
+
+Three layers:
+
+| Layer | Where | Command |
+|-------|-------|---------|
+| Unit (zod schemas, label normalization) | `packages/shared/src/*.test.ts` | `pnpm --filter @cdgodd/shared test` |
+| API integration (real workerd: local D1/R2/Durable Objects) | `apps/api/test/` | `pnpm --dir apps/api test` |
+| Browser e2e (Playwright: admin + game web) | `e2e/tests/` | `pnpm test:e2e` |
+
+`pnpm test` runs the first two via turbo. E2E boots its own local stack —
+API on :8789 (`wrangler dev --local`, fresh migrated+seeded D1 in
+`.wrangler/e2e-state`, never prod data), admin on :5178, game web on :8082.
+CI runs typecheck + `turbo test` before every deploy; e2e runs as a parallel
+non-blocking job on `main`.
+
 ## Deployment
 
 **CI (recommended):** every push to `main` runs

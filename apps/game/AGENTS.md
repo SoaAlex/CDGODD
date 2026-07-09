@@ -26,3 +26,8 @@ Web is the fastest loop: `pnpm --dir apps/game exec expo start --web`
 (port 8081), drive with `preview_*` tools. Typecheck:
 `pnpm --dir apps/game typecheck`. Native builds need a device/simulator — call
 that out rather than claiming native is verified.
+
+Playwright e2e (`e2e/tests/game/`, run with `pnpm test:e2e`) covers solo,
+search, multiplayer and settings via the `testID`s → `data-testid` on web.
+Keep existing `testID`s stable; add one when building a new interactive
+element an e2e spec will need.

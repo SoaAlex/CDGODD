@@ -9,11 +9,14 @@ aren't obvious from the code.
 ## TL;DR
 
 - pnpm 10 + Node 22 monorepo, Turborepo, TypeScript everywhere (strict).
-- Three Workers (`apps/api`, `apps/admin`, `apps/game`) + one shared package.
-- **The real correctness gate is `pnpm turbo typecheck`.** Run it before every
-  commit. It is what CI runs and what the pre-commit hook enforces.
+- Three Workers (`apps/api`, `apps/admin`, `apps/game`) + one shared package +
+  an `e2e/` Playwright workspace.
+- **Correctness gates: `pnpm turbo typecheck` then `pnpm test`.** Both run in
+  CI before any deploy; the pre-commit hook enforces typecheck.
 - **Every branch shares PRODUCTION D1 + R2 bindings.** There are no dev/staging
-  data stores. See "Danger zones" below before touching data.
+  data stores. See "Danger zones" below before touching data. Tests never
+  touch prod: API tests run in workerd with per-file isolated D1; e2e runs
+  against `wrangler dev --local` with its own persist dir.
 
 ## Layout
 
@@ -32,7 +35,9 @@ Run from repo root unless noted. Turbo caches, so repeated runs are cheap.
 
 ```bash
 pnpm install                      # Node 22, pnpm 10
-pnpm turbo typecheck              # THE correctness gate — run before committing
+pnpm turbo typecheck              # gate 1 — run before committing
+pnpm test                         # gate 2 — shared units + API workerd tests
+pnpm test:e2e                     # Playwright (boots api :8789 / admin :5178 / game :8082)
 pnpm turbo build
 pnpm --dir apps/api dev           # API  → http://localhost:8787
 pnpm --dir apps/admin dev         # Admin → http://localhost:5173 (proxies /api → 8787)
@@ -48,13 +53,23 @@ browser.
 Do not claim a change works until it is exercised. Order of trust:
 
 1. `pnpm turbo typecheck` — must pass. Non-negotiable.
-2. For anything the browser renders, drive it: start the relevant dev server via
+2. `pnpm test` — shared unit tests + API integration tests (real workerd via
+   `@cloudflare/vitest-pool-workers`: real local D1/R2/DO, migrations + seed
+   applied per test file, reseeded before every test).
+3. For anything the browser renders, drive it: start the relevant dev server via
    `preview_start`, then use the `preview_*` tools (snapshot, console, network).
-   Never ask the human to check manually.
-3. For API/data changes, hit the endpoint or drive the flow end-to-end.
+   Never ask the human to check manually. `pnpm test:e2e` covers the main
+   admin + game flows end-to-end.
 
 `turbo lint` exists but only `apps/game` has a real lint script; treat lint as
-advisory, not a gate. Typecheck is the gate.
+advisory, not a gate.
+
+Test layout: `packages/shared/src/*.test.ts` (pure units),
+`apps/api/test/*.test.ts` (integration, see `apps/api/AGENTS.md`),
+`e2e/tests/**` (Playwright, ports 8789/5178/8082, admin token
+`cdgodd-e2e-token`). API tests and e2e specs assume the canonical
+`apps/api/src/db/seed.sql` (3 categories, 6 approved items) — changing the
+seed means updating tests.
 
 ## Conventions
 
@@ -81,8 +96,9 @@ advisory, not a gate. Typecheck is the gate.
   state. Renaming a DO class or its binding needs a migration and can drop
   active rooms — coordinate, don't rename casually.
 - **Deploys happen in CI on push.** Every push to any branch uploads a preview
-  version of the prod Workers; pushing to `main` deploys live. Commit/push only
-  when asked.
+  version of the prod Workers; pushing to `main` deploys live. CI gates:
+  typecheck + `turbo test` (blocking); Playwright e2e runs as a parallel
+  non-blocking job on `main`. Commit/push only when asked.
 
 ## Finishing work
 

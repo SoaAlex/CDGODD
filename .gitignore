@@ -11,3 +11,5 @@ build/
 !.env.example
 .dev.vars
 .claude/settings.local.json
+e2e/test-results/
+e2e/playwright-report/

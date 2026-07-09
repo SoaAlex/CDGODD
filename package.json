@@ -8,6 +8,7 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
+    "test:e2e": "pnpm --filter @cdgodd/e2e test:e2e",
     "prepare": "git config core.hooksPath .githooks || true"
   },
   "devDependencies": {

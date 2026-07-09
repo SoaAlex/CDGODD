@@ -37,7 +37,28 @@ bindings/secrets; this file is agent conventions. Root rules in
 - Renaming the `Room` DO class/binding can drop live rooms — needs a DO
   migration; coordinate first.
 
+## Tests
+
+`pnpm --dir apps/api test` — vitest + `@cloudflare/vitest-pool-workers`: tests
+run inside real workerd with the real bindings (local D1, R2, the Room DO).
+Conventions (`test/`):
+
+- `test/setup.ts` applies migrations once per file and **reseeds before every
+  test** (state persists within a file otherwise — the v4 pool isolates per
+  FILE, not per test). Deterministic ids via the `sqlite_sequence` reset.
+- Requests go through `SELF.fetch` via `test/helpers.ts` (`api()`, `vote()`).
+  Note: workerd strips `cf-connecting-ip` — the identity middleware always
+  sees `0.0.0.0` in tests.
+- **Mock `globalThis.fetch`** (`vi.stubGlobal`) for anything external:
+  Turnstile siteverify, Wikimedia/Pixabay, image-from-source bytes.
+- **Never let `env.AI.run` call through** — the AI binding hits the real,
+  billed API even locally. Replace it: `env.AI = { run: vi.fn(...) }`.
+- Room DO: use the stub (`env.ROOMS.get(...)`) + WebSocket pairs;
+  `runDurableObjectAlarm` for expiry. Never assert card order
+  (`ORDER BY RANDOM()`).
+- Tests assume the canonical seed (3 categories, 6 approved items).
+
 ## Verify
 
 `pnpm --dir apps/api dev` (port 8787), then curl/drive the endpoint. Typecheck
-with `pnpm --dir apps/api typecheck`.
+with `pnpm --dir apps/api typecheck` (covers `test/` too).
