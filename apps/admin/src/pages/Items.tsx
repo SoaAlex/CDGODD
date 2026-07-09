@@ -1,17 +1,21 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import {
   CheckCircleIcon,
   XCircleIcon,
   ArrowUturnLeftIcon,
   PencilSquareIcon,
   TrashIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../hooks/useAuth';
 import { API, apiGet, authHeaders, imageUrl } from '../lib/api';
 import { ItemEditModal } from '../components/ItemEditModal';
+import { CategoryPicker } from '../components/CategoryPicker';
 import type { AdminItem, Category, ItemStatus } from '../types';
 
 type Filter = 'all' | ItemStatus;
+type VoteField = 'votes_left' | 'votes_right';
 const TABS: Filter[] = ['all', 'pending', 'approved', 'rejected'];
 const TAB_LABELS: Record<Filter, string> = {
   all: 'Tous',
@@ -34,12 +38,87 @@ const parseItem = (r: RawItem): AdminItem => ({
   category_keys: r.category_keys ? r.category_keys.split(',') : [],
 });
 
+/**
+ * Click-to-edit cell: renders the value as a button; a click swaps in an
+ * input. Enter/blur commits (via onSave), Escape cancels. The input stays
+ * open when onSave reports failure so the draft isn't lost.
+ */
+function InlineText({
+  value,
+  display,
+  inputType = 'text',
+  inputClass = 'w-40',
+  onSave,
+}: {
+  value: string;
+  /** Collapsed rendering; defaults to the raw value. */
+  display?: ReactNode;
+  inputType?: 'text' | 'number';
+  inputClass?: string;
+  onSave: (value: string) => Promise<boolean>;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value);
+  const [busy, setBusy] = useState(false);
+
+  async function commit() {
+    if (draft === value) {
+      setEditing(false);
+      return;
+    }
+    setBusy(true);
+    const ok = await onSave(draft);
+    setBusy(false);
+    setEditing(!ok);
+  }
+
+  if (!editing) {
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          setDraft(value);
+          setEditing(true);
+        }}
+        className="-mx-1 cursor-text rounded px-1 py-0.5 text-left transition-colors hover:bg-blue-50"
+        title="Cliquer pour modifier"
+      >
+        {display ?? value}
+      </button>
+    );
+  }
+
+  return (
+    <input
+      autoFocus
+      type={inputType}
+      min={inputType === 'number' ? 0 : undefined}
+      maxLength={80}
+      value={draft}
+      disabled={busy}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={() => void commit()}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          e.currentTarget.blur(); // commit via onBlur
+        } else if (e.key === 'Escape') {
+          setDraft(value); // a late blur then commits a no-op
+          setEditing(false);
+        }
+      }}
+      className={`input-field !px-2 !py-1 text-sm ${inputClass}`}
+    />
+  );
+}
+
 export function Items() {
   const { token } = useAuth();
   const [status, setStatus] = useState<Filter>('all');
   const [items, setItems] = useState<AdminItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [editing, setEditing] = useState<AdminItem | null>(null);
+  // Item whose category cell is expanded into a picker.
+  const [catEditing, setCatEditing] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -83,13 +162,75 @@ export function Items() {
       .catch(() => setCategories([]));
   }, []);
 
-  async function setItemStatus(id: number, next: ItemStatus) {
-    await fetch(`${API}/admin/items/${id}`, {
-      method: 'PATCH',
-      headers: { ...authHeaders(token), 'content-type': 'application/json' },
-      body: JSON.stringify({ status: next }),
-    });
-    void load();
+  /**
+   * PATCH one item and, on success, merge `local` into the row in place —
+   * no full reload, so the table doesn't flash. Rows whose status no longer
+   * matches the active tab are dropped, mirroring what a reload would show.
+   */
+  async function patchItem(
+    id: number,
+    body: Record<string, unknown>,
+    local: Partial<AdminItem>,
+  ): Promise<boolean> {
+    setError(null);
+    try {
+      const res = await fetch(`${API}/admin/items/${id}`, {
+        method: 'PATCH',
+        headers: { ...authHeaders(token), 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = (await res.json()) as { ok?: boolean; error?: string };
+      if (!data.ok) throw new Error(data.error ?? `API ${res.status}`);
+      setItems((list) =>
+        list
+          .map((x) => (x.id === id ? { ...x, ...local } : x))
+          .filter((x) => status === 'all' || x.status === status),
+      );
+      return true;
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Erreur');
+      return false;
+    }
+  }
+
+  function setItemStatus(id: number, next: ItemStatus) {
+    void patchItem(id, { status: next }, { status: next });
+  }
+
+  async function saveLabel(it: AdminItem, raw: string): Promise<boolean> {
+    const label = raw.trim();
+    if (!label) {
+      setError('Label requis');
+      return false;
+    }
+    return patchItem(it.id, { label }, { label });
+  }
+
+  async function saveVotes(
+    it: AdminItem,
+    field: VoteField,
+    raw: string,
+  ): Promise<boolean> {
+    const n = Number(raw);
+    if (!Number.isInteger(n) || n < 0) {
+      setError('Votes invalides (entier ≥ 0)');
+      return false;
+    }
+    return patchItem(it.id, { [field]: n }, { [field]: n });
+  }
+
+  function bumpVotes(it: AdminItem, field: VoteField, delta: number) {
+    const next = Math.max(0, it[field] + delta);
+    if (next === it[field]) return;
+    void patchItem(it.id, { [field]: next }, { [field]: next });
+  }
+
+  function toggleCategory(it: AdminItem, key: string) {
+    const next = new Set(it.category_keys);
+    if (next.has(key)) next.delete(key);
+    else next.add(key);
+    const keys = [...next];
+    void patchItem(it.id, { categoryKeys: keys }, { category_keys: keys });
   }
 
   async function deleteItem(item: AdminItem) {
@@ -176,35 +317,113 @@ export function Items() {
                     )}
                   </td>
                   <td className="table-cell">
-                    {it.label ?? (
-                      <span className="text-gray-400">Sans label</span>
-                    )}
+                    <InlineText
+                      value={it.label ?? ''}
+                      display={
+                        it.label ?? (
+                          <span className="text-gray-400">Sans label</span>
+                        )
+                      }
+                      onSave={(v) => saveLabel(it, v)}
+                    />
                   </td>
                   <td className="table-cell">
-                    {it.category_keys.length > 0 ? (
-                      <div className="flex flex-wrap gap-1">
-                        {it.category_keys.map((key) => (
-                          <span
-                            key={key}
-                            className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800"
-                          >
-                            {categories.find((c) => c.key === key)?.name ?? key}
-                          </span>
-                        ))}
+                    {catEditing === it.id ? (
+                      <div className="w-72 space-y-1">
+                        <CategoryPicker
+                          categories={categories}
+                          selected={new Set(it.category_keys)}
+                          onToggle={(key) => toggleCategory(it, key)}
+                          onCreated={(cat) =>
+                            setCategories((list) => [...list, cat])
+                          }
+                          token={token}
+                          onError={setError}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setCatEditing(null)}
+                          className="text-xs text-blue-600 hover:underline"
+                        >
+                          Fermer
+                        </button>
                       </div>
                     ) : (
-                      <span className="text-gray-400">—</span>
+                      <button
+                        type="button"
+                        onClick={() => setCatEditing(it.id)}
+                        className="-mx-1 rounded px-1 py-0.5 text-left transition-colors hover:bg-blue-50"
+                        title="Cliquer pour modifier"
+                      >
+                        {it.category_keys.length > 0 ? (
+                          <span className="flex flex-wrap gap-1">
+                            {it.category_keys.map((key) => (
+                              <span
+                                key={key}
+                                className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800"
+                              >
+                                {categories.find((c) => c.key === key)?.name ??
+                                  key}
+                              </span>
+                            ))}
+                          </span>
+                        ) : (
+                          <span className="text-gray-400">—</span>
+                        )}
+                      </button>
                     )}
                   </td>
                   <td className="table-cell">
-                    <span
-                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${STATUS_STYLES[it.status]}`}
+                    <select
+                      value={it.status}
+                      onChange={(e) =>
+                        setItemStatus(it.id, e.target.value as ItemStatus)
+                      }
+                      className={`cursor-pointer appearance-none rounded-full border-0 px-2 py-1 text-xs font-semibold ${STATUS_STYLES[it.status]}`}
+                      title="Cliquer pour modifier"
                     >
-                      {it.status}
-                    </span>
+                      {(['pending', 'approved', 'rejected'] as ItemStatus[]).map(
+                        (s) => (
+                          <option key={s} value={s}>
+                            {s}
+                          </option>
+                        ),
+                      )}
+                    </select>
                   </td>
-                  <td className="table-cell">{it.votes_left}</td>
-                  <td className="table-cell">{it.votes_right}</td>
+                  {(['votes_left', 'votes_right'] as VoteField[]).map(
+                    (field) => (
+                      <td key={field} className="table-cell">
+                        <div className="flex items-center gap-1">
+                          <InlineText
+                            value={String(it[field])}
+                            inputType="number"
+                            inputClass="w-16"
+                            onSave={(v) => saveVotes(it, field, v)}
+                          />
+                          <div className="flex flex-col">
+                            <button
+                              type="button"
+                              onClick={() => bumpVotes(it, field, 1)}
+                              className="text-gray-400 transition-colors hover:text-blue-600"
+                              title="+1 vote"
+                            >
+                              <ChevronUpIcon className="h-3.5 w-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => bumpVotes(it, field, -1)}
+                              disabled={it[field] === 0}
+                              className="text-gray-400 transition-colors hover:text-blue-600 disabled:opacity-30"
+                              title="-1 vote"
+                            >
+                              <ChevronDownIcon className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      </td>
+                    ),
+                  )}
                   <td className="table-cell">
                     {it.report_count > 0 ? (
                       <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
