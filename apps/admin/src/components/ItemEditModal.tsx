@@ -7,6 +7,7 @@ import {
   CheckIcon,
 } from '@heroicons/react/24/outline';
 import { API, apiGet, authHeaders, imageUrl } from '../lib/api';
+import { CategoryPicker } from './CategoryPicker';
 import type { AdminItem, Category, ItemStatus, ItemTranslation } from '../types';
 
 const STATUSES: ItemStatus[] = ['pending', 'approved', 'rejected'];
@@ -38,11 +39,6 @@ export function ItemEditModal({
   const [categoryKeys, setCategoryKeys] = useState<Set<string>>(
     () => new Set(item.category_keys),
   );
-  // Categories created inline here, not yet in the parent `categories` prop.
-  const [extraCategories, setExtraCategories] = useState<Category[]>([]);
-  const [addingCategory, setAddingCategory] = useState(false);
-  const [newCatName, setNewCatName] = useState('');
-  const [catBusy, setCatBusy] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -128,50 +124,6 @@ export function ItemEditModal({
         setNewTransLabel('');
       }
     });
-  }
-
-  /** name → url-safe key: strip accents, non [a-z0-9] to dashes, max 50. */
-  function slugify(name: string): string {
-    return name
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-      .slice(0, 50);
-  }
-
-  async function createCategory() {
-    const name = newCatName.trim();
-    const key = slugify(name);
-    if (!name || !key) {
-      setError('Nom de catégorie invalide');
-      return;
-    }
-    const all = [...categories, ...extraCategories];
-    if (all.some((cat) => cat.key === key)) {
-      setError('Catégorie déjà existante');
-      return;
-    }
-    setCatBusy(true);
-    setError(null);
-    try {
-      const res = await fetch(`${API}/admin/categories`, {
-        method: 'POST',
-        headers: { ...authHeaders(token), 'content-type': 'application/json' },
-        body: JSON.stringify({ key, translations: { fr: name } }),
-      });
-      const data = (await res.json()) as { ok?: boolean; error?: string };
-      if (!data.ok) throw new Error(data.error ?? `API ${res.status}`);
-      setExtraCategories((list) => [...list, { key, name }]);
-      setCategoryKeys((prev) => new Set(prev).add(key));
-      setNewCatName('');
-      setAddingCategory(false);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Erreur');
-    } finally {
-      setCatBusy(false);
-    }
   }
 
   function pickFile(f: File | undefined) {
@@ -382,95 +334,20 @@ export function ItemEditModal({
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Catégories
             </label>
-            <div className="flex flex-wrap items-center gap-2">
-              {[...categories, ...extraCategories].map((cat) => {
-                const checked = categoryKeys.has(cat.key);
-                return (
-                  <label
-                    key={cat.key}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm cursor-pointer transition-colors ${
-                      checked
-                        ? 'bg-blue-50 border-blue-500 text-blue-700'
-                        : 'bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() =>
-                        setCategoryKeys((prev) => {
-                          const next = new Set(prev);
-                          if (next.has(cat.key)) next.delete(cat.key);
-                          else next.add(cat.key);
-                          return next;
-                        })
-                      }
-                      className="sr-only"
-                    />
-                    {cat.name}
-                  </label>
-                );
-              })}
-
-              {/* Inline "add category": + button becomes a text field. */}
-              {addingCategory ? (
-                <div className="flex items-center gap-1">
-                  <input
-                    type="text"
-                    autoFocus
-                    value={newCatName}
-                    onChange={(e) => setNewCatName(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        void createCategory();
-                      } else if (e.key === 'Escape') {
-                        setAddingCategory(false);
-                        setNewCatName('');
-                      }
-                    }}
-                    maxLength={80}
-                    placeholder="Nouvelle catégorie"
-                    className="input-field w-44 !py-1.5 text-sm"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => void createCategory()}
-                    disabled={catBusy}
-                    className="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 p-2 rounded transition-colors disabled:opacity-40"
-                    title="Créer la catégorie"
-                  >
-                    <CheckIcon className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAddingCategory(false);
-                      setNewCatName('');
-                    }}
-                    disabled={catBusy}
-                    className="text-gray-500 hover:text-gray-800 bg-gray-50 hover:bg-gray-100 p-2 rounded transition-colors disabled:opacity-40"
-                    title="Annuler"
-                  >
-                    <XMarkIcon className="h-4 w-4" />
-                  </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setAddingCategory(true)}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-dashed border-gray-400 text-sm text-gray-600 hover:bg-gray-100 transition-colors"
-                  title="Ajouter une catégorie"
-                >
-                  <PlusIcon className="h-4 w-4" />
-                  Catégorie
-                </button>
-              )}
-
-              {categories.length === 0 && extraCategories.length === 0 && (
-                <span className="text-sm text-gray-400">Aucune catégorie</span>
-              )}
-            </div>
+            <CategoryPicker
+              categories={categories}
+              selected={categoryKeys}
+              onToggle={(key) =>
+                setCategoryKeys((prev) => {
+                  const next = new Set(prev);
+                  if (next.has(key)) next.delete(key);
+                  else next.add(key);
+                  return next;
+                })
+              }
+              token={token}
+              onError={setError}
+            />
           </div>
 
           {/* Status */}

@@ -154,6 +154,29 @@ admin.post('/items', async (c) => {
   const image = form.get('image');
   if (!label) return c.json({ error: 'label required' }, 400);
 
+  // Optional extra labels: JSON object { "en": "Coffee", ... }.
+  const translationsRaw = form.get('translations');
+  let extraTranslations: [string, string][] = [];
+  if (typeof translationsRaw === 'string' && translationsRaw !== '') {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(translationsRaw);
+    } catch {
+      return c.json({ error: 'bad translations JSON' }, 400);
+    }
+    if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return c.json({ error: 'bad translations JSON' }, 400);
+    }
+    extraTranslations = Object.entries(parsed as Record<string, unknown>)
+      .map(([l, v]) => [l, String(v ?? '').trim()] as [string, string])
+      .filter(([l]) => l !== lang);
+    for (const [l, v] of extraTranslations) {
+      if (!LANG_RE.test(l) || !v || v.length > 80) {
+        return c.json({ error: `bad translation for lang "${l}"` }, 400);
+      }
+    }
+  }
+
   const categoryIds = await resolveCategoryIds(c.env.DB, categoryKeys);
   if (categoryIds === null) return c.json({ error: 'unknown category' }, 400);
 
@@ -185,6 +208,13 @@ admin.post('/items', async (c) => {
   )
     .bind(item!.id, lang, label)
     .run();
+  for (const [l, v] of extraTranslations) {
+    await c.env.DB.prepare(
+      `INSERT INTO item_translations (item_id, lang, label) VALUES (?1, ?2, ?3)`,
+    )
+      .bind(item!.id, l, v)
+      .run();
+  }
 
   if (categoryIds.length > 0) {
     await setItemCategories(c.env.DB, item!.id, categoryIds);

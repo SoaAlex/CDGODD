@@ -4,10 +4,13 @@ import {
   PhotoIcon,
   ArrowUpTrayIcon,
   XMarkIcon,
+  PlusIcon,
+  TrashIcon,
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../hooks/useAuth';
 import { API, authHeaders } from '../lib/api';
-import type { Category } from '../types';
+import { CategoryPicker } from '../components/CategoryPicker';
+import type { Category, ItemTranslation } from '../types';
 
 const MAX_BYTES = 10 * 1024 * 1024;
 const VALID_TYPES = [
@@ -26,6 +29,10 @@ export function AddItem() {
   const [label, setLabel] = useState('');
   const [categoryKeys, setCategoryKeys] = useState<Set<string>>(new Set());
   const [categories, setCategories] = useState<Category[]>([]);
+  // Extra labels sent with the create call (fr is the main field above).
+  const [translations, setTranslations] = useState<ItemTranslation[]>([]);
+  const [newLang, setNewLang] = useState('');
+  const [newTransLabel, setNewTransLabel] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -60,10 +67,35 @@ export function AddItem() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
+  function addTranslation() {
+    const lang = newLang.trim().toLowerCase();
+    if (!/^[a-z]{2}$/.test(lang) || lang === 'fr') {
+      setError('Langue : code ISO à 2 lettres (en, es…), fr est géré au-dessus');
+      return;
+    }
+    if (!newTransLabel.trim()) {
+      setError('Label traduit requis');
+      return;
+    }
+    setError(null);
+    const value = newTransLabel.trim();
+    setTranslations((list) =>
+      list.some((t) => t.lang === lang)
+        ? list.map((t) => (t.lang === lang ? { lang, label: value } : t))
+        : [...list, { lang, label: value }],
+    );
+    setNewLang('');
+    setNewTransLabel('');
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (label.trim() === '') {
       setError('Label requis');
+      return;
+    }
+    if (translations.some((t) => t.label.trim() === '')) {
+      setError('Label traduit vide — complétez ou supprimez la ligne');
       return;
     }
     setLoading(true);
@@ -73,6 +105,14 @@ export function AddItem() {
     const form = new FormData();
     form.set('label', label.trim());
     form.set('lang', 'fr');
+    if (translations.length > 0) {
+      form.set(
+        'translations',
+        JSON.stringify(
+          Object.fromEntries(translations.map((t) => [t.lang, t.label.trim()])),
+        ),
+      );
+    }
     for (const key of categoryKeys) form.append('categoryKeys', key);
     if (file) form.set('image', file);
 
@@ -133,43 +173,93 @@ export function AddItem() {
             />
           </div>
 
+          {/* Other translations — sent together with the create call. */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Autres traductions
+            </label>
+            <div className="space-y-2">
+              {translations.map((tr) => (
+                <div key={tr.lang} className="flex items-center gap-2">
+                  <span className="w-10 shrink-0 text-center text-xs font-semibold uppercase text-gray-500">
+                    {tr.lang}
+                  </span>
+                  <input
+                    type="text"
+                    value={tr.label}
+                    maxLength={80}
+                    onChange={(e) =>
+                      setTranslations((list) =>
+                        list.map((t) =>
+                          t.lang === tr.lang
+                            ? { ...t, label: e.target.value }
+                            : t,
+                        ),
+                      )
+                    }
+                    className="input-field flex-1"
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setTranslations((list) =>
+                        list.filter((t) => t.lang !== tr.lang),
+                      )
+                    }
+                    className="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 p-2 rounded transition-colors"
+                    title="Supprimer la traduction"
+                  >
+                    <TrashIcon className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={newLang}
+                  onChange={(e) => setNewLang(e.target.value)}
+                  maxLength={2}
+                  placeholder="en"
+                  className="input-field w-16 text-center"
+                />
+                <input
+                  type="text"
+                  value={newTransLabel}
+                  onChange={(e) => setNewTransLabel(e.target.value)}
+                  maxLength={80}
+                  placeholder="Label traduit"
+                  className="input-field flex-1"
+                />
+                <button
+                  type="button"
+                  onClick={addTranslation}
+                  className="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 p-2 rounded transition-colors"
+                  title="Ajouter une traduction"
+                >
+                  <PlusIcon className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Catégories
             </label>
-            <div className="flex flex-wrap gap-2">
-              {categories.map((c) => {
-                const checked = categoryKeys.has(c.key);
-                return (
-                  <label
-                    key={c.key}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm cursor-pointer transition-colors ${
-                      checked
-                        ? 'bg-blue-50 border-blue-500 text-blue-700'
-                        : 'bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() =>
-                        setCategoryKeys((prev) => {
-                          const next = new Set(prev);
-                          if (next.has(c.key)) next.delete(c.key);
-                          else next.add(c.key);
-                          return next;
-                        })
-                      }
-                      className="sr-only"
-                    />
-                    {c.name}
-                  </label>
-                );
-              })}
-              {categories.length === 0 && (
-                <span className="text-sm text-gray-400">Aucune catégorie</span>
-              )}
-            </div>
+            <CategoryPicker
+              categories={categories}
+              selected={categoryKeys}
+              onToggle={(key) =>
+                setCategoryKeys((prev) => {
+                  const next = new Set(prev);
+                  if (next.has(key)) next.delete(key);
+                  else next.add(key);
+                  return next;
+                })
+              }
+              token={token}
+              onError={setError}
+            />
           </div>
 
           <div>
