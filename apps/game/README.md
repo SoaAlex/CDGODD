@@ -12,6 +12,9 @@ Android**. The web export is served as an assets-only Cloudflare Worker.
   web / Gauche–Droite buttons. Deck is batch-fetched with the next few card
   images prefetched. Global results are hidden by default; a toggle shows the
   previous card's result and, when on, the live tally of the current card.
+  Cards with a free-license image show a small ⓘ badge — tap for the credit
+  strip (author · license, links to the source page); AI-generated images get
+  a static "IA" badge (driven by `DeckCard.imageAttribution`).
 - **Free search** — find an item and vote on it, or propose a new one (moderated).
 - **Multiplayer** — create/join a room by 6-char code; everyone gets the same
   deck and swipes it at their own pace. Batch mode reveals all results at the

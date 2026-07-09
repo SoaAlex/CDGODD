@@ -19,7 +19,11 @@ A sidebar-navigated SPA, all talking to the API with a bearer token:
   thumbnails, category and status badges. Quick actions (approve, reject, reset
   to pending) plus a full **edit modal**: replace the image, rename the label,
   toggle categories (an item can have several), override vote counts, and set
-  status.
+  status. The image section includes a **free-license picker** ("Chercher une
+  image"): searches Wikimedia Commons + Pixabay via
+  `GET /admin/image-candidates`, one click copies the candidate to R2 with its
+  attribution (`POST /admin/items/:id/image-from-source`), and a "Générer par
+  IA" button generates a Workers AI image (`POST /admin/items/:id/ai-image`).
 - **Créer un item** (`/add-item`) — create an item with a French label,
   categories, and drag-and-drop image (uploaded to R2); goes live immediately.
 - **Catégories** (`/categories`) — create categories (key + French name) and
@@ -46,7 +50,8 @@ src/
   App.tsx              routes + AuthProvider
   hooks/useAuth.tsx    token context (login/logout/verify)
   lib/api.ts           API base, bearer headers, image URLs
-  components/          Layout (sidebar + top bar), ProtectedRoute, ItemEditModal
+  components/          Layout (sidebar + top bar), ProtectedRoute, ItemEditModal,
+                       CategoryPicker, ImagePicker
   pages/               Login, Dashboard, Items, AddItem, Reports
   index.css            Tailwind + shared .card/.btn/.table utility classes
 ```

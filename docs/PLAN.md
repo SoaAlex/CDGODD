@@ -118,7 +118,12 @@ CREATE TABLE items (
   report_count INTEGER NOT NULL DEFAULT 0,
   status      TEXT NOT NULL DEFAULT 'pending', -- pending|approved|rejected
   submitted_by TEXT,                        -- session id, nullable
-  created_at  INTEGER NOT NULL              -- epoch ms
+  created_at  INTEGER NOT NULL,             -- epoch ms
+  -- Image attribution (migration 0003): all NULL = manual upload, no credit.
+  image_source TEXT,                        -- 'wikimedia' | 'pixabay' | 'ai'
+  image_author TEXT,                        -- plain text, HTML stripped
+  image_license TEXT,                       -- 'CC BY-SA 4.0' | 'Public domain' | … | 'ai-generated'
+  image_source_url TEXT                     -- Commons file page / Pixabay page
 );
 CREATE INDEX idx_items_status ON items(status);
 
@@ -180,6 +185,9 @@ All write endpoints carry a **Cloudflare Turnstile token** (privacy-friendly, no
 **Admin (authenticated):**
 - `GET  /admin/items` (filter by status), `PATCH /admin/items/:id` (approve/reject/edit)
 - `POST /admin/items` (create + upload image to R2)
+- `GET  /admin/image-candidates?q=` (free-license search: Wikimedia Commons + Pixabay)
+- `POST /admin/items/:id/image-from-source` (copy candidate → R2 + attribution)
+- `POST /admin/items/:id/ai-image` (Workers AI flux-1-schnell fallback)
 - `GET  /admin/submissions` (pending queue)
 - `GET  /admin/reports` (flagged items)
 - `GET  /admin/stats` (vote distributions, top items)
@@ -191,6 +199,8 @@ Admin auth: simplest viable = Cloudflare Access in front of the admin routes/Pag
 ## 5. Key subsystems
 
 **Image pipeline**: admin uploads → Worker puts object in R2 → store `image_key`. Client builds URL as `${CDN_BASE}/${image_key}` (optionally via Cloudflare Images variant for size/WebP). Swapping CDN never requires a DB migration.
+
+**Image sourcing (copyright-safe)**: user submissions are label-only, so the admin picker (`ImagePicker` in the edit modal) searches **Wikimedia Commons** (real entities; no key) + **Pixabay** (generic concepts; `PIXABAY_KEY` secret) at review time, filtered to genuinely free licenses (CC0/PD/CC BY/CC BY-SA — no NC/ND). Picking a candidate copies the image server-side to R2 and stores attribution on the item; `DeckCard.imageAttribution` drives an ⓘ credit overlay on the card (author + license + source link, as CC BY requires). Fallback: **Workers AI flux-1-schnell** generation (~$0.001/image), stored as `image_license='ai-generated'` → "IA" badge, no credit. Gotchas encoded in `image-sources.ts`: Wikimedia requires a descriptive User-Agent and only serves fixed thumb-width buckets (330px ok, 320px → 400).
 
 **Preloading**: `useDeck` fetches 25 items per call; `useImagePreload` prefetches the next 3–5 card images (`Image.prefetch`) while the top card is shown. Refetch when ~5 cards remain. Deck cards carry their global tallies, so vote results render instantly (own vote added optimistically, reconciled by the vote response); on web, a Turnstile token is pre-minted in the background so votes never wait on the challenge.
 
