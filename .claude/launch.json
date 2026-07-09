@@ -38,6 +38,15 @@
       "port": 8081
     },
     {
+      "name": "game-dist",
+      "runtimeExecutable": "zsh",
+      "runtimeArgs": [
+        "-c",
+        "export PATH=\"$HOME/.nvm/versions/node/v22.15.0/bin:$PATH\"; exec npx serve --no-clipboard -l 8090 apps/game/dist"
+      ],
+      "port": 8090
+    },
+    {
       "name": "game-web-alt",
       "runtimeExecutable": "zsh",
       "runtimeArgs": [

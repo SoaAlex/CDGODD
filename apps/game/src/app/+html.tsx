@@ -18,6 +18,16 @@ export default function Root({ children }: PropsWithChildren) {
         />
         <meta name="google-adsense-account" content="ca-pub-5889686672909524" />
         <ScrollViewStyleReset />
+        {/* ScrollViewStyleReset sizes the app with `height:100%`, which mobile
+            browsers resolve against the large viewport (URL bar hidden): the
+            deck and bottom buttons end up clipped behind the browser chrome.
+            `dvh` tracks the *visible* viewport, so this must come after the
+            reset to win the cascade. */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: '@supports(height:100dvh){#root,body,html{height:100dvh}}',
+          }}
+        />
       </head>
       <body>{children}</body>
     </html>
