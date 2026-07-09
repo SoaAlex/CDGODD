@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -38,6 +39,7 @@ export default function RoomScreen() {
   const [replayMode, setReplayMode] = useState<RoomMode>('batch');
   const [replayRoundSize, setReplayRoundSize] = useState(10);
   const [replayCategoryKeys, setReplayCategoryKeys] = useState<string[]>([]);
+  const [linkCopied, setLinkCopied] = useState(false);
   const {
     room,
     deck,
@@ -59,6 +61,24 @@ export default function RoomScreen() {
   useEffect(() => {
     if (phase !== 'results') setConfiguring(false);
   }, [phase]);
+
+  // "Lien copié !" feedback reverts to the copy button after a moment.
+  useEffect(() => {
+    if (!linkCopied) return;
+    const timer = setTimeout(() => setLinkCopied(false), 2000);
+    return () => clearTimeout(timer);
+  }, [linkCopied]);
+
+  const copyJoinLink = async (roomCode: string) => {
+    // Web keeps whatever origin we're on (preview builds included);
+    // native has no origin, so link to the prod site.
+    const origin =
+      Platform.OS === 'web'
+        ? window.location.origin
+        : 'https://cestdegaucheoudedroite.com';
+    await Clipboard.setStringAsync(`${origin}/room/${roomCode}`);
+    setLinkCopied(true);
+  };
 
   // Web: vote with the keyboard arrows.
   useEffect(() => {
@@ -305,6 +325,26 @@ export default function RoomScreen() {
         <ThemedText type="title" style={styles.code} selectable>
           {room.code}
         </ThemedText>
+        <Pressable
+          testID="copy-link"
+          onPress={() => copyJoinLink(room.code)}
+          style={({ pressed }) => [
+            styles.copyButton,
+            {
+              backgroundColor: theme.backgroundElement,
+              opacity: pressed ? 0.8 : 1,
+            },
+          ]}
+        >
+          <Ionicons
+            name={linkCopied ? 'checkmark' : 'link-outline'}
+            size={16}
+            color={theme.textSecondary}
+          />
+          <ThemedText type="small" themeColor="textSecondary">
+            {linkCopied ? t('multiplayer.linkCopied') : t('multiplayer.copyLink')}
+          </ThemedText>
+        </Pressable>
         <ThemedText themeColor="textSecondary">
           {room.playerCount} {t('multiplayer.players')} ·{' '}
           {room.roundSize} {t('multiplayer.cards')} ·{' '}
@@ -489,6 +529,14 @@ const styles = StyleSheet.create({
   },
   code: {
     letterSpacing: 8,
+  },
+  copyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
+    borderRadius: Spacing.four,
   },
   startButton: {
     paddingHorizontal: Spacing.six,
