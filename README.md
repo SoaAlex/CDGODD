@@ -29,6 +29,7 @@ Expo game (web/iOS/Android) ─┐
 React admin panel ───────────┼──► api.cestdegaucheoudedroite.com (Worker, Hono)
                              │        ├─ D1 (SQLite)         — items, votes, reports
                              │        ├─ R2 (cdgodd-images)  — card images
+                             │        ├─ Workers AI          — admin image generation
                              │        └─ Durable Objects     — multiplayer rooms
                              └──► images.cestdegaucheoudedroite.com (R2 custom domain)
 ```
@@ -48,7 +49,7 @@ pnpm install
 Copy the example env files and create the local D1 database:
 
 ```bash
-cp apps/api/.dev.vars.example apps/api/.dev.vars      # ADMIN_TOKEN, CDN_BASE
+cp apps/api/.dev.vars.example apps/api/.dev.vars      # ADMIN_TOKEN, CDN_BASE (+ optional PIXABAY_KEY)
 cd apps/api
 pnpm db:migrate:local
 pnpm db:seed:local
