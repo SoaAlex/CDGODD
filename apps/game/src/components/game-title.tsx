@@ -2,8 +2,8 @@ import { StyleSheet, Text } from 'react-native';
 
 import {
   Fonts,
-  LEFT_TEXT_COLOR,
-  RIGHT_TEXT_COLOR,
+  LEFT_COLOR,
+  RIGHT_COLOR,
   TEXT_SHADOW,
 } from '@/constants/theme';
 
@@ -35,9 +35,9 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   gauche: {
-    color: LEFT_TEXT_COLOR,
+    color: LEFT_COLOR,
   },
   droite: {
-    color: RIGHT_TEXT_COLOR,
+    color: RIGHT_COLOR,
   },
 });

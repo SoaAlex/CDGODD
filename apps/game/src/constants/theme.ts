@@ -22,14 +22,10 @@ export const LEFT_COLOR = '#e2523a';
 export const RIGHT_COLOR = '#6db0f8';
 
 /**
- * Slightly lightened tints of the brand colors for *text* sitting directly on
- * the purple gradient — the saturated fills have nearly the same luminance as
- * the gradient (≈1:1 contrast) and disappear. Pair with {@link TEXT_SHADOW}.
+ * Subtle dark halo for brand-colored text sitting directly on the gradient —
+ * the colors have nearly the same luminance as the gradient (≈1:1 contrast),
+ * so the shadow is what keeps them legible.
  */
-export const LEFT_TEXT_COLOR = '#f47b66';
-export const RIGHT_TEXT_COLOR = '#85c2ff';
-
-/** Subtle dark halo that lifts tinted text off the mid-tone gradient. */
 export const TEXT_SHADOW = {
   textShadowColor: 'rgba(0, 0, 0, 0.35)',
   textShadowOffset: { width: 0, height: 1 },

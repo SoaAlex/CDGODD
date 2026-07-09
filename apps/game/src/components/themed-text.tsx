@@ -1,6 +1,6 @@
 import { Platform, StyleSheet, Text, type TextProps } from 'react-native';
 
-import { Fonts, RIGHT_TEXT_COLOR, ThemeColor } from '@/constants/theme';
+import { Fonts, ThemeColor } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export type ThemedTextProps = TextProps & {
@@ -68,8 +68,7 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.sans,
     lineHeight: 32,
     fontSize: 15,
-    // Light tint: saturated blue has ~1:1 luminance contrast on the gradient.
-    color: RIGHT_TEXT_COLOR,
+    color: '#3c87f7',
   },
   code: {
     fontFamily: Fonts.mono,

@@ -11,10 +11,8 @@ import {
   ACCENT_COLOR,
   Fonts,
   LEFT_COLOR,
-  LEFT_TEXT_COLOR,
   MaxContentWidth,
   RIGHT_COLOR,
-  RIGHT_TEXT_COLOR,
   Spacing,
   TEXT_SHADOW,
 } from '@/constants/theme';
@@ -160,10 +158,10 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   logoGauche: {
-    color: LEFT_TEXT_COLOR,
+    color: LEFT_COLOR,
   },
   logoDroite: {
-    color: RIGHT_TEXT_COLOR,
+    color: RIGHT_COLOR,
   },
   menu: {
     gap: Spacing.three,

@@ -3,9 +3,7 @@ import type { VoteTally } from '@cdgodd/shared';
 import { ThemedText } from '@/components/themed-text';
 import {
   LEFT_COLOR,
-  LEFT_TEXT_COLOR,
   RIGHT_COLOR,
-  RIGHT_TEXT_COLOR,
   Spacing,
   TEXT_SHADOW,
 } from '@/constants/theme';
@@ -28,15 +26,12 @@ export function TallyBar({ tally }: { tally: VoteTally }) {
         />
       </View>
       <View style={styles.labels}>
-        <ThemedText
-          type="smallBold"
-          style={[styles.pct, { color: LEFT_TEXT_COLOR }]}
-        >
+        <ThemedText type="smallBold" style={[styles.pct, { color: LEFT_COLOR }]}>
           {leftPct}%
         </ThemedText>
         <ThemedText
           type="smallBold"
-          style={[styles.pct, { color: RIGHT_TEXT_COLOR }]}
+          style={[styles.pct, { color: RIGHT_COLOR }]}
         >
           {rightPct}%
         </ThemedText>
