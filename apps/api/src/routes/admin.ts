@@ -1,5 +1,12 @@
 import { Hono } from 'hono';
 import type { AppContext } from '../env';
+import {
+  isAllowedImageHost,
+  searchPixabay,
+  searchWikimedia,
+  SOURCE_FETCH_UA,
+  type ImageCandidate,
+} from '../image-sources';
 import { adminAuth } from '../security';
 
 const admin = new Hono<AppContext>();
@@ -243,7 +250,177 @@ admin.patch('/items/:id/image', async (c) => {
       cacheControl: 'public, max-age=31536000, immutable',
     },
   });
-  await c.env.DB.prepare(`UPDATE items SET image_key = ?2 WHERE id = ?1`)
+  // Manual uploads carry no attribution — clear any stale credit.
+  await c.env.DB.prepare(
+    `UPDATE items SET image_key = ?2, image_source = NULL, image_author = NULL,
+            image_license = NULL, image_source_url = NULL WHERE id = ?1`,
+  )
+    .bind(itemId, imageKey)
+    .run();
+  return c.json({ ok: true, imageKey });
+});
+
+/**
+ * GET /admin/image-candidates?q=term — free-license image candidates from
+ * Wikimedia Commons + Pixabay (skipped without PIXABAY_KEY), interleaved.
+ * Item-agnostic so the admin can refine the search query.
+ */
+admin.get('/image-candidates', async (c) => {
+  const q = (c.req.query('q') ?? '').trim();
+  if (!q || q.length > 100) return c.json({ error: 'bad q' }, 400);
+
+  const [wikimedia, pixabay] = await Promise.all([
+    searchWikimedia(q),
+    c.env.PIXABAY_KEY ? searchPixabay(q, c.env.PIXABAY_KEY) : [],
+  ]);
+
+  const candidates: ImageCandidate[] = [];
+  const max = Math.max(wikimedia.length, pixabay.length);
+  for (let i = 0; i < max && candidates.length < 24; i++) {
+    if (i < wikimedia.length) candidates.push(wikimedia[i]!);
+    if (i < pixabay.length && candidates.length < 24) {
+      candidates.push(pixabay[i]!);
+    }
+  }
+  return c.json({ candidates });
+});
+
+/** Copy the R2 put pattern used by the upload endpoints. */
+async function putItemImage(
+  images: R2Bucket,
+  bytes: ArrayBuffer,
+  contentType: string,
+): Promise<string> {
+  const ext = contentType.split('/')[1]?.replace('jpeg', 'jpg') ?? 'bin';
+  const imageKey = `items/${crypto.randomUUID()}.${ext}`;
+  await images.put(imageKey, bytes, {
+    httpMetadata: {
+      contentType,
+      // Keys are content-unique UUIDs, so the images domain can cache forever.
+      cacheControl: 'public, max-age=31536000, immutable',
+    },
+  });
+  return imageKey;
+}
+
+const MAX_SOURCE_IMAGE_BYTES = 8 * 1024 * 1024;
+
+/**
+ * POST /admin/items/:id/image-from-source — copy a picked candidate to R2
+ * and store its attribution. Body: { fullUrl, source, author, license,
+ * sourcePageUrl } echoed from /admin/image-candidates.
+ */
+admin.post('/items/:id/image-from-source', async (c) => {
+  const itemId = Number(c.req.param('id'));
+  const body = (await c.req.json().catch(() => ({}))) as {
+    fullUrl?: string;
+    source?: string;
+    author?: string | null;
+    license?: string;
+    sourcePageUrl?: string;
+  };
+
+  const item = await c.env.DB.prepare(`SELECT id FROM items WHERE id = ?1`)
+    .bind(itemId)
+    .first();
+  if (!item) return c.json({ error: 'item not found' }, 404);
+
+  const source = body.source;
+  if (source !== 'wikimedia' && source !== 'pixabay') {
+    return c.json({ error: 'bad source' }, 400);
+  }
+  const license = (body.license ?? '').trim();
+  const fullUrl = body.fullUrl ?? '';
+  const sourcePageUrl = body.sourcePageUrl ?? '';
+  const author = body.author?.trim() || null;
+  if (!license || !fullUrl || !sourcePageUrl) {
+    return c.json({ error: 'fullUrl, license, sourcePageUrl required' }, 400);
+  }
+  for (const v of [fullUrl, license, sourcePageUrl, author ?? '']) {
+    if (v.length > 500) return c.json({ error: 'field too long' }, 400);
+  }
+
+  let hostname: string;
+  try {
+    hostname = new URL(fullUrl).hostname;
+  } catch {
+    return c.json({ error: 'bad fullUrl' }, 400);
+  }
+  if (!isAllowedImageHost(source, hostname)) {
+    return c.json({ error: 'host not allowed' }, 400);
+  }
+
+  const res = await fetch(fullUrl, {
+    headers: { 'User-Agent': SOURCE_FETCH_UA },
+    signal: AbortSignal.timeout(15000),
+  }).catch(() => null);
+  const contentType = res?.headers.get('content-type') ?? '';
+  if (!res?.ok || !contentType.startsWith('image/')) {
+    return c.json({ error: 'source image fetch failed' }, 502);
+  }
+  const bytes = await res.arrayBuffer();
+  if (bytes.byteLength > MAX_SOURCE_IMAGE_BYTES) {
+    return c.json({ error: 'image too large' }, 400);
+  }
+
+  const imageKey = await putItemImage(c.env.IMAGES, bytes, contentType);
+  await c.env.DB.prepare(
+    `UPDATE items SET image_key = ?2, image_source = ?3, image_author = ?4,
+            image_license = ?5, image_source_url = ?6 WHERE id = ?1`,
+  )
+    .bind(itemId, imageKey, source, author, license, sourcePageUrl)
+    .run();
+  return c.json({ ok: true, imageKey });
+});
+
+/**
+ * POST /admin/items/:id/ai-image — generate an image with Workers AI
+ * (flux-1-schnell) from the item's fr label, or an explicit { prompt }.
+ */
+admin.post('/items/:id/ai-image', async (c) => {
+  const itemId = Number(c.req.param('id'));
+  const body = (await c.req.json().catch(() => ({}))) as { prompt?: string };
+
+  const exists = await c.env.DB.prepare(`SELECT id FROM items WHERE id = ?1`)
+    .bind(itemId)
+    .first();
+  if (!exists) return c.json({ error: 'item not found' }, 404);
+
+  let prompt = body.prompt?.trim() ?? '';
+  if (prompt.length > 2048) return c.json({ error: 'prompt too long' }, 400);
+  if (!prompt) {
+    const row = await c.env.DB.prepare(
+      `SELECT label FROM item_translations WHERE item_id = ?1 AND lang = 'fr'`,
+    )
+      .bind(itemId)
+      .first<{ label: string }>();
+    if (!row) return c.json({ error: 'item or fr label not found' }, 404);
+    // Flux prompts work best in English; the subject stays verbatim.
+    // Full-frame close-up composition: poster-like prompts ("centered
+    // subject, clean background") make flux render the label as a title.
+    prompt =
+      `Detailed close-up photograph of ${row.label}, the subject fills ` +
+      'the entire frame edge to edge, natural lighting, shallow depth of ' +
+      'field, vibrant colors, professional stock photography';
+  }
+
+  const out = (await c.env.AI.run('@cf/black-forest-labs/flux-1-schnell', {
+    prompt,
+    steps: 8,
+  })) as { image?: string };
+  if (!out.image) return c.json({ error: 'generation failed' }, 502);
+  const bytes = Uint8Array.from(atob(out.image), (ch) => ch.codePointAt(0)!);
+
+  const imageKey = await putItemImage(
+    c.env.IMAGES,
+    bytes.buffer as ArrayBuffer,
+    'image/jpeg',
+  );
+  await c.env.DB.prepare(
+    `UPDATE items SET image_key = ?2, image_source = 'ai', image_author = NULL,
+            image_license = 'ai-generated', image_source_url = NULL
+      WHERE id = ?1`,
+  )
     .bind(itemId, imageKey)
     .run();
   return c.json({ ok: true, imageKey });

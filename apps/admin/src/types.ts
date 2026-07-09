@@ -5,12 +5,26 @@ export interface AdminItem {
   label: string | null;
   status: ItemStatus;
   image_key: string | null;
+  image_source: string | null;
+  image_author: string | null;
+  image_license: string | null;
+  image_source_url: string | null;
   votes_left: number;
   votes_right: number;
   report_count: number;
   created_at: number;
   /** Parsed client-side from the API's CSV `category_keys` column. */
   category_keys: string[];
+}
+
+/** GET /admin/image-candidates result row (Wikimedia Commons / Pixabay). */
+export interface ImageCandidate {
+  thumbUrl: string;
+  fullUrl: string;
+  source: 'wikimedia' | 'pixabay';
+  author: string | null;
+  license: string;
+  sourcePageUrl: string;
 }
 
 export interface AdminReport {

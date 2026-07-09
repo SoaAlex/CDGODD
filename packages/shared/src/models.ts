@@ -17,6 +17,15 @@ export interface Item {
   createdAt: number; // epoch ms
 }
 
+/** Credit for a card image sourced from a free-license provider or AI. */
+export interface ImageAttribution {
+  author: string | null;
+  /** Short license name; 'ai-generated' for AI images. */
+  license: string;
+  /** Source page (Commons file page / Pixabay page), linked from credit. */
+  sourceUrl: string | null;
+}
+
 /** An item as served to the game client: localized label + resolved image URL. */
 export interface DeckCard {
   id: number;
@@ -24,6 +33,8 @@ export interface DeckCard {
   /** Empty array when the item has no category. */
   categoryKeys: string[];
   imageUrl: string | null;
+  /** Null/absent when the image needs no credit (manual upload, legacy). */
+  imageAttribution?: ImageAttribution | null;
   /**
    * Global tally at deck-fetch time. Lets the client show the previous
    * card's result instantly (own vote added optimistically) instead of

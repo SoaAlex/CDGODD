@@ -5,9 +5,11 @@ import {
   PlusIcon,
   TrashIcon,
   CheckIcon,
+  MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import { API, apiGet, authHeaders, imageUrl } from '../lib/api';
 import { CategoryPicker } from './CategoryPicker';
+import { ImagePicker } from './ImagePicker';
 import type { AdminItem, Category, ItemStatus, ItemTranslation } from '../types';
 
 const STATUSES: ItemStatus[] = ['pending', 'approved', 'rejected'];
@@ -41,6 +43,9 @@ export function ItemEditModal({
   );
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [showPicker, setShowPicker] = useState(false);
+  // License of the displayed image (updates when the picker applies one).
+  const [imageLicense, setImageLicense] = useState(item.image_license);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -216,17 +221,24 @@ export function ItemEditModal({
               Image
             </label>
             <div className="flex items-center gap-4">
-              {currentImage ? (
-                <img
-                  src={currentImage}
-                  alt=""
-                  className="h-20 w-20 object-cover rounded-lg border border-gray-200"
-                />
-              ) : (
-                <div className="flex h-20 w-20 items-center justify-center rounded-lg border border-dashed border-gray-300 text-gray-400">
-                  <PhotoIcon className="h-8 w-8" />
-                </div>
-              )}
+              <div>
+                {currentImage ? (
+                  <img
+                    src={currentImage}
+                    alt=""
+                    className="h-20 w-20 object-cover rounded-lg border border-gray-200"
+                  />
+                ) : (
+                  <div className="flex h-20 w-20 items-center justify-center rounded-lg border border-dashed border-gray-300 text-gray-400">
+                    <PhotoIcon className="h-8 w-8" />
+                  </div>
+                )}
+                {imageLicense && (
+                  <p className="mt-1 max-w-20 truncate text-[10px] text-gray-400" title={imageLicense}>
+                    {imageLicense}
+                  </p>
+                )}
+              </div>
               <label className="btn-secondary cursor-pointer">
                 {file ? 'Changer' : 'Remplacer'}
                 <input
@@ -236,7 +248,33 @@ export function ItemEditModal({
                   onChange={(e) => pickFile(e.target.files?.[0])}
                 />
               </label>
+              <button
+                type="button"
+                onClick={() => setShowPicker((v) => !v)}
+                className="btn-secondary flex items-center gap-1"
+              >
+                <MagnifyingGlassIcon className="h-4 w-4" />
+                Chercher une image
+              </button>
             </div>
+            {showPicker && (
+              <div className="mt-3">
+                <ImagePicker
+                  itemId={item.id}
+                  initialQuery={label}
+                  token={token}
+                  onError={setError}
+                  onImageSet={(imageKey, license) => {
+                    // Applied server-side already; drop any pending upload
+                    // so Save doesn't overwrite it.
+                    setFile(null);
+                    setPreviewUrl(imageUrl(imageKey));
+                    setImageLicense(license);
+                    setShowPicker(false);
+                  }}
+                />
+              </div>
+            )}
           </div>
 
           {/* Label */}

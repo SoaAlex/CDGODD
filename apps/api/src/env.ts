@@ -2,10 +2,12 @@ export interface Env {
   DB: D1Database;
   IMAGES: R2Bucket;
   ROOMS: DurableObjectNamespace;
+  AI: Ai;
   CDN_BASE: string;
   TURNSTILE_SECRET?: string;
   IP_HASH_SALT?: string;
   ADMIN_TOKEN?: string;
+  PIXABAY_KEY?: string;
 }
 
 export type AppContext = {

@@ -23,7 +23,9 @@
     "showResults": "Voir les résultats des votes",
     "hideResults": "Masquer les résultats des votes",
     "imageComingSoon": "Image à venir",
-    "globalVotes": "Votes globaux"
+    "globalVotes": "Votes globaux",
+    "imageCredit": "Crédit image",
+    "aiGenerated": "Image générée par IA"
   },
   "multiplayer": {
     "create": "Créer une salle",

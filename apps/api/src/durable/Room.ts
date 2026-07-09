@@ -121,7 +121,8 @@ export class Room implements DurableObject {
   /** Draw a fresh random hand of approved cards from D1. */
   private async dealCards(roundSize: number): Promise<DeckCard[]> {
     const { results } = await this.env.DB.prepare(
-      `SELECT i.id, t.label, i.image_key, i.votes_left, i.votes_right,
+      `SELECT i.id, t.label, i.image_key, i.image_author, i.image_license,
+              i.image_source_url, i.votes_left, i.votes_right,
               (SELECT GROUP_CONCAT(c.key)
                  FROM item_categories ic
                  JOIN categories c ON c.id = ic.category_id
@@ -137,6 +138,9 @@ export class Room implements DurableObject {
         id: number;
         label: string;
         image_key: string | null;
+        image_author: string | null;
+        image_license: string | null;
+        image_source_url: string | null;
         votes_left: number;
         votes_right: number;
         category_keys: string | null;
@@ -147,6 +151,13 @@ export class Room implements DurableObject {
       label: r.label,
       categoryKeys: r.category_keys ? r.category_keys.split(',') : [],
       imageUrl: r.image_key ? `${this.env.CDN_BASE}/${r.image_key}` : null,
+      imageAttribution: r.image_license
+        ? {
+            author: r.image_author,
+            license: r.image_license,
+            sourceUrl: r.image_source_url,
+          }
+        : null,
       votesLeft: r.votes_left,
       votesRight: r.votes_right,
     }));

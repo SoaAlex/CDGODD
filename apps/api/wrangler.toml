@@ -23,6 +23,9 @@ database_id = "70625d39-d78a-4dcc-8507-d9ad6660269a"
 binding = "IMAGES"
 bucket_name = "cdgodd-images"
 
+[ai]
+binding = "AI"
+
 [[durable_objects.bindings]]
 name = "ROOMS"
 class_name = "Room"

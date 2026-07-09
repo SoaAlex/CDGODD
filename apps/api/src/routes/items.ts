@@ -14,6 +14,9 @@ interface DeckRow {
   id: number;
   label: string;
   image_key: string | null;
+  image_author: string | null;
+  image_license: string | null;
+  image_source_url: string | null;
   votes_left: number;
   votes_right: number;
   /** GROUP_CONCAT of category keys — keys are [a-z0-9-] so ',' is safe. */
@@ -33,6 +36,13 @@ function toCard(row: DeckRow, cdnBase: string): DeckCard {
     label: row.label,
     categoryKeys: row.category_keys ? row.category_keys.split(',') : [],
     imageUrl: row.image_key ? `${cdnBase}/${row.image_key}` : null,
+    imageAttribution: row.image_license
+      ? {
+          author: row.image_author,
+          license: row.image_license,
+          sourceUrl: row.image_source_url,
+        }
+      : null,
     votesLeft: row.votes_left,
     votesRight: row.votes_right,
   };
@@ -49,7 +59,8 @@ items.get('/deck', async (c) => {
   const { lang, cursor = 0, limit } = parsed.data;
 
   const { results } = await c.env.DB.prepare(
-    `SELECT i.id, t.label, i.image_key, i.votes_left, i.votes_right, ${CATEGORY_KEYS_SQL}
+    `SELECT i.id, t.label, i.image_key, i.image_author, i.image_license,
+            i.image_source_url, i.votes_left, i.votes_right, ${CATEGORY_KEYS_SQL}
        FROM items i
        JOIN item_translations t ON t.item_id = i.id AND t.lang = ?1
       WHERE i.status = 'approved' AND i.id > ?2
@@ -108,7 +119,8 @@ items.get('/items/search', async (c) => {
   const { q, lang } = parsed.data;
 
   const { results } = await c.env.DB.prepare(
-    `SELECT i.id, t.label, i.image_key, i.votes_left, i.votes_right, ${CATEGORY_KEYS_SQL}
+    `SELECT i.id, t.label, i.image_key, i.image_author, i.image_license,
+            i.image_source_url, i.votes_left, i.votes_right, ${CATEGORY_KEYS_SQL}
        FROM items i
        JOIN item_translations t ON t.item_id = i.id AND t.lang = ?1
       WHERE i.status = 'approved' AND t.label LIKE ?2
