@@ -16,6 +16,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import type { RoomCardResult, Side } from '@cdgodd/shared';
+import { TallyBar } from '@/components/tally-bar';
 import { ThemedText } from '@/components/themed-text';
 import {
   Fonts,
@@ -237,6 +238,38 @@ function RevealCard({
             ))}
           </View>
         </View>
+        {/* Global community tally (all app users), apart from the room's
+            votes above — fades in once the room bar has settled. */}
+        <Animated.View
+          entering={FadeInUp.delay(TALLY_DELAY_MS + TALLY_MS).duration(220)}
+          style={styles.globalZone}
+        >
+          <ThemedText
+            type="small"
+            themeColor="textSecondaryOnSurface"
+            style={styles.globalLabel}
+          >
+            {t('game.globalVotes')}
+          </ThemedText>
+          {card.votesLeft + card.votesRight > 0 ? (
+            <TallyBar
+              tally={{
+                itemId: card.id,
+                votesLeft: card.votesLeft,
+                votesRight: card.votesRight,
+              }}
+              compact
+            />
+          ) : (
+            <ThemedText
+              type="small"
+              themeColor="textSecondaryOnSurface"
+              style={styles.globalLabel}
+            >
+              {t('game.noVotesYet')}
+            </ThemedText>
+          )}
+        </Animated.View>
       </View>
     </View>
   );
@@ -395,6 +428,16 @@ const styles = StyleSheet.create({
   },
   votersSideRight: {
     justifyContent: 'flex-end',
+  },
+  globalZone: {
+    marginTop: Spacing.one,
+    paddingTop: Spacing.two,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(27, 27, 47, 0.2)',
+    gap: Spacing.half,
+  },
+  globalLabel: {
+    textAlign: 'center',
   },
   voterChip: {
     borderRadius: Spacing.three,
