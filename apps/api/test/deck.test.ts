@@ -81,14 +81,15 @@ describe('GET /deck', () => {
 });
 
 describe('GET /categories', () => {
-  it('returns localized categories sorted by name', async () => {
+  it('returns localized categories sorted by name, with approved counts', async () => {
     const res = await api('/categories?lang=fr');
     expect(await res.json()).toEqual({
       categories: [
-        { key: 'culture', name: 'Culture' },
-        { key: 'food', name: 'Nourriture' },
-        { key: 'daily-life', name: 'Vie quotidienne' },
+        { key: 'culture', name: 'Culture', count: 3 },
+        { key: 'food', name: 'Nourriture', count: 2 },
+        { key: 'daily-life', name: 'Vie quotidienne', count: 2 },
       ],
+      total: 6,
     });
   });
 });

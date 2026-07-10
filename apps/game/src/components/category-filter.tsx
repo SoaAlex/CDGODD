@@ -31,7 +31,7 @@ export function CategoryFilter({
   /** Center the trigger (solo header); default left-aligns (settings forms). */
   centered?: boolean;
 }) {
-  const categories = useCategories();
+  const { categories, total } = useCategories();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   if (categories.length === 0) return null;
@@ -55,7 +55,7 @@ export function CategoryFilter({
         ? selectedNames.join(' · ')
         : `${selectedNames.length} ${t('filter.categoriesLabel').toLowerCase()}`;
 
-  const row = (isSelected: boolean, key: string, name: string) => (
+  const row = (isSelected: boolean, key: string, name: string, count: number) => (
     <Pressable
       key={key}
       testID={`category-${key}`}
@@ -67,7 +67,7 @@ export function CategoryFilter({
         },
       ]}
     >
-      <ThemedText>{name}</ThemedText>
+      <ThemedText>{`${name} (${count})`}</ThemedText>
       {isSelected && <Ionicons name="checkmark" size={18} color="#fff" />}
     </Pressable>
   );
@@ -110,9 +110,9 @@ export function CategoryFilter({
               {t('filter.categoriesLabel')}
             </ThemedText>
             <ScrollView style={styles.optionList}>
-              {row(selected.length === 0, 'all', t('filter.allCategories'))}
-              {categories.map(({ key, name }) =>
-                row(selected.includes(key), key, name),
+              {row(selected.length === 0, 'all', t('filter.allCategories'), total)}
+              {categories.map(({ key, name, count }) =>
+                row(selected.includes(key), key, name, count),
               )}
             </ScrollView>
             {/* AND/OR switch — only meaningful once 2+ categories combine. */}

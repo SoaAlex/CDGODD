@@ -104,15 +104,24 @@ items.get('/deck', async (c) => {
 /** GET /categories?lang=fr — localized category list (submit form, admin). */
 items.get('/categories', async (c) => {
   const lang = c.req.query('lang') ?? 'fr';
-  const { results } = await c.env.DB.prepare(
-    `SELECT c.key, ct.name
-       FROM categories c
-       JOIN category_translations ct ON ct.category_id = c.id AND ct.lang = ?1
-      ORDER BY ct.name`,
-  )
-    .bind(lang)
-    .all<{ key: string; name: string }>();
-  return c.json({ categories: results });
+  const [{ results }, totalRow] = await Promise.all([
+    c.env.DB.prepare(
+      `SELECT c.key, ct.name,
+              (SELECT COUNT(*)
+                 FROM item_categories ic
+                 JOIN items i ON i.id = ic.item_id AND i.status = 'approved'
+                WHERE ic.category_id = c.id) AS count
+         FROM categories c
+         JOIN category_translations ct ON ct.category_id = c.id AND ct.lang = ?1
+        ORDER BY ct.name`,
+    )
+      .bind(lang)
+      .all<{ key: string; name: string; count: number }>(),
+    c.env.DB.prepare(
+      `SELECT COUNT(*) AS total FROM items WHERE status = 'approved'`,
+    ).first<{ total: number }>(),
+  ]);
+  return c.json({ categories: results, total: totalRow?.total ?? 0 });
 });
 
 /**

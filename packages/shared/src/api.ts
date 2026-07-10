@@ -24,9 +24,11 @@ export interface SearchResponse {
   results: DeckCard[];
 }
 
-/** GET /categories — localized category list. */
+/** GET /categories — localized category list with approved-item counts. */
 export interface CategoriesResponse {
-  categories: { key: string; name: string }[];
+  categories: { key: string; name: string; count: number }[];
+  /** Total approved items (the "all categories" count). */
+  total: number;
 }
 
 /** POST /submissions */
