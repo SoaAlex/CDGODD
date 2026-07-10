@@ -31,12 +31,14 @@ export function AdSlot({ placement = 'banner' }: AdSlotProps) {
   useEffect(() => {
     if (!active || pushed.current) return;
     pushed.current = true;
-    if (!document.querySelector('script[data-cdgodd-adsense]')) {
+    // Dedupe by src — adsbygoogle.js warns about any custom data-* marker
+    // attribute on its own script tag.
+    const src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`;
+    if (!document.querySelector(`script[src="${src}"]`)) {
       const script = document.createElement('script');
-      script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`;
+      script.src = src;
       script.async = true;
       script.crossOrigin = 'anonymous';
-      script.setAttribute('data-cdgodd-adsense', '1');
       document.head.appendChild(script);
     }
     (window.adsbygoogle = window.adsbygoogle ?? []).push({});

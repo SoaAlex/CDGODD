@@ -6,6 +6,7 @@ interface TurnstileApi {
     opts: {
       sitekey: string;
       size: 'invisible';
+      execution: 'render' | 'execute';
       callback: (token: string) => void;
       'error-callback': () => void;
     },
@@ -53,6 +54,9 @@ async function mintToken(): Promise<string> {
     const widgetId = window.turnstile!.render(host, {
       sitekey: SITE_KEY,
       size: 'invisible',
+      // Default execution is 'render' (challenge runs at render time), which
+      // makes the execute() below warn "widget already executing".
+      execution: 'execute',
       callback: (token) => {
         cleanup(widgetId);
         resolve(token);

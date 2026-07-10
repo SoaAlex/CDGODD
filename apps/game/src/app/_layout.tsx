@@ -1,5 +1,5 @@
 import { useFonts } from 'expo-font';
-import { DefaultTheme, ThemeProvider } from 'expo-router';
+import { DefaultTheme, ThemeProvider, usePathname } from 'expo-router';
 import { Stack as NativeStack } from 'expo-router';
 import JsStack from 'expo-router/js-stack';
 import { useEffect } from 'react';
@@ -97,10 +97,21 @@ export default function RootLayout() {
     // Single ClashGrotesk variable family everywhere, matching the web app.
     'ClashGrotesk-Variable': require('../../assets/fonts/ClashGrotesk-Variable.ttf'),
   });
+  const pathname = usePathname();
 
   useEffect(() => {
     startBackgroundMusic(); // no-op on native
   }, []);
+
+  // Web: react-navigation puts aria-hidden on the outgoing screen while the
+  // link/button that triggered the navigation still holds focus, which the
+  // browser flags ("Blocked aria-hidden on an element because its descendant
+  // retained focus"). Drop focus as soon as the route changes.
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const el = document.activeElement;
+    if (el instanceof HTMLElement) el.blur();
+  }, [pathname]);
 
   if (!fontsLoaded) return null;
 

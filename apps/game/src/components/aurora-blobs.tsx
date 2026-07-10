@@ -19,6 +19,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 
+import { useHydrated } from '@/hooks/use-hydrated';
+
 /**
  * One aurora blob: a soft radial-gradient circle drifting slowly across the
  * screen. Positions and drift are fractions of the window so the layout
@@ -142,6 +144,9 @@ export function AuroraBlobs() {
   // Prefer the measured layout (the actual painted area), fall back to the
   // window.
   const win = useWindowDimensions();
+  // Server renders no blobs (0×0 window); the client must render the same
+  // empty tree during hydration or React reports mismatch #418.
+  const hydrated = useHydrated();
   const [layout, setLayout] = useState({ width: 0, height: 0 });
   const width = layout.width || win.width;
   const height = layout.height || win.height;
@@ -164,7 +169,8 @@ export function AuroraBlobs() {
 
   return (
     <View aria-hidden style={styles.container} onLayout={onLayout}>
-      {width > 0 &&
+      {hydrated &&
+        width > 0 &&
         height > 0 &&
         BLOBS.map((blob, i) => (
           <AuroraBlob
