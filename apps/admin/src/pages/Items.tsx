@@ -357,7 +357,14 @@ export function Items() {
                     <InlineText
                       value={it.label ?? ''}
                       display={
-                        it.label ?? (
+                        it.label ? (
+                          <span
+                            className="block max-w-[16rem] truncate"
+                            title={it.label}
+                          >
+                            {it.label}
+                          </span>
+                        ) : (
                           <span className="text-gray-400">Sans label</span>
                         )
                       }

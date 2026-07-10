@@ -102,6 +102,35 @@ describe('POST /admin/items (multipart)', () => {
     );
   });
 
+  it('records an uploaded image as ai-generated when flagged', async () => {
+    const res = await createItem({
+      label: 'Le deepfake',
+      image: new File([PNG_BYTES], 'd.png', { type: 'image/png' }),
+      ai_generated: '1',
+    });
+    const body = (await res.json()) as { itemId: number };
+    const item = await env.DB.prepare(
+      `SELECT image_license FROM items WHERE id = ?1`,
+    )
+      .bind(body.itemId)
+      .first<{ image_license: string | null }>();
+    expect(item!.image_license).toBe('ai-generated');
+  });
+
+  it('leaves image_license null without the ai_generated flag', async () => {
+    const res = await createItem({
+      label: 'Le velo',
+      image: new File([PNG_BYTES], 'v.png', { type: 'image/png' }),
+    });
+    const body = (await res.json()) as { itemId: number };
+    const item = await env.DB.prepare(
+      `SELECT image_license FROM items WHERE id = ?1`,
+    )
+      .bind(body.itemId)
+      .first<{ image_license: string | null }>();
+    expect(item!.image_license).toBeNull();
+  });
+
   it('stores extra translations', async () => {
     const res = await createItem({
       label: 'Le café',

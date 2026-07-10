@@ -87,6 +87,8 @@
   "credits": {
     "aiTitle": "Game & images",
     "aiBody": "This game was largely created with the help of artificial intelligence: both the code and the card images are mostly AI-generated.",
+    "thanksTitle": "Special thanks",
+    "thanksBody": "Special thanks to my wonderful girlfriend, and her sister, for helping me move this project forward!",
     "musicTitle": "Music",
     "musicBody": "\"CHIRAC - Je serai le président de tous les Français (TOMALY House remix)\" by Tomaly, based on the original track by Malto. Big thanks to both of them!",
     "musicRemixLink": "Listen to the remix on SoundCloud",

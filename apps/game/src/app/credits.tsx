@@ -64,6 +64,16 @@ export default function CreditsScreen() {
             </ThemedText>
           </View>
 
+          {/* Special thanks */}
+          <View style={styles.section}>
+            <ThemedText type="smallBold" themeColor="textSecondary">
+              {t('credits.thanksTitle')}
+            </ThemedText>
+            <ThemedText type="small" themeColor="textSecondary">
+              {t('credits.thanksBody')}
+            </ThemedText>
+          </View>
+
           {/* Music */}
           <View style={styles.section}>
             <ThemedText type="smallBold" themeColor="textSecondary">

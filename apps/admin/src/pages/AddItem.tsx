@@ -47,6 +47,8 @@ export function AddItem() {
   const [newTransLabel, setNewTransLabel] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  // Marks a self-uploaded image as AI-made (license = ai-generated).
+  const [aiGenerated, setAiGenerated] = useState(false);
   // Free-license candidate or AI generation, applied after the create call.
   const [imageChoice, setImageChoice] = useState<ImageChoice | null>(null);
   // Bumped after each bulk create to remount the picker (fresh query/results).
@@ -81,6 +83,7 @@ export function AddItem() {
   function removeFile() {
     setFile(null);
     setPreviewUrl(null);
+    setAiGenerated(false);
     if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
@@ -133,7 +136,10 @@ export function AddItem() {
     for (const key of categoryKeys) form.append('categoryKeys', key);
     if (flags.not_mobile) form.set('not_mobile', '1');
     if (flags.nsfw) form.set('nsfw', '1');
-    if (file) form.set('image', file);
+    if (file) {
+      form.set('image', file);
+      if (aiGenerated) form.set('ai_generated', '1');
+    }
 
     try {
       const res = await fetch(`${API}/admin/items`, {
@@ -487,13 +493,24 @@ export function AddItem() {
                     </p>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={removeFile}
-                  className="text-red-600 hover:text-red-800"
-                >
-                  <XMarkIcon className="h-5 w-5" />
-                </button>
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 text-sm text-gray-700">
+                    <input
+                      type="checkbox"
+                      checked={aiGenerated}
+                      onChange={(e) => setAiGenerated(e.target.checked)}
+                      className="h-4 w-4 rounded border-gray-300"
+                    />
+                    Image générée par IA
+                  </label>
+                  <button
+                    type="button"
+                    onClick={removeFile}
+                    className="text-red-600 hover:text-red-800"
+                  >
+                    <XMarkIcon className="h-5 w-5" />
+                  </button>
+                </div>
               </div>
             )}
 

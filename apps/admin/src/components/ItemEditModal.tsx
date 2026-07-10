@@ -48,6 +48,8 @@ export function ItemEditModal({
   });
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  // Marks a self-uploaded replacement as AI-made (license = ai-generated).
+  const [aiGenerated, setAiGenerated] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   // License of the displayed image (updates when the picker applies one).
   const [imageLicense, setImageLicense] = useState(item.image_license);
@@ -165,6 +167,7 @@ export function ItemEditModal({
       if (file) {
         const form = new FormData();
         form.set('image', file);
+        if (aiGenerated) form.set('ai_generated', '1');
         const imgRes = await fetch(`${API}/admin/items/${item.id}/image`, {
           method: 'PATCH',
           headers: authHeaders(token),
@@ -264,6 +267,17 @@ export function ItemEditModal({
                 Chercher une image
               </button>
             </div>
+            {file && (
+              <label className="mt-2 flex items-center gap-2 text-sm text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={aiGenerated}
+                  onChange={(e) => setAiGenerated(e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300"
+                />
+                Image générée par IA
+              </label>
+            )}
             {showPicker && (
               <div className="mt-3">
                 <ImagePicker

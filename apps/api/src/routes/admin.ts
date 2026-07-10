@@ -216,6 +216,8 @@ admin.post('/items', async (c) => {
   const image = form.get('image');
   const notMobile = form.get('not_mobile') === '1' ? 1 : 0;
   const nsfw = form.get('nsfw') === '1' ? 1 : 0;
+  // Admin marks their own upload as AI-made → credit it like generated images.
+  const aiGenerated = form.get('ai_generated') === '1';
   if (!label) return c.json({ error: 'label required' }, 400);
 
   // Optional extra labels: JSON object { "en": "Coffee", ... }.
@@ -260,11 +262,12 @@ admin.post('/items', async (c) => {
     });
   }
 
+  const imageLicense = imageKey && aiGenerated ? 'ai-generated' : null;
   const item = await c.env.DB.prepare(
-    `INSERT INTO items (image_key, status, not_mobile, nsfw, created_at)
-     VALUES (?1, 'approved', ?2, ?3, ?4) RETURNING id`,
+    `INSERT INTO items (image_key, image_license, status, not_mobile, nsfw, created_at)
+     VALUES (?1, ?2, 'approved', ?3, ?4, ?5) RETURNING id`,
   )
-    .bind(imageKey, notMobile, nsfw, Date.now())
+    .bind(imageKey, imageLicense, notMobile, nsfw, Date.now())
     .first<{ id: number }>();
 
   await c.env.DB.prepare(
@@ -307,12 +310,14 @@ admin.patch('/items/:id/image', async (c) => {
       cacheControl: 'public, max-age=31536000, immutable',
     },
   });
-  // Manual uploads carry no attribution — clear any stale credit.
+  // Manual uploads carry no attribution — clear any stale credit, except an
+  // explicit "this upload is AI-made" flag which we record as ai-generated.
+  const imageLicense = form?.get('ai_generated') === '1' ? 'ai-generated' : null;
   await c.env.DB.prepare(
     `UPDATE items SET image_key = ?2, image_source = NULL, image_author = NULL,
-            image_license = NULL, image_source_url = NULL WHERE id = ?1`,
+            image_license = ?3, image_source_url = NULL WHERE id = ?1`,
   )
-    .bind(itemId, imageKey)
+    .bind(itemId, imageKey, imageLicense)
     .run();
   return c.json({ ok: true, imageKey });
 });
