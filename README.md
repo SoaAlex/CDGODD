@@ -35,8 +35,11 @@ React admin panel ───────────┼──► api.cestdegauche
 ```
 
 Core principles: **no login, 100% anonymous** (GDPR-friendly; only ads collect
-data, behind consent). Vote integrity without identity: Turnstile + IP-hash
-rate limiting + per-session dedupe, with every vote stored as a reversible row.
+data, behind consent). Vote integrity without identity: Turnstile + per-IP
+flood rate limit (Workers `ratelimit` binding) + per-item IP-hash vote cap +
+per-session dedupe, with every vote stored as a reversible row. IP hashes are
+salted with a 30-day rotating epoch and nulled by a daily cron after the
+window (GDPR data minimization).
 
 ## Local development
 

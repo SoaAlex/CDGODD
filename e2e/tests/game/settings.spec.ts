@@ -17,22 +17,4 @@ test.describe('settings', () => {
       page.getByTestId('show-results-switch').locator('input[type="checkbox"]'),
     ).toBeChecked({ checked: !before, timeout: 30_000 });
   });
-
-  test('reset-session mints a fresh anonymous session id', async ({ page }) => {
-    await page.goto('/settings');
-    const reset = page.getByTestId('reset-session');
-    await expect(reset).toBeVisible({ timeout: 30_000 });
-
-    // AsyncStorage on web = localStorage.
-    const before = await page.evaluate(() =>
-      localStorage.getItem('cdgodd.session_id'),
-    );
-    await reset.click();
-    await expect
-      .poll(
-        () => page.evaluate(() => localStorage.getItem('cdgodd.session_id')),
-        { timeout: 10_000 },
-      )
-      .not.toBe(before);
-  });
 });

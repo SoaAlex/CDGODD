@@ -5,7 +5,8 @@
     "multiplayer": "Multijoueur",
     "settings": "Paramètres",
     "history": "Historique",
-    "credits": "Crédits"
+    "credits": "Crédits",
+    "back": "Retour"
   },
   "solo": {
     "random": "Cartes aléatoires",
@@ -60,10 +61,8 @@
     "music": "Musique",
     "soundEffects": "Effets sonores",
     "language": "Langue",
-    "resetSession": "Réinitialiser ma session anonyme",
-    "sessionReset": "Session réinitialisée",
     "anonymity": "Anonymat",
-    "sessionHint": "Le jeu est 100% anonyme : aucun compte, aucune donnée personnelle. Cet identifiant aléatoire sert uniquement à éviter les votes en double.",
+    "sessionHint": "Le jeu est 100% anonyme : aucun compte, aucune donnée personnelle. Cet identifiant aléatoire sert uniquement à éviter les votes en double. Un mécanisme de hashage d'IP est également mis en place pour contrer les abus (ce hash est conservé 30 jours, et ne permets pas de retrouver l'IP d'origine).",
     "moreLanguages": "D'autres langues seront ajoutées prochainement."
   },
   "categories": {

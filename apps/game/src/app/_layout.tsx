@@ -1,12 +1,20 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
-import { DefaultTheme, ThemeProvider, usePathname } from 'expo-router';
+import { DefaultTheme, router, ThemeProvider, usePathname } from 'expo-router';
 import { Stack as NativeStack } from 'expo-router';
 import JsStack from 'expo-router/js-stack';
 import { useEffect } from 'react';
-import { Animated, Easing, Platform } from 'react-native';
+import {
+  Animated,
+  Easing,
+  Platform,
+  Pressable,
+  useWindowDimensions,
+} from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { GameTitle } from '@/components/game-title';
 import { GradientBackground } from '@/components/gradient-background';
+import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { t } from '@/lib/i18n';
 import { startBackgroundMusic } from '@/lib/music';
 
@@ -80,6 +88,28 @@ const SNAPPY_TRANSITION = {
   config: { duration: 200, easing: Easing.out(Easing.cubic) },
 };
 
+/**
+ * Web back arrow: the JS stack's built-in button vanishes when a deep link is
+ * loaded fresh (no history to go back to), so always render one and fall back
+ * to the home screen when there is nothing to pop.
+ */
+function HeaderBack() {
+  return (
+    <Pressable
+      onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
+      hitSlop={12}
+      accessibilityRole="button"
+      accessibilityLabel={t('menu.back')}
+      style={({ pressed }) => ({
+        paddingHorizontal: Spacing.four,
+        opacity: pressed ? 0.6 : 1,
+      })}
+    >
+      <Ionicons name="arrow-back" size={24} color="#fff" />
+    </Pressable>
+  );
+}
+
 /** Navigation theme that lets the gradient show through and keeps chrome white. */
 const NavTheme = {
   ...DefaultTheme,
@@ -98,6 +128,11 @@ export default function RootLayout() {
     'ClashGrotesk-Variable': require('../../assets/fonts/ClashGrotesk-Variable.ttf'),
   });
   const pathname = usePathname();
+  const { width } = useWindowDimensions();
+  // Screens center their content in a MaxContentWidth column; inset the
+  // header's back arrow by the same margin so it lines up with that column
+  // instead of hugging the viewport edge on wide screens.
+  const headerSideInset = Math.max(0, (width - MaxContentWidth) / 2);
 
   useEffect(() => {
     startBackgroundMusic(); // no-op on native
@@ -150,6 +185,11 @@ export default function RootLayout() {
                       open: SNAPPY_TRANSITION,
                       close: SNAPPY_TRANSITION,
                     },
+                    headerLeft: () => <HeaderBack />,
+                    headerLeftContainerStyle: { paddingLeft: headerSideInset },
+                    // Mirror the inset on the right so the centered title
+                    // isn't pushed sideways by the wide left container.
+                    headerRightContainerStyle: { paddingRight: headerSideInset },
                   }
                 : null),
             }}

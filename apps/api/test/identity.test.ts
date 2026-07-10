@@ -1,5 +1,12 @@
-import { env } from 'cloudflare:test';
+import {
+  createExecutionContext,
+  createScheduledController,
+  env,
+  waitOnExecutionContext,
+} from 'cloudflare:test';
 import { describe, expect, it } from 'vitest';
+import worker from '../src/index';
+import { IP_HASH_WINDOW_MS } from '../src/security';
 import { api, SESSION_A, SESSION_B, vote } from './helpers';
 
 describe('identity middleware', () => {
@@ -35,8 +42,9 @@ describe('identity middleware', () => {
   it('stores a deterministic salted ip hash, never the raw IP', async () => {
     // workerd strips cf-connecting-ip from test-constructed requests, so the
     // middleware always sees its '0.0.0.0' fallback here. That still proves
-    // the pipeline: sha256('{salt}:{ip}') with the 'dev-salt' fallback,
-    // truncated to 32 hex chars, identical across sessions — no raw IP.
+    // the pipeline: sha256('{salt}:{epoch}:{ip}') with the 'dev-salt'
+    // fallback and the 30-day salt epoch, truncated to 32 hex chars,
+    // identical across sessions — no raw IP.
     await vote(1, 'left', SESSION_A);
     await vote(1, 'right', SESSION_B);
 
@@ -45,10 +53,42 @@ describe('identity middleware', () => {
     ).all<{ session_id: string; ip_hash: string }>();
     expect(results).toHaveLength(2);
 
-    const expected = await sha256Hex32('dev-salt:0.0.0.0');
+    const epoch = Math.floor(Date.now() / IP_HASH_WINDOW_MS);
+    const expected = await sha256Hex32(`dev-salt:${epoch}:0.0.0.0`);
     expect(results[0]!.ip_hash).toBe(expected);
     expect(results[1]!.ip_hash).toBe(expected);
     expect(results[0]!.ip_hash).toMatch(/^[0-9a-f]{32}$/);
+  });
+});
+
+describe('scheduled ip_hash purge', () => {
+  it('nulls ip_hash on votes older than the window, keeps recent ones', async () => {
+    const now = Date.now();
+    await env.DB.batch([
+      env.DB.prepare(
+        `INSERT INTO votes (item_id, side, session_id, ip_hash, created_at)
+         VALUES (1, 'left', ?1, 'old-hash', ?2)`,
+      ).bind(SESSION_A, now - IP_HASH_WINDOW_MS - 1000),
+      env.DB.prepare(
+        `INSERT INTO votes (item_id, side, session_id, ip_hash, created_at)
+         VALUES (1, 'left', ?1, 'new-hash', ?2)`,
+      ).bind(SESSION_B, now),
+    ]);
+
+    const controller = createScheduledController({
+      scheduledTime: new Date(now),
+      cron: '0 4 * * *',
+    });
+    const ctx = createExecutionContext();
+    await worker.scheduled(controller, env, ctx);
+    await waitOnExecutionContext(ctx);
+
+    const { results } = await env.DB.prepare(
+      `SELECT session_id, ip_hash FROM votes ORDER BY id`,
+    ).all<{ session_id: string; ip_hash: string | null }>();
+    expect(results).toHaveLength(2);
+    expect(results[0]!.ip_hash).toBeNull();
+    expect(results[1]!.ip_hash).toBe('new-hash');
   });
 });
 

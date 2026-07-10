@@ -25,7 +25,10 @@ Plain vars live in `wrangler.toml`:
 Secrets (set with `wrangler secret put`, never committed):
 
 - `ADMIN_TOKEN` — bearer token guarding `/admin/*` routes.
-- `IP_HASH_SALT` — salt for the per-request IP hash (raw IPs are never stored).
+- `IP_HASH_SALT` — salt for the per-request IP hash (raw IPs are never
+  stored). The effective salt mixes in a 30-day epoch, so hashes auto-rotate
+  and can't be correlated across windows; a daily cron nulls `ip_hash` on
+  votes older than the window.
 - `TURNSTILE_SECRET` — Cloudflare Turnstile secret. **When unset, Turnstile
   verification is skipped** (dev mode / not-yet-enabled), and the client's
   placeholder token is accepted; IP rate limiting + session dedupe still apply.

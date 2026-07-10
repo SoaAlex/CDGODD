@@ -14,6 +14,20 @@ preview_urls = true
 [observability]
 enabled = true
 
+# Daily GDPR sweep: nulls ip_hash on votes older than IP_HASH_WINDOW_MS
+# (see src/index.ts scheduled handler).
+[triggers]
+crons = ["0 4 * * *"]
+
+# Edge flood guard on the vote endpoint: max 30 vote requests per IP hash
+# per 60s sliding window. Free, in-worker; absent in tests/local (code
+# treats the binding as optional).
+[[unsafe.bindings]]
+name = "VOTE_LIMITER"
+type = "ratelimit"
+namespace_id = "1001"
+simple = { limit = 30, period = 60 }
+
 [[d1_databases]]
 binding = "DB"
 database_name = "cdgodd"

@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /**
- * Anonymous, resettable device session id (UUID v4). Not tied to any
- * account or person — used only for vote dedupe server-side. Resetting
- * it (Settings) is always allowed; abuse is handled by IP rate limits.
+ * Anonymous device session id (UUID v4). Not tied to any account or
+ * person — used only for vote dedupe server-side. Cycling it doesn't
+ * grant extra votes: the API caps votes per item per ip_hash.
  */
 const KEY = 'cdgodd.session_id';
 
@@ -22,8 +22,3 @@ export async function getSessionId(): Promise<string> {
   return fresh;
 }
 
-export async function resetSessionId(): Promise<string> {
-  cached = null;
-  await AsyncStorage.removeItem(KEY);
-  return getSessionId();
-}

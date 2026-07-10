@@ -28,6 +28,22 @@ describe('POST /items/:id/vote', () => {
     });
   });
 
+  it('caps votes per item per ip_hash — session cycling is a no-op', async () => {
+    // All test requests share one ip_hash (no cf-connecting-ip header).
+    for (let i = 1; i <= 5; i++) {
+      await vote(1, 'left', `${i}${SESSION_A.slice(1)}`);
+    }
+    const capped = await vote(1, 'left', `9${SESSION_A.slice(1)}`);
+    expect(capped.status).toBe(200);
+    expect(await capped.json()).toEqual({
+      tally: { itemId: 1, votesLeft: 5, votesRight: 0 },
+    });
+    const count = await env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM votes WHERE item_id = 1`,
+    ).first<{ n: number }>();
+    expect(count!.n).toBe(5);
+  });
+
   it('404s on an unknown item', async () => {
     const res = await vote(999, 'left', SESSION_A);
     expect(res.status).toBe(404);

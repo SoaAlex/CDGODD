@@ -2,9 +2,20 @@ import type { Context, Next } from 'hono';
 import { sessionIdSchema } from '@cdgodd/shared';
 import type { AppContext } from './env';
 
+/**
+ * ip_hash privacy window. Two mechanisms share it:
+ * - the salt epoch below rotates every window, so hashes from different
+ *   windows can never be correlated (effective anonymization over time);
+ * - the daily cron (index.ts scheduled handler) nulls ip_hash on votes
+ *   older than one window (GDPR data minimization).
+ * Side effect: the per-item IP vote cap resets each window. Accepted.
+ */
+export const IP_HASH_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+
 /** Salted SHA-256 of the client IP. Raw IP is never persisted (GDPR). */
 async function hashIp(ip: string, salt: string): Promise<string> {
-  const data = new TextEncoder().encode(`${salt}:${ip}`);
+  const epoch = Math.floor(Date.now() / IP_HASH_WINDOW_MS);
+  const data = new TextEncoder().encode(`${salt}:${epoch}:${ip}`);
   const digest = await crypto.subtle.digest('SHA-256', data);
   return [...new Uint8Array(digest)]
     .map((b) => b.toString(16).padStart(2, '0'))

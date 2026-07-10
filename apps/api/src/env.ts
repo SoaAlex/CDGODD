@@ -8,6 +8,8 @@ export interface Env {
   IP_HASH_SALT?: string;
   ADMIN_TOKEN?: string;
   PIXABAY_KEY?: string;
+  /** Workers rate-limit binding (prod only; absent in tests/local dev). */
+  VOTE_LIMITER?: RateLimit;
 }
 
 export type AppContext = {
