@@ -22,7 +22,7 @@ export function startBackgroundMusic(): void {
   if (audio) return;
   const uri = Asset.fromModule(
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require('../../assets/audio/tous-les-francais.mp3'),
+    require('../../assets/audio/tous-les-francais-house.mp3'),
   ).uri;
 
   audio = new window.Audio(uri);

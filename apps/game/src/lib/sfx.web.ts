@@ -9,6 +9,30 @@ import type { Side } from '@cdgodd/shared';
 let left: HTMLAudioElement | null = null;
 let right: HTMLAudioElement | null = null;
 
+const MUTE_KEY = 'cdgodd.sfx_muted';
+let muted = readMuted();
+
+function readMuted(): boolean {
+  try {
+    return window.localStorage.getItem(MUTE_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+export function isSfxMuted(): boolean {
+  return muted;
+}
+
+export function setSfxMuted(next: boolean): void {
+  muted = next;
+  try {
+    window.localStorage.setItem(MUTE_KEY, next ? '1' : '0');
+  } catch {
+    /* ignore */
+  }
+}
+
 function make(uri: string): HTMLAudioElement {
   const audio = new window.Audio(uri);
   audio.volume = 0.6;
@@ -16,6 +40,7 @@ function make(uri: string): HTMLAudioElement {
 }
 
 export function playSwipeSound(side: Side): void {
+  if (muted) return;
   if (!left) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     left = make(Asset.fromModule(require('../../assets/audio/m-republique.mp3')).uri);
