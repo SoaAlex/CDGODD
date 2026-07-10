@@ -57,6 +57,8 @@ export function CategoryFilter({
   // Trigger label: "Toutes", the names when short, a count when not.
   // Exclude mode prefixes with "Sans" so the trigger reads as a negation.
   const excluding = mode === 'exclude';
+  const allSelected =
+    categories.length > 0 && selected.length === categories.length;
   const selectedNames = categories
     .filter(({ key }) => selected.includes(key))
     .map(({ name }) => name);
@@ -158,6 +160,25 @@ export function CategoryFilter({
                 ))}
               </View>
             )}
+            {/* Check every category (then untick a few) or start over. */}
+            <Pressable
+              testID="category-filter-select-all"
+              onPress={() =>
+                onChange(
+                  allSelected ? [] : categories.map(({ key }) => key),
+                )
+              }
+              style={styles.selectAllRow}
+            >
+              <Ionicons
+                name={allSelected ? 'close-circle-outline' : 'checkmark-done'}
+                size={16}
+                color="#fff"
+              />
+              <ThemedText type="small">
+                {allSelected ? t('filter.unselectAll') : t('filter.selectAll')}
+              </ThemedText>
+            </Pressable>
             <ScrollView style={styles.optionList}>
               {row(selected.length === 0, 'all', t('filter.allCategories'), total)}
               {categories.map(({ key, name, count }) =>
@@ -246,6 +267,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.one,
     borderRadius: Spacing.four,
+  },
+  selectAllRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.one,
+    paddingHorizontal: Spacing.two,
+    paddingVertical: Spacing.one,
+    alignSelf: 'flex-end',
   },
   optionList: {
     flexGrow: 0,

@@ -79,6 +79,8 @@
     "modeInclude": "Include",
     "modeExclude": "Exclude",
     "without": "Without",
+    "selectAll": "Select all",
+    "unselectAll": "Unselect all",
     "matchAll": "Only items in all of these categories",
     "done": "OK"
   },

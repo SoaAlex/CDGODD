@@ -79,6 +79,8 @@
     "modeInclude": "Meenemen",
     "modeExclude": "Uitsluiten",
     "without": "Zonder",
+    "selectAll": "Alles selecteren",
+    "unselectAll": "Alles deselecteren",
     "matchAll": "Alleen items in al deze categorieën",
     "done": "OK"
   },
