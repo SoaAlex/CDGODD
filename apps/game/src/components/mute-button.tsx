@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
+import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
@@ -50,7 +51,11 @@ export function MuteButton() {
         />
       </Pressable>
       {open && (
-        <View style={[styles.menu, { backgroundColor: theme.backgroundElement }]}>
+        <Animated.View
+          entering={FadeInDown.duration(180)}
+          exiting={FadeOutUp.duration(120)}
+          style={[styles.menu, { backgroundColor: theme.backgroundElement }]}
+        >
           <View style={styles.menuRow}>
             <ThemedText type="small" style={styles.menuLabel}>
               {t('settings.music')}
@@ -71,7 +76,7 @@ export function MuteButton() {
               onValueChange={toggleSfx}
             />
           </View>
-        </View>
+        </Animated.View>
       )}
     </View>
   );
