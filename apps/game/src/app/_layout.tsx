@@ -138,6 +138,13 @@ export default function RootLayout() {
                 ? {
                     animation: 'fade' as const,
                     cardOverlayEnabled: false,
+                    // The JS stack's default web behavior sizes cards by their
+                    // content (minHeight: 100%) and expects document.body to
+                    // scroll the page — but the HTML shell locks body scrolling
+                    // (ScrollViewStyleReset + 100dvh), so tall screens (history,
+                    // multiplayer results) just clipped. flex: 1 clamps cards to
+                    // the viewport so inner FlatLists scroll instead.
+                    cardStyle: { flex: 1 },
                     cardStyleInterpolator: forSlideFade,
                     transitionSpec: {
                       open: SNAPPY_TRANSITION,

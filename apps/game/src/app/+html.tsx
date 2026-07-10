@@ -12,9 +12,12 @@ export default function Root({ children }: PropsWithChildren) {
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        {/* viewport-fit=cover extends the page under the phone's home
+            indicator / gesture nav bar; without it that strip is painted with
+            the flat fallback background instead of the gradient. */}
         <meta
           name="viewport"
-          content="width=device-width, initial-scale=1, shrink-to-fit=no"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
         />
         <meta name="google-adsense-account" content="ca-pub-5889686672909524" />
         <ScrollViewStyleReset />
