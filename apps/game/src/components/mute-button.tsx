@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
+import { ThemedSwitch } from '@/components/themed-switch';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
@@ -60,7 +61,7 @@ export function MuteButton() {
             <ThemedText type="small" style={styles.menuLabel}>
               {t('settings.music')}
             </ThemedText>
-            <Switch
+            <ThemedSwitch
               testID="toggle-music"
               value={!musicMuted}
               onValueChange={toggleMusic}
@@ -70,7 +71,7 @@ export function MuteButton() {
             <ThemedText type="small" style={styles.menuLabel}>
               {t('settings.soundEffects')}
             </ThemedText>
-            <Switch
+            <ThemedSwitch
               testID="toggle-sfx"
               value={!sfxMuted}
               onValueChange={toggleSfx}

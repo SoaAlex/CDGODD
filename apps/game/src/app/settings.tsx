@@ -1,9 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Rect } from 'react-native-svg';
+import { ThemedSwitch } from '@/components/themed-switch';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
@@ -39,7 +40,7 @@ export default function SettingsScreen() {
             <ThemedText style={styles.rowLabel}>
               {t('settings.showResults')}
             </ThemedText>
-            <Switch
+            <ThemedSwitch
               testID="show-results-switch"
               value={showResults}
               onValueChange={setShowResults}
@@ -55,7 +56,7 @@ export default function SettingsScreen() {
             </ThemedText>
             <View style={[styles.row, { backgroundColor: theme.backgroundElement }]}>
               <ThemedText style={styles.rowLabel}>{t('settings.music')}</ThemedText>
-              <Switch
+              <ThemedSwitch
                 testID="music-switch"
                 value={!musicMuted}
                 onValueChange={(on) => {
@@ -68,7 +69,7 @@ export default function SettingsScreen() {
               <ThemedText style={styles.rowLabel}>
                 {t('settings.soundEffects')}
               </ThemedText>
-              <Switch
+              <ThemedSwitch
                 testID="sfx-switch"
                 value={!sfxMuted}
                 onValueChange={(on) => {
@@ -126,7 +127,7 @@ export default function SettingsScreen() {
             <ThemedText type="small" style={styles.rowLabel}>
               {t('consent.adsToggle')}
             </ThemedText>
-            <Switch
+            <ThemedSwitch
               testID="ads-enabled-switch"
               value={adsEnabled}
               onValueChange={setAdsEnabled}
