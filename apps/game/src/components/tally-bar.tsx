@@ -8,8 +8,12 @@ import {
   TEXT_SHADOW,
 } from '@/constants/theme';
 
-/** Community result of the last card voted on: proportional gauche/droite bar. */
-export function TallyBar({ tally }: { tally: VoteTally }) {
+/**
+ * Community result of the last card voted on: proportional gauche/droite bar.
+ * `compact` renders a smaller bar without the text halo — for white surfaces
+ * (card label zone, last-vote panel) instead of the gradient background.
+ */
+export function TallyBar({ tally, compact }: { tally: VoteTally; compact?: boolean }) {
   const total = tally.votesLeft + tally.votesRight;
   if (total === 0) return null;
   const leftPct = Math.round((tally.votesLeft / total) * 100);
@@ -17,7 +21,7 @@ export function TallyBar({ tally }: { tally: VoteTally }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.bar}>
+      <View style={[styles.bar, compact && styles.barCompact]}>
         <View
           style={[styles.segment, { flex: leftPct, backgroundColor: LEFT_COLOR }]}
         />
@@ -26,12 +30,15 @@ export function TallyBar({ tally }: { tally: VoteTally }) {
         />
       </View>
       <View style={styles.labels}>
-        <ThemedText type="smallBold" style={[styles.pct, { color: LEFT_COLOR }]}>
+        <ThemedText
+          type="smallBold"
+          style={[compact ? styles.pctCompact : styles.pct, { color: LEFT_COLOR }]}
+        >
           {leftPct}%
         </ThemedText>
         <ThemedText
           type="smallBold"
-          style={[styles.pct, { color: RIGHT_COLOR }]}
+          style={[compact ? styles.pctCompact : styles.pct, { color: RIGHT_COLOR }]}
         >
           {rightPct}%
         </ThemedText>
@@ -50,6 +57,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     overflow: 'hidden',
   },
+  barCompact: {
+    height: 8,
+    borderRadius: 4,
+  },
   segment: {
     minWidth: 4,
   },
@@ -61,5 +72,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     lineHeight: 26,
     ...TEXT_SHADOW,
+  },
+  pctCompact: {
+    fontSize: 15,
+    lineHeight: 20,
   },
 });

@@ -1,7 +1,8 @@
 import { Image } from 'expo-image';
 import { useState } from 'react';
 import { Linking, Pressable, StyleSheet, View } from 'react-native';
-import type { DeckCard } from '@cdgodd/shared';
+import type { DeckCard, VoteTally } from '@cdgodd/shared';
+import { TallyBar } from '@/components/tally-bar';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { categoryName, t } from '@/lib/i18n';
@@ -10,7 +11,11 @@ import { categoryName, t } from '@/lib/i18n';
 const CARD_TEXT = '#1b1b2f';
 const CARD_TEXT_SECONDARY = 'rgba(27, 27, 47, 0.55)';
 
-export function SwipeCard({ card }: { card: DeckCard }) {
+/**
+ * `tally` (real-time results mode): the card's live global tally, rendered
+ * inside the white label zone under a separator.
+ */
+export function SwipeCard({ card, tally }: { card: DeckCard; tally?: VoteTally | null }) {
   const [showCredit, setShowCredit] = useState(false);
   const attribution = card.imageUrl ? card.imageAttribution : null;
   const isAi = attribution?.license === 'ai-generated';
@@ -88,6 +93,11 @@ export function SwipeCard({ card }: { card: DeckCard }) {
             {card.categoryKeys.map(categoryName).join(' · ')}
           </ThemedText>
         )}
+        {tally && tally.votesLeft + tally.votesRight > 0 && (
+          <View style={styles.tallyZone}>
+            <TallyBar tally={tally} compact />
+          </View>
+        )}
       </View>
     </View>
   );
@@ -113,6 +123,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#eef0f6',
+    overflow: 'hidden',
   },
   placeholderEmoji: {
     fontSize: 96,
@@ -149,10 +160,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   labelZone: {
-    padding: Spacing.four,
-    gap: Spacing.one,
+    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.three,
+    gap: Spacing.half,
+    alignItems: 'center',
   },
   label: {
     textAlign: 'center',
+    fontSize: 26,
+    lineHeight: 34,
+  },
+  tallyZone: {
+    alignSelf: 'stretch',
+    marginTop: Spacing.one,
+    paddingTop: Spacing.two,
+    paddingBottom: Spacing.one,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(27, 27, 47, 0.2)',
   },
 });

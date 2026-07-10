@@ -9,7 +9,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import type { DeckCard, Side } from '@cdgodd/shared';
+import type { DeckCard, Side, VoteTally } from '@cdgodd/shared';
 import { SwipeCard } from '@/components/swipe-card';
 import { ThemedText } from '@/components/themed-text';
 import { LEFT_COLOR, RIGHT_COLOR, Spacing } from '@/constants/theme';
@@ -24,6 +24,8 @@ const EXIT_MS = 220;
 interface Props {
   cards: DeckCard[];
   onSwipe: (side: Side) => void;
+  /** Live global tally shown inside the top card (real-time results mode). */
+  topTally?: VoteTally | null;
 }
 
 export interface SwipeDeckHandle {
@@ -36,7 +38,7 @@ export interface SwipeDeckHandle {
  * underneath, slightly scaled down, and pops up when the top one leaves.
  */
 export const SwipeDeck = forwardRef<SwipeDeckHandle, Props>(function SwipeDeck(
-  { cards, onSwipe }: Props,
+  { cards, onSwipe, topTally }: Props,
   ref,
 ) {
   const { width } = useWindowDimensions();
@@ -155,7 +157,12 @@ export const SwipeDeck = forwardRef<SwipeDeckHandle, Props>(function SwipeDeck(
           </Animated.View>
         )}
         <Animated.View key={top.id} style={[styles.cardSlot, topStyle]}>
-          <SwipeCard card={top} />
+          {/* Guard on itemId: right after a swipe the tally can still belong
+              to the card that just left. */}
+          <SwipeCard
+            card={top}
+            tally={topTally?.itemId === top.id ? topTally : null}
+          />
           <Animated.View
             style={[styles.badge, styles.badgeLeft, leftBadge, styles.noPointer]}
           >

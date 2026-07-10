@@ -13,7 +13,6 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { SwipeDeck, type SwipeDeckHandle } from '@/components/swipe-deck';
 import { LastVoteBar } from '@/components/last-vote-bar';
-import { TallyBar } from '@/components/tally-bar';
 import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/theme';
 import { AdRails } from '@/ads/ad-rails';
 import { AdSlot } from '@/ads/ad-slot';
@@ -145,14 +144,15 @@ export default function SoloScreen() {
             )}
 
             {cards.length > 0 && (
-              <SwipeDeck ref={deck} cards={cards} onSwipe={onSwipe} />
+              // Real-time mode: the live tally renders inside the top card.
+              <SwipeDeck
+                ref={deck}
+                cards={cards}
+                onSwipe={onSwipe}
+                topTally={showResults ? currentTally : null}
+              />
             )}
           </View>
-
-          {/* Real-time mode: the current card's live global tally. */}
-          {showResults && top && currentTally && (
-            <TallyBar tally={currentTally} />
-          )}
 
           {cards.length > 0 && (
             <View style={styles.voteRow}>

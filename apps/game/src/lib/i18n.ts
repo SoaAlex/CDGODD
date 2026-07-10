@@ -28,6 +28,6 @@ export function t(key: MessageKey): string {
  * Falls back to the raw key when no translation exists yet.
  */
 export function categoryName(key: string): string {
-  const name = (fr.categories as Record<string, string>)[key];
-  return name ?? key;
+  const name = (fr.categories as Record<string, string>)[key] ?? key;
+  return name.charAt(0).toUpperCase() + name.slice(1);
 }
