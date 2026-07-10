@@ -30,7 +30,8 @@
     "imageComingSoon": "Image coming soon",
     "globalVotes": "Global votes",
     "imageCredit": "Image credit",
-    "aiGenerated": "AI-generated image"
+    "aiGenerated": "AI-generated image",
+    "noVotesYet": "No votes yet — be the first!"
   },
   "multiplayer": {
     "create": "Create a room",
@@ -67,11 +68,6 @@
     "language": "Language",
     "anonymity": "Anonymity",
     "sessionHint": "The game is 100% anonymous: no account, no personal data. This random identifier is only used to prevent duplicate votes. An IP-hashing mechanism is also in place to prevent abuse (the hash is kept for 30 days and cannot be used to recover the original IP)."
-  },
-  "categories": {
-    "food": "Food",
-    "culture": "Culture",
-    "daily-life": "Daily life"
   },
   "filter": {
     "categoriesLabel": "Categories",

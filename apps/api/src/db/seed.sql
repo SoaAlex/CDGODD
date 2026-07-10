@@ -4,7 +4,22 @@ INSERT INTO categories (key) VALUES ('food'), ('culture'), ('daily-life');
 INSERT INTO category_translations (category_id, lang, name) VALUES
   (1, 'fr', 'Nourriture'),
   (2, 'fr', 'Culture'),
-  (3, 'fr', 'Vie quotidienne');
+  (3, 'fr', 'Vie quotidienne'),
+  (1, 'en', 'Food'),
+  (2, 'en', 'Culture'),
+  (3, 'en', 'Daily life'),
+  (1, 'pt', 'Comida'),
+  (2, 'pt', 'Cultura'),
+  (3, 'pt', 'Vida quotidiana'),
+  (1, 'es', 'Comida'),
+  (2, 'es', 'Cultura'),
+  (3, 'es', 'Vida cotidiana'),
+  (1, 'nl', 'Eten'),
+  (2, 'nl', 'Cultuur'),
+  (3, 'nl', 'Dagelijks leven'),
+  (1, 'de', 'Essen'),
+  (2, 'de', 'Kultur'),
+  (3, 'de', 'Alltag');
 
 INSERT INTO items (status, created_at) VALUES
   ('approved', unixepoch('now') * 1000),

@@ -218,7 +218,7 @@ Admin auth: simplest viable = Cloudflare Access in front of the admin routes/Pag
 - **Displayed averages** can trim outliers (e.g. drop contributions above a per-source cap) so a burst can't swing the shown result even before cleanup.
 - Multiplayer rooms: vote validity is enforced in the room's Durable Object (one vote per connected player per card), immune to external stuffing.
 
-**i18n**: UI strings in `packages/shared/i18n/*.json` (i18next). Item labels from `item_translations` (fr now, table ready for more langs). Locale detected on device, overridable in Settings.
+**i18n**: UI strings in `packages/shared/i18n/*.json` (i18next). Item labels and category names come from the DB (`item_translations` / `category_translations`), localized server-side with a French fallback (fr is the reference translation every row must have; the admin panel edits these). Locale detected on device, overridable in Settings.
 
 **Ads & consent (`src/ads/`)**: `AdSlot` component. `Platform.OS !== 'web'` → AdMob banner/interstitial (e.g. interstitial every N swipes); `web` → AdSense unit or nothing. Mobile is the real revenue surface. **Ads are the only data-collecting feature**, so they sit behind a consent flow: **Google UMP SDK** (mobile) / **IAB TCF CMP** (web) shows a consent prompt on first ad; decline → non-personalized ads (or none). The game itself never blocks on consent — you can play immediately, consent is asked only when an ad would show.
 

@@ -30,7 +30,8 @@
     "imageComingSoon": "Bild folgt",
     "globalVotes": "Globale Stimmen",
     "imageCredit": "Bildnachweis",
-    "aiGenerated": "KI-generiertes Bild"
+    "aiGenerated": "KI-generiertes Bild",
+    "noVotesYet": "Noch keine Stimmen — gib die erste ab!"
   },
   "multiplayer": {
     "create": "Raum erstellen",
@@ -67,11 +68,6 @@
     "language": "Sprache",
     "anonymity": "Anonymität",
     "sessionHint": "Das Spiel ist 100% anonym: kein Konto, keine persönlichen Daten. Diese zufällige Kennung dient nur dazu, doppelte Stimmen zu verhindern. Zusätzlich gibt es einen IP-Hash-Mechanismus gegen Missbrauch (dieser Hash wird 30 Tage gespeichert und lässt keinen Rückschluss auf die ursprüngliche IP zu)."
-  },
-  "categories": {
-    "food": "Essen",
-    "culture": "Kultur",
-    "daily-life": "Alltag"
   },
   "filter": {
     "categoriesLabel": "Kategorien",

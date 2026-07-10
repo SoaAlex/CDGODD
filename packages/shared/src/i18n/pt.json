@@ -30,7 +30,8 @@
     "imageComingSoon": "Imagem em breve",
     "globalVotes": "Votos globais",
     "imageCredit": "Crédito da imagem",
-    "aiGenerated": "Imagem gerada por IA"
+    "aiGenerated": "Imagem gerada por IA",
+    "noVotesYet": "Ainda sem votos — seja o primeiro!"
   },
   "multiplayer": {
     "create": "Criar uma sala",
@@ -67,11 +68,6 @@
     "language": "Idioma",
     "anonymity": "Anonimato",
     "sessionHint": "O jogo é 100% anónimo: sem conta, sem dados pessoais. Este identificador aleatório serve apenas para evitar votos duplicados. Existe também um mecanismo de hash do IP para combater abusos (esse hash é guardado durante 30 dias e não permite recuperar o IP original)."
-  },
-  "categories": {
-    "food": "Comida",
-    "culture": "Cultura",
-    "daily-life": "Vida quotidiana"
   },
   "filter": {
     "categoriesLabel": "Categorias",

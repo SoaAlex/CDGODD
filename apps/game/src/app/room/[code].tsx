@@ -22,11 +22,13 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { useCategoryName } from '@/hooks/use-categories';
 import { useRoom } from '@/hooks/use-room';
 import { useT } from '@/lib/i18n';
 
 export default function RoomScreen() {
-  const { t, categoryName } = useT();
+  const { t } = useT();
+  const categoryName = useCategoryName();
   const { code, name: nameParam } = useLocalSearchParams<{
     code: string;
     name?: string;

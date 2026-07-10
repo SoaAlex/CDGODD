@@ -30,7 +30,8 @@
     "imageComingSoon": "Afbeelding volgt",
     "globalVotes": "Wereldwijde stemmen",
     "imageCredit": "Afbeeldingscredit",
-    "aiGenerated": "Door AI gegenereerde afbeelding"
+    "aiGenerated": "Door AI gegenereerde afbeelding",
+    "noVotesYet": "Nog geen stemmen — wees de eerste!"
   },
   "multiplayer": {
     "create": "Kamer aanmaken",
@@ -67,11 +68,6 @@
     "language": "Taal",
     "anonymity": "Anonimiteit",
     "sessionHint": "Het spel is 100% anoniem: geen account, geen persoonsgegevens. Deze willekeurige identifier dient alleen om dubbele stemmen te voorkomen. Er is ook een IP-hashmechanisme om misbruik tegen te gaan (deze hash wordt 30 dagen bewaard en kan niet worden gebruikt om het oorspronkelijke IP-adres te achterhalen)."
-  },
-  "categories": {
-    "food": "Eten",
-    "culture": "Cultuur",
-    "daily-life": "Dagelijks leven"
   },
   "filter": {
     "categoriesLabel": "Categorieën",

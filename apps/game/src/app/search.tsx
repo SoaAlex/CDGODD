@@ -16,6 +16,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { useCategoryName } from '@/hooks/use-categories';
 import { castVote, searchItems, submitItem } from '@/lib/api';
 import { recordVote } from '@/lib/history';
 import { useT } from '@/lib/i18n';
@@ -27,7 +28,8 @@ const DEBOUNCE_MS = 300;
  * propose it for admin validation.
  */
 export default function SearchScreen() {
-  const { t, categoryName } = useT();
+  const { t, lang } = useT();
+  const categoryName = useCategoryName();
   const theme = useTheme();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<DeckCard[]>([]);
@@ -50,7 +52,7 @@ export default function SearchScreen() {
     }
     setSearching(true);
     debounce.current = setTimeout(() => {
-      searchItems(q)
+      searchItems(q, lang)
         .then(({ results }) => setResults(results))
         .catch(() => setResults([]))
         .finally(() => setSearching(false));
@@ -58,7 +60,7 @@ export default function SearchScreen() {
     return () => {
       if (debounce.current) clearTimeout(debounce.current);
     };
-  }, [query]);
+  }, [query, lang]);
 
   function pick(card: DeckCard) {
     setSelected(card);

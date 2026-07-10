@@ -56,7 +56,8 @@ Conventions (`test/`):
 - Room DO: use the stub (`env.ROOMS.get(...)`) + WebSocket pairs;
   `runDurableObjectAlarm` for expiry. Never assert card order
   (`ORDER BY RANDOM()`).
-- Tests assume the canonical seed (3 categories, 6 approved items).
+- Tests assume the canonical seed (3 categories named in fr/en/pt/es/nl/de,
+  6 approved items with fr labels only — non-fr requests fall back to fr).
 
 ## Verify
 

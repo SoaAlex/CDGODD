@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { DeckCard, Side, VoteTally } from '@cdgodd/shared';
 import { castVote, fetchDeck } from '@/lib/api';
 import { recordVote } from '@/lib/history';
+import { useLang } from '@/lib/i18n';
 import { clearSeen, getSeen, markSeen } from '@/lib/seen';
 import { prewarmTurnstileToken } from '@/lib/turnstile';
 
@@ -67,6 +68,9 @@ export function useDeck(
   // Join for a stable dependency; keys are [a-z0-9-] so ',' is safe.
   const categoriesKey = categories.join(',');
   const excludedKey = excluded.join(',');
+  // Labels are localized server-side (French fallback), so a language
+  // switch resets the deck the same way a filter change does.
+  const lang = useLang();
 
   const refill = useCallback(async () => {
     if (fetching.current || exhausted.current) return;
@@ -82,6 +86,7 @@ export function useDeck(
       let next = cursor.current;
       do {
         const { cards, nextCursor } = await fetchDeck(
+          lang,
           next,
           wanted,
           matchAll,
@@ -116,10 +121,10 @@ export function useDeck(
       // Filter changed while we were fetching: fetch the fresh deck now.
       if (generation.current !== gen) void refillRef.current();
     }
-  }, [categoriesKey, excludedKey, matchAll]);
+  }, [categoriesKey, excludedKey, matchAll, lang]);
   refillRef.current = refill;
 
-  // Initial load + full reset whenever the category filter changes.
+  // Initial load + full reset whenever the category filter or language changes.
   useEffect(() => {
     generation.current += 1;
     cursor.current = undefined;

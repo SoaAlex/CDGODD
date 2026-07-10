@@ -150,11 +150,13 @@ items.get('/deck', async (c) => {
   const exclFirstParam = catFirstParam + categories.length;
 
   const { results } = await c.env.DB.prepare(
-    `SELECT i.id, t.label, i.image_key, i.image_author, i.image_license,
+    `SELECT i.id, COALESCE(t.label, tf.label) AS label, i.image_key,
+            i.image_author, i.image_license,
             i.image_source_url, i.votes_left, i.votes_right, ${CATEGORY_KEYS_SQL},
             ${orderKey} AS sort_key
        FROM items i
-       JOIN item_translations t ON t.item_id = i.id AND t.lang = ?1
+       JOIN item_translations tf ON tf.item_id = i.id AND tf.lang = 'fr'
+       LEFT JOIN item_translations t ON t.item_id = i.id AND t.lang = ?1
       WHERE i.status = 'approved' AND ${orderKey} > ?2
       ${categoryFilterSql(categories, catFirstParam, match === 'all')}
       ${categoryExcludeSql(exclude, exclFirstParam)}
@@ -184,14 +186,15 @@ items.get('/categories', async (c) => {
   const lang = c.req.query('lang') ?? 'fr';
   const [{ results }, totalRow] = await Promise.all([
     c.env.DB.prepare(
-      `SELECT c.key, ct.name,
+      `SELECT c.key, COALESCE(ct.name, cf.name) AS name,
               (SELECT COUNT(*)
                  FROM item_categories ic
                  JOIN items i ON i.id = ic.item_id AND i.status = 'approved'
                 WHERE ic.category_id = c.id) AS count
          FROM categories c
-         JOIN category_translations ct ON ct.category_id = c.id AND ct.lang = ?1
-        ORDER BY ct.name`,
+         JOIN category_translations cf ON cf.category_id = c.id AND cf.lang = 'fr'
+         LEFT JOIN category_translations ct ON ct.category_id = c.id AND ct.lang = ?1
+        ORDER BY name`,
     )
       .bind(lang)
       .all<{ key: string; name: string; count: number }>(),
@@ -231,12 +234,14 @@ items.get('/items/search', async (c) => {
   const { q, lang } = parsed.data;
 
   const { results } = await c.env.DB.prepare(
-    `SELECT i.id, t.label, i.image_key, i.image_author, i.image_license,
+    `SELECT i.id, COALESCE(t.label, tf.label) AS label, i.image_key,
+            i.image_author, i.image_license,
             i.image_source_url, i.votes_left, i.votes_right, ${CATEGORY_KEYS_SQL}
        FROM items i
-       JOIN item_translations t ON t.item_id = i.id AND t.lang = ?1
-      WHERE i.status = 'approved' AND t.label LIKE ?2
-      ORDER BY t.label
+       JOIN item_translations tf ON tf.item_id = i.id AND tf.lang = 'fr'
+       LEFT JOIN item_translations t ON t.item_id = i.id AND t.lang = ?1
+      WHERE i.status = 'approved' AND COALESCE(t.label, tf.label) LIKE ?2
+      ORDER BY label
       LIMIT 20`,
   )
     .bind(lang, `%${q}%`)

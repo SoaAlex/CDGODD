@@ -7,7 +7,7 @@ import { defaultLang, resources, supportedLangs } from '@cdgodd/shared/i18n';
 /**
  * Minimal typed i18n over the shared resource bundles.
  *
- * Components MUST get `t`/`categoryName` from the `useT()` hook, not from a
+ * Components MUST get `t` from the `useT()` hook, not from a
  * module-level function: React Compiler (enabled in app.json) caches JSX by
  * its reactive dependencies, and a plain `t('key')` call has none — its
  * output would be frozen at first render and survive a language switch. The
@@ -116,23 +116,9 @@ function translate(lang: Lang, key: MessageKey): string {
   return typeof node === 'string' ? node : key;
 }
 
-/**
- * Localized display name for a dynamic category key coming from the API.
- * Falls back to the raw key when no translation exists yet.
- */
-function categoryNameFor(lang: Lang, key: string): string {
-  const categories = resources[lang].translation.categories as Record<
-    string,
-    string
-  >;
-  const name = categories[key] ?? key;
-  return name.charAt(0).toUpperCase() + name.slice(1);
-}
-
 export interface I18n {
   lang: Lang;
   t: (key: MessageKey) => string;
-  categoryName: (key: string) => string;
 }
 
 // One frozen bundle per language so `t` keeps a stable identity while the
@@ -145,7 +131,6 @@ function bundleFor(lang: Lang): I18n {
     bundle = {
       lang,
       t: (key) => translate(lang, key),
-      categoryName: (key) => categoryNameFor(lang, key),
     };
     bundles.set(lang, bundle);
   }

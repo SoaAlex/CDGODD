@@ -32,6 +32,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export function fetchDeck(
+  lang: string,
   cursor?: number,
   categories: string[] = [],
   matchAll = false,
@@ -39,7 +40,7 @@ export function fetchDeck(
   excluded: string[] = [],
   limit = 25,
 ): Promise<DeckResponse> {
-  const params = new URLSearchParams({ lang: 'fr', limit: String(limit) });
+  const params = new URLSearchParams({ lang, limit: String(limit) });
   if (cursor !== undefined) params.set('cursor', String(cursor));
   if (seed !== undefined) params.set('seed', String(seed));
   if (categories.length > 0) {
@@ -50,8 +51,8 @@ export function fetchDeck(
   return request<DeckResponse>(`/deck?${params}`);
 }
 
-export function fetchCategories(): Promise<CategoriesResponse> {
-  return request<CategoriesResponse>('/categories?lang=fr');
+export function fetchCategories(lang: string): Promise<CategoriesResponse> {
+  return request<CategoriesResponse>(`/categories?lang=${lang}`);
 }
 
 export async function castVote(
@@ -65,11 +66,15 @@ export async function castVote(
   });
 }
 
-export function searchItems(q: string): Promise<SearchResponse> {
-  const params = new URLSearchParams({ q, lang: 'fr' });
+export function searchItems(q: string, lang: string): Promise<SearchResponse> {
+  const params = new URLSearchParams({ q, lang });
   return request<SearchResponse>(`/items/search?${params}`);
 }
 
+/**
+ * Submissions stay lang=fr: French is the reference translation every item
+ * must have (the deck falls back to it), and moderation is French-first.
+ */
 export async function submitItem(label: string): Promise<SubmissionResponse> {
   const turnstileToken = await getTurnstileToken();
   return request<SubmissionResponse>('/submissions', {

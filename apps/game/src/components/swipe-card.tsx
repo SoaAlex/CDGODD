@@ -5,6 +5,7 @@ import type { DeckCard, VoteTally } from '@cdgodd/shared';
 import { TallyBar } from '@/components/tally-bar';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { useCategoryName } from '@/hooks/use-categories';
 import { useT } from '@/lib/i18n';
 
 /** Solid card colors — the card is an opaque white surface on the gradient. */
@@ -16,7 +17,8 @@ const CARD_TEXT_SECONDARY = 'rgba(27, 27, 47, 0.55)';
  * inside the white label zone under a separator.
  */
 export function SwipeCard({ card, tally }: { card: DeckCard; tally?: VoteTally | null }) {
-  const { t, categoryName } = useT();
+  const { t } = useT();
+  const categoryName = useCategoryName();
   const [showCredit, setShowCredit] = useState(false);
   const attribution = card.imageUrl ? card.imageAttribution : null;
   const isAi = attribution?.license === 'ai-generated';
@@ -94,9 +96,20 @@ export function SwipeCard({ card, tally }: { card: DeckCard; tally?: VoteTally |
             {card.categoryKeys.map((key) => categoryName(key)).join(' · ')}
           </ThemedText>
         )}
-        {tally && tally.votesLeft + tally.votesRight > 0 && (
+        {tally && (
           <View style={styles.tallyZone}>
-            <TallyBar tally={tally} compact />
+            {tally.votesLeft + tally.votesRight > 0 ? (
+              <TallyBar tally={tally} compact />
+            ) : (
+              // Live-results mode must stay visibly on even when the card
+              // has no votes, or the toggle looks broken on fresh items.
+              <ThemedText
+                type="small"
+                style={[styles.noVotes, { color: CARD_TEXT_SECONDARY }]}
+              >
+                {t('game.noVotesYet')}
+              </ThemedText>
+            )}
           </View>
         )}
       </View>
@@ -178,5 +191,8 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.one,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: 'rgba(27, 27, 47, 0.2)',
+  },
+  noVotes: {
+    textAlign: 'center',
   },
 });

@@ -144,6 +144,20 @@ describe('GET /deck', () => {
     expect(body.cards.map((c) => c.id)).toEqual([1, 2, 4, 5, 6]);
   });
 
+  it('falls back to French labels for languages without item translations', async () => {
+    // Seed has only fr item labels: an en deck serves them unchanged.
+    const en = await deck('?lang=en');
+    expect(en.cards.find((c) => c.id === 1)!.label).toBe('Le quinoa');
+
+    // Once a translation exists it wins over the fallback, per item.
+    await env.DB.prepare(
+      `INSERT INTO item_translations (item_id, lang, label) VALUES (1, 'en', 'Quinoa')`,
+    ).run();
+    const again = await deck('?lang=en');
+    expect(again.cards.find((c) => c.id === 1)!.label).toBe('Quinoa');
+    expect(again.cards.find((c) => c.id === 2)!.label).toBe('La côte de bœuf');
+  });
+
   it('400s on bad queries', async () => {
     for (const q of [
       '?limit=0',
@@ -170,6 +184,30 @@ describe('GET /categories', () => {
       total: 6,
     });
   });
+
+  it('serves seeded translations for supported languages', async () => {
+    const res = await api('/categories?lang=de');
+    const body = (await res.json()) as {
+      categories: Array<{ key: string; name: string }>;
+    };
+    expect(body.categories.map((c) => [c.key, c.name])).toEqual([
+      ['daily-life', 'Alltag'],
+      ['food', 'Essen'],
+      ['culture', 'Kultur'],
+    ]);
+  });
+
+  it('falls back to French names for unknown languages', async () => {
+    const res = await api('/categories?lang=xx');
+    const body = (await res.json()) as {
+      categories: Array<{ name: string }>;
+    };
+    expect(body.categories.map((c) => c.name)).toEqual([
+      'Culture',
+      'Nourriture',
+      'Vie quotidienne',
+    ]);
+  });
 });
 
 describe('GET /items/tallies', () => {
@@ -193,6 +231,13 @@ describe('GET /items/search', () => {
     const body = (await res.json()) as { results: Card[] };
     expect(body.results).toHaveLength(1);
     expect(body.results[0]!.id).toBe(1);
+  });
+
+  it('searches the French fallback label for untranslated languages', async () => {
+    const res = await api('/items/search?q=quinoa&lang=en');
+    const body = (await res.json()) as { results: Card[] };
+    expect(body.results).toHaveLength(1);
+    expect(body.results[0]!.label).toBe('Le quinoa');
   });
 
   it('400s without q', async () => {
