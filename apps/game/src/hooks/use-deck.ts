@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { DeckCard, Side, VoteTally } from '@cdgodd/shared';
 import { castVote, fetchDeck } from '@/lib/api';
 import { recordVote } from '@/lib/history';
+import { clearSeen, getSeen, markSeen } from '@/lib/seen';
 import { prewarmTurnstileToken } from '@/lib/turnstile';
 
 /** Refetch a new batch when this few cards remain. */
@@ -34,6 +35,9 @@ export function useDeck(categories: string[] = [], matchAll = false) {
   });
   const cursor = useRef<number | undefined>(undefined);
   const exhausted = useRef(false);
+  // True once a card was skipped as already-seen or swiped this session —
+  // distinguishes "you've swiped everything" from "no items match the filter".
+  const seenAny = useRef(false);
   const fetching = useRef(false);
   const prefetched = useRef(new Set<string>());
   // Synchronous mirror of state.cards, so swipe() can read/advance the top
@@ -53,15 +57,22 @@ export function useDeck(categories: string[] = [], matchAll = false) {
     const gen = generation.current;
     try {
       const wanted = categoriesKey ? categoriesKey.split(',') : [];
-      const { cards, nextCursor } = await fetchDeck(
-        cursor.current,
-        wanted,
-        matchAll,
-      );
-      if (generation.current !== gen) return; // stale filter
-      cursor.current = nextCursor;
-      if (nextCursor === undefined) exhausted.current = true;
-      queue.current = [...queue.current, ...cards];
+      const seen = await getSeen();
+      // Cards already swiped (persisted on-device) are skipped; keep paging
+      // until at least one unseen card shows up or the server runs out.
+      let batch: DeckCard[] = [];
+      let next = cursor.current;
+      do {
+        const { cards, nextCursor } = await fetchDeck(next, wanted, matchAll);
+        if (generation.current !== gen) return; // stale filter
+        next = nextCursor;
+        const unseen = cards.filter((card) => !seen.has(card.id));
+        if (unseen.length < cards.length) seenAny.current = true;
+        batch = [...batch, ...unseen];
+      } while (batch.length === 0 && next !== undefined);
+      cursor.current = next;
+      if (next === undefined) exhausted.current = true;
+      queue.current = [...queue.current, ...batch];
       const snapshot = queue.current;
       setState((s) => ({
         ...s,
@@ -89,6 +100,7 @@ export function useDeck(categories: string[] = [], matchAll = false) {
     generation.current += 1;
     cursor.current = undefined;
     exhausted.current = false;
+    seenAny.current = false;
     queue.current = [];
     setState({ cards: [], loading: true, error: null, lastVote: null });
     void refill();
@@ -138,6 +150,9 @@ export function useDeck(categories: string[] = [], matchAll = false) {
         imageUrl: top.imageUrl,
         at: Date.now(),
       });
+      // Never show this card again on this device (until a replay reset).
+      void markSeen(top.id);
+      seenAny.current = true;
 
       castVote(top.id, side)
         .then(({ tally }) =>
@@ -161,5 +176,25 @@ export function useDeck(categories: string[] = [], matchAll = false) {
     void refill();
   }, [refill]);
 
-  return { ...state, swipe, retry, exhausted: exhausted.current };
+  /** Every card has been seen — wipe the seen set and deal from the top. */
+  const restart = useCallback(() => {
+    generation.current += 1;
+    cursor.current = undefined;
+    exhausted.current = false;
+    seenAny.current = false;
+    queue.current = [];
+    setState({ cards: [], loading: true, error: null, lastVote: null });
+    void clearSeen().then(() => refill());
+  }, [refill]);
+
+  return {
+    ...state,
+    swipe,
+    retry,
+    restart,
+    exhausted: exhausted.current,
+    // Deck ran dry only because seen cards were filtered out.
+    allSeen:
+      exhausted.current && state.cards.length === 0 && seenAny.current,
+  };
 }

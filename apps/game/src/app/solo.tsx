@@ -29,10 +29,17 @@ export default function SoloScreen() {
   // Category filter: empty = all categories. Session-only by design.
   const [categoryKeys, setCategoryKeys] = useState<string[]>([]);
   const [matchAll, setMatchAll] = useState(false);
-  const { cards, loading, error, lastVote, swipe, retry, exhausted } = useDeck(
-    categoryKeys,
-    matchAll,
-  );
+  const {
+    cards,
+    loading,
+    error,
+    lastVote,
+    swipe,
+    retry,
+    restart,
+    exhausted,
+    allSeen,
+  } = useDeck(categoryKeys, matchAll);
   const deck = useRef<SwipeDeckHandle>(null);
   const theme = useTheme();
   const countSwipeForAds = useInterstitial();
@@ -121,8 +128,19 @@ export default function SoloScreen() {
                   {exhausted ? '🎉' : '…'}
                 </ThemedText>
                 <ThemedText themeColor="textSecondary" style={styles.centerText}>
-                  {exhausted ? t('solo.notFound') : t('errors.network')}
+                  {allSeen
+                    ? t('solo.allSeen')
+                    : exhausted
+                      ? t('solo.notFound')
+                      : t('errors.network')}
                 </ThemedText>
+                {allSeen && (
+                  <Pressable testID="replay" onPress={restart} style={styles.retry}>
+                    <ThemedText type="linkPrimary">
+                      ↻ {t('solo.replay')}
+                    </ThemedText>
+                  </Pressable>
+                )}
               </View>
             )}
 

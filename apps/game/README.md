@@ -16,6 +16,9 @@ Android**. The web export is served as an assets-only Cloudflare Worker.
   strip (author · license, links to the source page); AI-generated images get
   a static "IA" badge (driven by `DeckCard.imageAttribution`). A category
   dropdown at the top filters the deck (modal multi-select; "Toutes" resets).
+  Swiped cards are remembered on-device only (`lib/seen.ts`, AsyncStorage —
+  no server tracking) and filtered out of future decks; once everything is
+  seen, a "Tu as tout vu !" screen offers a replay that clears the set.
 - **Free search** — find an item and vote on it, or propose a new one (moderated).
 - **Multiplayer** — create/join a room by 6-char code; everyone gets the same
   deck and swipes it at their own pace. The host picks the mode, the number of

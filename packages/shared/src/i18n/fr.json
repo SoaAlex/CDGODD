@@ -11,6 +11,8 @@
     "search": "Recherche libre",
     "searchPlaceholder": "Chercher un objet, un concept…",
     "notFound": "Introuvable ? Proposez-le !",
+    "allSeen": "Tu as tout vu !",
+    "replay": "Rejouer",
     "submit": "Proposer",
     "submitted": "Envoyé pour validation",
     "duplicate": "Déjà proposé ! Cet item existe ou attend sa validation."
