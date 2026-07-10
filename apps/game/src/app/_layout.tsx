@@ -197,6 +197,13 @@ export default function RootLayout() {
               headerBackButtonDisplayMode: 'minimal',
             }}
           />
+          <Stack.Screen
+            name="credits"
+            options={{
+              title: t('menu.credits'),
+              headerBackButtonDisplayMode: 'minimal',
+            }}
+          />
           </Stack>
         </ThemeProvider>
       </GradientBackground>

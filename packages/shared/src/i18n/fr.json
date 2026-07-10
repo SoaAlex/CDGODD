@@ -4,7 +4,8 @@
     "play": "Jouer",
     "multiplayer": "Multijoueur",
     "settings": "Paramètres",
-    "history": "Historique"
+    "history": "Historique",
+    "credits": "Crédits"
   },
   "solo": {
     "random": "Cartes aléatoires",
@@ -72,6 +73,18 @@
     "allCategories": "Toutes",
     "matchAll": "Uniquement les items dans toutes ces catégories",
     "done": "OK"
+  },
+  "credits": {
+    "aiTitle": "Jeu & images",
+    "aiBody": "Ce jeu a été en grande partie créé avec l'aide de l'intelligence artificielle : le code comme les images des cartes sont majoritairement générés par IA.",
+    "musicTitle": "Musique",
+    "musicBody": "« CHIRAC - Je serai le président de tous les Français (TOMALY House remix) » par Tomaly, d'après le son original de Malto. Un grand merci à eux deux !",
+    "musicRemixLink": "Écouter le remix sur SoundCloud",
+    "musicOriginalLink": "Écouter l'original sur YouTube",
+    "privacyTitle": "Vie privée",
+    "privacyBody": "Le jeu est 100% anonyme : aucun compte, aucune collecte de données personnelles. Seules les publicités peuvent en collecter, uniquement avec votre consentement (désactivables dans les paramètres).",
+    "contactTitle": "Contact",
+    "contactBody": "Pour toute question ou demande de support :"
   },
   "consent": {
     "title": "Publicités",
