@@ -51,7 +51,11 @@
     "nickname": "Wähl deinen Spitznamen",
     "nicknamePlaceholder": "Dein Spitzname",
     "playAgain": "Nochmal spielen",
-    "waitingHost": "Warten auf den Host für eine neue Runde…"
+    "waitingHost": "Warten auf den Host für eine neue Runde…",
+    "voteResults": "Abstimmungsergebnisse",
+    "nextCard": "Nächste Karte",
+    "showSummary": "Zur Übersicht",
+    "waitingHostReveal": "Der Host wechselt zur nächsten Karte…"
   },
   "history": {
     "empty": "Noch keine Stimmen",

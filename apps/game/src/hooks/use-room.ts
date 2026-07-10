@@ -102,6 +102,9 @@ export function useRoom(code: string, name: string | null) {
 
   const start = useCallback(() => send({ type: 'start' }), [send]);
 
+  /** Host, batch results: advance the shared card-by-card reveal. */
+  const next = useCallback(() => send({ type: 'next' }), [send]);
+
   const restart = useCallback(
     (settings?: {
       mode: RoomMode;
@@ -145,6 +148,7 @@ export function useRoom(code: string, name: string | null) {
     isHost,
     done,
     start,
+    next,
     restart,
     vote,
   };

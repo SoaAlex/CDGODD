@@ -112,6 +112,8 @@ describe('Room DO — websocket lifecycle (batch)', () => {
 
     state = (await a.until('state')).room;
     expect(state.phase).toBe('results');
+    // Batch mode: the card-by-card reveal starts on the first card.
+    expect(state.revealIndex).toBe(0);
     const reveal = await a.until('reveal');
     expect(reveal.results).toHaveLength(5);
     for (const result of reveal.results) {
@@ -122,10 +124,38 @@ describe('Room DO — websocket lifecycle (batch)', () => {
     }
     await b.until('reveal');
 
+    // Guests cannot pace the reveal.
+    send(wsB, { type: 'next' });
+    expect((await b.until('error')).message).toBe('host only');
+
+    // Host advances; every player sees the shared index move.
+    send(wsA, { type: 'next' });
+    expect((await a.until('state')).room.revealIndex).toBe(1);
+    expect((await b.until('state')).room.revealIndex).toBe(1);
+
+    // A late joiner lands on the card currently being discussed.
+    const wsC = await openSocket('TESTBA');
+    const c = wsMessages(wsC);
+    send(wsC, { type: 'join', sessionId: 'sess-c', name: 'Carol' });
+    expect((await c.until('state')).room.revealIndex).toBe(1);
+    expect((await c.until('reveal')).results).toHaveLength(5);
+    wsC.close();
+
+    // Walk to the end (skipping Carol's join/drop broadcasts, which keep
+    // revealIndex at 1); an extra 'next' past the last card is a no-op.
+    for (let i = 2; i <= 5; i++) {
+      send(wsA, { type: 'next' });
+      let room = (await a.until('state')).room;
+      while (room.revealIndex < i) room = (await a.until('state')).room;
+      expect(room.revealIndex).toBe(i);
+    }
+    send(wsA, { type: 'next' });
+
     // Host restarts with a smaller hand; fresh deck, votes cleared.
     send(wsA, { type: 'restart', roundSize: 5 });
     state = (await a.until('state')).room;
     expect(state.phase).toBe('playing');
+    expect(state.revealIndex).toBe(0);
     const freshDeck = (await a.until('deck')).cards as DeckCard[];
     expect(freshDeck).toHaveLength(5);
     await b.until('deck');
@@ -133,6 +163,29 @@ describe('Room DO — websocket lifecycle (batch)', () => {
     // Guests cannot restart either.
     wsA.close();
     wsB.close();
+  });
+
+  it("skips the reveal walk in live mode and ignores 'next' while playing", async () => {
+    await createRoom('TESTBC', { mode: 'live', roundSize: '5' });
+    const ws = await openSocket('TESTBC');
+    const reader = wsMessages(ws);
+    send(ws, { type: 'join', sessionId: 'sess-a', name: 'Solo' });
+    await reader.until('state');
+    send(ws, { type: 'start' });
+    await reader.until('deck');
+
+    // 'next' outside the results phase does nothing (host or not).
+    send(ws, { type: 'next' });
+
+    for (let i = 0; i < 5; i++) {
+      send(ws, { type: 'vote', cardIndex: i, side: 'left' });
+    }
+    let state = (await reader.until('state')).room;
+    while (state.phase !== 'results') state = (await reader.until('state')).room;
+    // Live mode: tallies were shown during play — jump straight to summary.
+    expect(state.revealIndex).toBe(5);
+    await reader.until('reveal');
+    ws.close();
   });
 
   it('ignores duplicate votes from the same player', async () => {

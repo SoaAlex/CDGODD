@@ -51,7 +51,11 @@
     "nickname": "Elige tu apodo",
     "nicknamePlaceholder": "Tu apodo",
     "playAgain": "Volver a jugar",
-    "waitingHost": "Esperando al anfitrión para volver a jugar…"
+    "waitingHost": "Esperando al anfitrión para volver a jugar…",
+    "voteResults": "Resultados de los votos",
+    "nextCard": "Siguiente carta",
+    "showSummary": "Ver el resumen",
+    "waitingHostReveal": "El anfitrión pasa a la siguiente carta…"
   },
   "history": {
     "empty": "Todavía no hay votos",

@@ -80,6 +80,12 @@ export interface RoomState {
   /** Currently connected players with their chosen nicknames. */
   players: RoomPlayer[];
   currentCardIndex: number;
+  /**
+   * Results phase: index of the card currently revealed (host-paced, batch
+   * mode). Equals roundSize once the reveal is over — or always, in live
+   * mode, which skips straight to the summary.
+   */
+  revealIndex: number;
   /** Session id of the room creator (only the host can start the round). */
   hostId: string | null;
 }

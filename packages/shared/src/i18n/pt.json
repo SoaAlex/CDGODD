@@ -51,7 +51,11 @@
     "nickname": "Escolhe o teu pseudónimo",
     "nicknamePlaceholder": "O teu pseudónimo",
     "playAgain": "Jogar de novo",
-    "waitingHost": "À espera do anfitrião para jogar de novo…"
+    "waitingHost": "À espera do anfitrião para jogar de novo…",
+    "voteResults": "Resultados dos votos",
+    "nextCard": "Carta seguinte",
+    "showSummary": "Ver o resumo",
+    "waitingHostReveal": "O anfitrião passa à carta seguinte…"
   },
   "history": {
     "empty": "Ainda sem votos",

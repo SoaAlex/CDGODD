@@ -51,7 +51,11 @@
     "nickname": "Kies je bijnaam",
     "nicknamePlaceholder": "Je bijnaam",
     "playAgain": "Opnieuw spelen",
-    "waitingHost": "Wachten tot de host opnieuw speelt…"
+    "waitingHost": "Wachten tot de host opnieuw speelt…",
+    "voteResults": "Stemresultaten",
+    "nextCard": "Volgende kaart",
+    "showSummary": "Bekijk het overzicht",
+    "waitingHostReveal": "De host gaat naar de volgende kaart…"
   },
   "history": {
     "empty": "Nog geen stemmen",

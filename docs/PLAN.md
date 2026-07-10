@@ -205,7 +205,7 @@ Admin auth: simplest viable = Cloudflare Access in front of the admin routes/Pag
 **Preloading**: `useDeck` fetches 25 items per call; `useImagePreload` prefetches the next 3–5 card images (`Image.prefetch`) while the top card is shown. Refetch when ~5 cards remain. Deck cards carry their global tallies, so vote results render instantly (own vote added optimistically, reconciled by the vote response); on web, a Turnstile token is pre-minted in the background so votes never wait on the challenge.
 
 **Multiplayer (Durable Object `Room`)**: one instance per short code. Holds player list + current card + in-memory vote tally. Two modes:
-- *Batch (build first)*: players vote through N cards, DO reveals aggregated results at the end.
+- *Batch (build first)*: players vote through N cards; at the end the DO reveals results card by card — a "VOTE RESULTS" splash, then the host advances the shared `revealIndex` (`next` message) so everyone debates the same card, finishing on the aggregated summary.
 - *Live (later)*: DO broadcasts running average after each vote. Same object, extra broadcast — no re-architecture.
 
 **Moderation (`moderation.ts`)**: on submission → (1) regex/wordlist blocklist, (2) free moderation model call → auto-reject offensive; else enqueue as `pending`. Reports increment `report_count`; crossing threshold auto-hides pending admin review.

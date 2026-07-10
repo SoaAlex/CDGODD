@@ -51,6 +51,8 @@ export class Room implements DurableObject {
 
   private phase: RoomState['phase'] = 'lobby';
   private currentCardIndex = 0;
+  /** Results phase: index of the card currently revealed (host-paced). */
+  private revealIndex = 0;
   private hostId: string | null = null;
   /** ws -> sessionId of connected players. */
   private players = new Map<WebSocket, string>();
@@ -86,6 +88,7 @@ export class Room implements DurableObject {
       playerCount: sessions.size,
       players,
       currentCardIndex: this.currentCardIndex,
+      revealIndex: this.revealIndex,
       hostId: this.hostId,
     };
   }
@@ -207,6 +210,7 @@ export class Room implements DurableObject {
     await this.ctx.storage.deleteAll();
     this.config = null;
     this.phase = 'lobby';
+    this.revealIndex = 0;
     for (const ws of this.players.keys()) ws.close(1000, 'room expired');
     this.players.clear();
     this.names.clear();
@@ -308,6 +312,20 @@ export class Room implements DurableObject {
         break;
       }
 
+      case 'next': {
+        // Host paces the batch-mode reveal: everyone debates the same card,
+        // the host moves the room to the next one.
+        if (this.players.get(ws) !== this.hostId) {
+          this.send(ws, { type: 'error', message: 'host only' });
+          return;
+        }
+        if (this.phase !== 'results' || this.config?.mode !== 'batch') return;
+        if (this.revealIndex >= this.config.cards.length) return;
+        this.revealIndex += 1;
+        this.broadcast({ type: 'state', room: this.state });
+        break;
+      }
+
       case 'restart': {
         // Room stays open after a round: from the results screen the host
         // can relaunch with the same players, a fresh random hand and,
@@ -346,6 +364,7 @@ export class Room implements DurableObject {
 
         this.votes.clear();
         this.currentCardIndex = 0;
+        this.revealIndex = 0;
         this.phase = 'playing';
         this.broadcast({ type: 'state', room: this.state });
         for (const player of this.players.keys()) this.sendDeck(player);
@@ -367,6 +386,10 @@ export class Room implements DurableObject {
       }
     }
 
+    // Batch mode walks the reveal card by card (host-paced, starts at 0);
+    // live mode already showed tallies during play, so it jumps straight
+    // past the walk to the summary.
+    this.revealIndex = this.config?.mode === 'live' ? cardCount : 0;
     this.phase = 'results';
     this.broadcast({ type: 'state', room: this.state });
     this.broadcast(this.revealMessage());

@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RoomMode, Side } from '@cdgodd/shared';
 import { AdRails } from '@/ads/ad-rails';
 import { AdSlot } from '@/ads/ad-slot';
+import { ResultReveal } from '@/components/result-reveal';
 import { MIN_ROUND_SIZE, RoomSettings } from '@/components/room-settings';
 import { SwipeDeck, type SwipeDeckHandle } from '@/components/swipe-deck';
 import { TallyBar } from '@/components/tally-bar';
@@ -62,6 +63,7 @@ export default function RoomScreen() {
     isHost,
     done,
     start,
+    next,
     restart,
     vote,
   } = useRoom(code ?? '', name);
@@ -204,7 +206,26 @@ export default function RoomScreen() {
     );
   }
 
-  // ---- Results ----
+  // ---- Results: host-paced card-by-card reveal (batch mode) ----
+  // Live mode enters results with revealIndex already at the end, falling
+  // straight through to the summary below.
+  if (room.phase === 'results' && results && room.revealIndex < results.length) {
+    return (
+      <ThemedView style={styles.container}>
+        <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+          <ResultReveal
+            results={results}
+            revealIndex={room.revealIndex}
+            myVotes={myVotes}
+            isHost={isHost}
+            onNext={next}
+          />
+        </SafeAreaView>
+      </ThemedView>
+    );
+  }
+
+  // ---- Results summary ----
   if (room.phase === 'results' && results) {
     return (
       <ThemedView style={styles.container}>

@@ -67,7 +67,32 @@ test.describe('multiplayer room', () => {
     await voteAllCards(alice, 'vote-left');
     await voteAllCards(bob, 'vote-right');
 
-    // Reveal: results with both nicknames, host gets the replay control.
+    // Batch mode: after the splash, the host paces a card-by-card reveal.
+    await expect(alice.getByTestId('next-card')).toBeVisible({
+      timeout: 15_000,
+    });
+    // Both players look at the same first card, with both voters on it.
+    await expect(alice.getByText('1 / 6')).toBeVisible();
+    await expect(bob.getByText('1 / 6')).toBeVisible({ timeout: 15_000 });
+    await expect(alice.getByText('Alice').first()).toBeVisible();
+    await expect(alice.getByText('Bob').first()).toBeVisible();
+
+    // Advancing is mirrored on the guest in real time.
+    await alice.getByTestId('next-card').click();
+    await expect(alice.getByText('2 / 6')).toBeVisible();
+    await expect(bob.getByText('2 / 6')).toBeVisible({ timeout: 15_000 });
+
+    // Walk to the end of the reveal; the summary takes over.
+    for (let i = 0; i < 10; i++) {
+      try {
+        await alice.getByTestId('next-card').click({ timeout: 5_000 });
+      } catch {
+        break; // reveal over — button gone, summary shown
+      }
+      await alice.waitForTimeout(200);
+    }
+
+    // Summary: results with both nicknames, host gets the replay control.
     await expect(alice.getByTestId('replay-settings')).toBeVisible({
       timeout: 15_000,
     });
