@@ -76,6 +76,9 @@
   "filter": {
     "categoriesLabel": "Catégories",
     "allCategories": "Toutes",
+    "modeInclude": "Inclure",
+    "modeExclude": "Exclure",
+    "without": "Sans",
     "matchAll": "Uniquement les items dans toutes ces catégories",
     "done": "OK"
   },

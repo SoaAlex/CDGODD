@@ -102,6 +102,15 @@ describe('deckQuerySchema', () => {
     expect(deckQuerySchema.parse({ categories: '' }).categories).toEqual([]);
   });
 
+  it('splits exclude CSV like categories, rejects bad keys', () => {
+    expect(deckQuerySchema.parse({ exclude: 'food,culture' }).exclude).toEqual([
+      'food',
+      'culture',
+    ]);
+    expect(deckQuerySchema.parse({}).exclude).toBeUndefined();
+    expect(deckQuerySchema.safeParse({ exclude: 'Bad!' }).success).toBe(false);
+  });
+
   it('rejects bad category keys, too many keys, bad lang and match', () => {
     expect(deckQuerySchema.safeParse({ categories: 'Food' }).success).toBe(false);
     const tooMany = Array.from({ length: 21 }, (_, i) => `c${i}`).join(',');

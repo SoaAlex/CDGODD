@@ -35,6 +35,16 @@ export const deckQuerySchema = z.object({
   /** How `categories` combine; ignored when the filter is empty. */
   match: categoryMatchSchema.default('any'),
   /**
+   * CSV of category keys to exclude: items in any of them are dropped.
+   * Applied after `categories` (an item both included and excluded is
+   * excluded).
+   */
+  exclude: z
+    .string()
+    .transform((s) => s.split(',').filter(Boolean))
+    .pipe(z.array(categoryKeySchema).max(20))
+    .optional(),
+  /**
    * Per-session shuffle seed. When present the deck is ordered by a
    * deterministic permutation of item ids instead of ascending id, so each
    * play session sees a different order. Bounded to keep `id * seed` inside

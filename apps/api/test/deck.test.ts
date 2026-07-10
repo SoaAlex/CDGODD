@@ -101,6 +101,43 @@ describe('GET /deck', () => {
     expect((await deck('?categories=does-not-exist')).cards).toEqual([]);
   });
 
+  it('excludes categories (any match drops the item)', async () => {
+    // Seed: food = {1,2}, culture = {3,4,5}, daily-life = {5,6}.
+    expect((await deck('?exclude=food')).cards.map((c) => c.id)).toEqual([
+      3, 4, 5, 6,
+    ]);
+    // Item 5 is culture + daily-life: excluding either drops it.
+    expect((await deck('?exclude=daily-life')).cards.map((c) => c.id)).toEqual([
+      1, 2, 3, 4,
+    ]);
+    expect(
+      (await deck('?exclude=food,culture')).cards.map((c) => c.id),
+    ).toEqual([6]);
+    // Combines with the include filter; exclusion wins on overlap (item 5).
+    expect(
+      (await deck('?categories=culture&exclude=daily-life')).cards.map(
+        (c) => c.id,
+      ),
+    ).toEqual([3, 4]);
+    // Unknown key excludes nothing.
+    expect((await deck('?exclude=does-not-exist')).cards).toHaveLength(6);
+  });
+
+  it('exclusion works with a seeded shuffle and its keyset pagination', async () => {
+    const seen: number[] = [];
+    let cursor: number | undefined;
+    for (let guard = 0; guard < 20; guard++) {
+      const q = `?seed=7&limit=2&exclude=food${
+        cursor !== undefined ? `&cursor=${cursor}` : ''
+      }`;
+      const page = await deck(q);
+      seen.push(...page.cards.map((c) => c.id));
+      cursor = page.nextCursor;
+      if (cursor === undefined) break;
+    }
+    expect([...seen].sort((a, b) => a - b)).toEqual([3, 4, 5, 6]);
+  });
+
   it('excludes non-approved items', async () => {
     await env.DB.prepare(`UPDATE items SET status = 'pending' WHERE id = 3`).run();
     const body = await deck();
@@ -108,7 +145,13 @@ describe('GET /deck', () => {
   });
 
   it('400s on bad queries', async () => {
-    for (const q of ['?limit=0', '?limit=51', '?cursor=-1', '?categories=Bad!']) {
+    for (const q of [
+      '?limit=0',
+      '?limit=51',
+      '?cursor=-1',
+      '?categories=Bad!',
+      '?exclude=Bad!',
+    ]) {
       const res = await api(`/deck${q}`);
       expect(res.status).toBe(400);
     }

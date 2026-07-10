@@ -42,10 +42,11 @@ For local dev, copy `.dev.vars.example` → `.dev.vars`.
 
 Public (game):
 
-- `GET  /deck?lang=fr&cursor=&limit=&categories=&match=` — next batch of
-  approved cards; `categories` is an optional CSV of category keys to filter
+- `GET  /deck?lang=fr&cursor=&limit=&categories=&match=&exclude=` — next batch
+  of approved cards; `categories` is an optional CSV of category keys to filter
   by, `match=all` requires items to be in every listed category (default
-  `any`: at least one)
+  `any`: at least one), `exclude` is an optional CSV of category keys whose
+  items are dropped (any match; wins over `categories`)
 - `POST /items/:id/vote` `{ side, turnstileToken }` — anonymous vote (dedupe by session)
 - `GET  /items/search?q=&lang=fr` — free-search lookup
 - `GET  /items/tallies?ids=1,2,3` — current global tallies (history page)

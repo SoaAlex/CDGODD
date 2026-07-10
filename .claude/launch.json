@@ -110,6 +110,15 @@
         "export PATH=\"$HOME/.nvm/versions/node/v22.15.0/bin:$PATH\"; export EXPO_PUBLIC_API_URL=http://localhost:8788; exec pnpm --dir apps/game exec expo start --web --port 8084"
       ],
       "port": 8084
+    },
+    {
+      "name": "game-web-verify-alt",
+      "runtimeExecutable": "zsh",
+      "runtimeArgs": [
+        "-c",
+        "export PATH=\"$HOME/.nvm/versions/node/v22.15.0/bin:$PATH\"; export EXPO_PUBLIC_API_URL=http://localhost:8788; exec pnpm --dir apps/game exec expo start --web --port 8085"
+      ],
+      "port": 8085
     }
   ]
 }

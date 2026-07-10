@@ -79,6 +79,19 @@ export function categoryFilterSql(
                         ${having})`;
 }
 
+/**
+ * `AND i.id NOT IN (…)` clause dropping items in any of the excluded
+ * category keys. Same ?N binding convention as `categoryFilterSql`.
+ */
+export function categoryExcludeSql(keys: string[], firstParam: number): string {
+  if (keys.length === 0) return '';
+  const placeholders = keys.map((_, i) => `?${firstParam + i}`).join(',');
+  return `AND i.id NOT IN (SELECT ic.item_id
+                             FROM item_categories ic
+                             JOIN categories c ON c.id = ic.category_id
+                            WHERE c.key IN (${placeholders}))`;
+}
+
 function toCard(row: DeckRow, cdnBase: string): DeckCard {
   return {
     id: row.id,
@@ -111,7 +124,15 @@ function toCard(row: DeckRow, cdnBase: string): DeckCard {
 items.get('/deck', async (c) => {
   const parsed = deckQuerySchema.safeParse(c.req.query());
   if (!parsed.success) return c.json({ error: 'bad query' }, 400);
-  const { lang, cursor = 0, limit, categories = [], match, seed } = parsed.data;
+  const {
+    lang,
+    cursor = 0,
+    limit,
+    categories = [],
+    match,
+    exclude = [],
+    seed,
+  } = parsed.data;
 
   // Ordering key doubles as the keyset cursor. Both the shuffle and legacy
   // paths order by a value strictly greater than `cursor` and echo the last
@@ -126,6 +147,7 @@ items.get('/deck', async (c) => {
       ? `(i.id * (((?4 * ${SHUFFLE_MIX}) % ${SHUFFLE_HALF}) + ${SHUFFLE_HALF})) % ${SHUFFLE_MOD}`
       : `i.id`;
   const catFirstParam = seed !== undefined ? 5 : 4;
+  const exclFirstParam = catFirstParam + categories.length;
 
   const { results } = await c.env.DB.prepare(
     `SELECT i.id, t.label, i.image_key, i.image_author, i.image_license,
@@ -135,6 +157,7 @@ items.get('/deck', async (c) => {
        JOIN item_translations t ON t.item_id = i.id AND t.lang = ?1
       WHERE i.status = 'approved' AND ${orderKey} > ?2
       ${categoryFilterSql(categories, catFirstParam, match === 'all')}
+      ${categoryExcludeSql(exclude, exclFirstParam)}
       ORDER BY ${orderKey}
       LIMIT ?3`,
   )
@@ -144,6 +167,7 @@ items.get('/deck', async (c) => {
       limit,
       ...(seed !== undefined ? [seed] : []),
       ...categories,
+      ...exclude,
     )
     .all<DeckRow>();
 

@@ -36,7 +36,11 @@ interface DeckState {
   lastVote: LastVote | null;
 }
 
-export function useDeck(categories: string[] = [], matchAll = false) {
+export function useDeck(
+  categories: string[] = [],
+  matchAll = false,
+  excluded: string[] = [],
+) {
   const [state, setState] = useState<DeckState>({
     cards: [],
     loading: true,
@@ -62,6 +66,7 @@ export function useDeck(categories: string[] = [], matchAll = false) {
 
   // Join for a stable dependency; keys are [a-z0-9-] so ',' is safe.
   const categoriesKey = categories.join(',');
+  const excludedKey = excluded.join(',');
 
   const refill = useCallback(async () => {
     if (fetching.current || exhausted.current) return;
@@ -69,6 +74,7 @@ export function useDeck(categories: string[] = [], matchAll = false) {
     const gen = generation.current;
     try {
       const wanted = categoriesKey ? categoriesKey.split(',') : [];
+      const unwanted = excludedKey ? excludedKey.split(',') : [];
       const seen = await getSeen();
       // Cards already swiped (persisted on-device) are skipped; keep paging
       // until at least one unseen card shows up or the server runs out.
@@ -80,6 +86,7 @@ export function useDeck(categories: string[] = [], matchAll = false) {
           wanted,
           matchAll,
           seed.current,
+          unwanted,
         );
         if (generation.current !== gen) return; // stale filter
         next = nextCursor;
@@ -109,7 +116,7 @@ export function useDeck(categories: string[] = [], matchAll = false) {
       // Filter changed while we were fetching: fetch the fresh deck now.
       if (generation.current !== gen) void refillRef.current();
     }
-  }, [categoriesKey, matchAll]);
+  }, [categoriesKey, excludedKey, matchAll]);
   refillRef.current = refill;
 
   // Initial load + full reset whenever the category filter changes.

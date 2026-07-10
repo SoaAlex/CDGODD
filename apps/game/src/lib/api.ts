@@ -36,6 +36,7 @@ export function fetchDeck(
   categories: string[] = [],
   matchAll = false,
   seed?: number,
+  excluded: string[] = [],
   limit = 25,
 ): Promise<DeckResponse> {
   const params = new URLSearchParams({ lang: 'fr', limit: String(limit) });
@@ -45,6 +46,7 @@ export function fetchDeck(
     params.set('categories', categories.join(','));
     if (matchAll) params.set('match', 'all');
   }
+  if (excluded.length > 0) params.set('exclude', excluded.join(','));
   return request<DeckResponse>(`/deck?${params}`);
 }
 

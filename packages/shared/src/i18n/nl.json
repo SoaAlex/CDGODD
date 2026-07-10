@@ -76,6 +76,9 @@
   "filter": {
     "categoriesLabel": "Categorieën",
     "allCategories": "Alle",
+    "modeInclude": "Meenemen",
+    "modeExclude": "Uitsluiten",
+    "without": "Zonder",
     "matchAll": "Alleen items in al deze categorieën",
     "done": "OK"
   },

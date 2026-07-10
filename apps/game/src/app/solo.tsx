@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { CategoryFilter } from '@/components/category-filter';
+import { CategoryFilter, type FilterMode } from '@/components/category-filter';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { SwipeDeck, type SwipeDeckHandle } from '@/components/swipe-deck';
@@ -27,8 +27,11 @@ import type { Side, VoteTally } from '@cdgodd/shared';
 export default function SoloScreen() {
   const { t } = useT();
   // Category filter: empty = all categories. Session-only by design.
+  // In exclude mode the selected keys are dropped instead of kept.
   const [categoryKeys, setCategoryKeys] = useState<string[]>([]);
   const [matchAll, setMatchAll] = useState(false);
+  const [filterMode, setFilterMode] = useState<FilterMode>('include');
+  const excluding = filterMode === 'exclude';
   const {
     cards,
     loading,
@@ -39,7 +42,11 @@ export default function SoloScreen() {
     restart,
     exhausted,
     allSeen,
-  } = useDeck(categoryKeys, matchAll);
+  } = useDeck(
+    excluding ? [] : categoryKeys,
+    matchAll,
+    excluding ? categoryKeys : [],
+  );
   const deck = useRef<SwipeDeckHandle>(null);
   const theme = useTheme();
   const countSwipeForAds = useInterstitial();
@@ -109,6 +116,8 @@ export default function SoloScreen() {
             onChange={setCategoryKeys}
             matchAll={matchAll}
             onMatchAllChange={setMatchAll}
+            mode={filterMode}
+            onModeChange={setFilterMode}
             centered
           />
           <View style={styles.deckZone}>
