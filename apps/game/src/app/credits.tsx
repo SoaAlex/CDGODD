@@ -18,12 +18,12 @@ function LinkRow({
   label,
   url,
   testID,
-}: {
+}: Readonly<{
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
   url: string;
   testID?: string;
-}) {
+}>) {
   const theme = useTheme();
   return (
     <Pressable
