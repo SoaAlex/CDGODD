@@ -4,12 +4,17 @@ import { InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
 import { useAdsEnabled } from '@/lib/prefs';
 import { ensureAdsReady } from './consent';
 
-/** AdMob units are per-app: real per-platform id, Google's test unit otherwise. */
-const INTERSTITIAL_UNIT_ID =
-  Platform.select({
-    ios: process.env.EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID_IOS,
-    android: process.env.EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID_ANDROID,
-  }) ?? TestIds.INTERSTITIAL;
+/**
+ * AdMob units are per-app, hence per-platform ids (public by design —
+ * they ship in the binary). Dev builds always use Google's test unit:
+ * clicking real ads during development is AdMob policy abuse.
+ */
+const INTERSTITIAL_UNIT_ID = __DEV__
+  ? TestIds.INTERSTITIAL
+  : (Platform.select({
+      ios: 'ca-app-pub-5889686672909524/6181235272',
+      android: 'ca-app-pub-5889686672909524/1505704657',
+    }) ?? TestIds.INTERSTITIAL);
 
 /** Show an interstitial at most every N swipes. */
 export const SWIPES_PER_INTERSTITIAL = 20;

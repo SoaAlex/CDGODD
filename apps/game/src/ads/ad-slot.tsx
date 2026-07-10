@@ -5,12 +5,17 @@ import { useAdsEnabled } from '@/lib/prefs';
 import { ensureAdsReady } from './consent';
 import type { AdSlotProps } from './types';
 
-/** AdMob units are per-app: real per-platform id, Google's test banner otherwise. */
-const BANNER_UNIT_ID =
-  Platform.select({
-    ios: process.env.EXPO_PUBLIC_ADMOB_BANNER_ID_IOS,
-    android: process.env.EXPO_PUBLIC_ADMOB_BANNER_ID_ANDROID,
-  }) ?? TestIds.BANNER;
+/**
+ * AdMob units are per-app, hence per-platform ids (public by design —
+ * they ship in the binary). Dev builds always use Google's test banner:
+ * clicking real ads during development is AdMob policy abuse.
+ */
+const BANNER_UNIT_ID = __DEV__
+  ? TestIds.BANNER
+  : (Platform.select({
+      ios: 'ca-app-pub-5889686672909524/1263950512',
+      android: 'ca-app-pub-5889686672909524/2818786326',
+    }) ?? TestIds.BANNER);
 
 /**
  * Native (iOS/Android): anchored adaptive AdMob banner, shown only after
