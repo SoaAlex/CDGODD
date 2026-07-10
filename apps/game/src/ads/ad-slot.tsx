@@ -7,10 +7,13 @@ import type { AdSlotProps } from './types';
 
 /**
  * AdMob units are per-app, hence per-platform ids (public by design —
- * they ship in the binary). Dev builds always use Google's test banner:
- * clicking real ads during development is AdMob policy abuse.
+ * they ship in the binary). Dev and preview builds always use Google's
+ * test banner: clicking real ads during testing is AdMob policy abuse.
  */
-const BANNER_UNIT_ID = __DEV__
+const USE_TEST_ADS =
+  __DEV__ || process.env.EXPO_PUBLIC_FORCE_TEST_ADS === '1';
+
+const BANNER_UNIT_ID = USE_TEST_ADS
   ? TestIds.BANNER
   : (Platform.select({
       ios: 'ca-app-pub-5889686672909524/1263950512',

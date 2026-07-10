@@ -60,4 +60,19 @@ pnpm deploy                      # build:web + wrangler deploy → cestdegaucheo
 ```
 
 Native builds (App Store / Play Store) go through EAS Build — not part of the
-web CI pipeline.
+web CI pipeline. Profiles in [`eas.json`](eas.json):
+
+```bash
+npx eas-cli login                      # once (Expo account)
+npx eas-cli init                       # once — writes extra.eas.projectId to app.json
+npx eas-cli build -p android --profile preview     # installable APK, TEST ads
+npx eas-cli build -p ios --profile preview         # internal iOS build, TEST ads
+npx eas-cli build -p all --profile production      # store builds, REAL AdMob ads
+npx eas-cli submit -p android|ios                  # upload to store
+```
+
+`development` = dev client, `preview` = release build with Google test ads
+(`EXPO_PUBLIC_FORCE_TEST_ADS=1`), `production` = real per-platform AdMob unit
+ids (hardcoded in `src/ads/`, gated behind `__DEV__`/the force flag). Bundle
+id / package: `com.cdgodd.app` — changeable until the first store upload,
+permanent after.

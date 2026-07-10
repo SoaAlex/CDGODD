@@ -6,10 +6,13 @@ import { ensureAdsReady } from './consent';
 
 /**
  * AdMob units are per-app, hence per-platform ids (public by design —
- * they ship in the binary). Dev builds always use Google's test unit:
- * clicking real ads during development is AdMob policy abuse.
+ * they ship in the binary). Dev and preview builds always use Google's
+ * test unit: clicking real ads during testing is AdMob policy abuse.
  */
-const INTERSTITIAL_UNIT_ID = __DEV__
+const USE_TEST_ADS =
+  __DEV__ || process.env.EXPO_PUBLIC_FORCE_TEST_ADS === '1';
+
+const INTERSTITIAL_UNIT_ID = USE_TEST_ADS
   ? TestIds.INTERSTITIAL
   : (Platform.select({
       ios: 'ca-app-pub-5889686672909524/6181235272',
