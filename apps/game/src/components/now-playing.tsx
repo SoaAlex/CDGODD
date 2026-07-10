@@ -18,15 +18,16 @@ import { t } from '@/lib/i18n';
 
 /** Trailing separator gives the loop some air between repetitions. */
 const TRACK =
-  'CHIRAC - Je serai le président de tous les Français (TOMALY House remix) — Tomaly • ';
+  'CHIRAC - Je serai le président de tous les Français (TOMALY House remix) — Tomaly x Malto • ';
 
 /** Marquee speed in px/s. */
 const SPEED = 30;
 
 /**
- * Tiny "now playing" marquee pinned at the bottom of the home screen: a music
- * icon plus the theme song's title scrolling in a narrow window. Tapping it
- * opens the credits screen. Web only — music doesn't play on native.
+ * Tiny "now playing" marquee shown next to the mute button on the home
+ * screen: a music icon plus the theme song's title scrolling in a narrow
+ * window. Tapping it opens the credits screen. Web only — music doesn't
+ * play on native.
  */
 export function NowPlaying() {
   const theme = useTheme();

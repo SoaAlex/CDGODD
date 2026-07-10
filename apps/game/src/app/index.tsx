@@ -71,6 +71,7 @@ export default function MenuScreen() {
         {/* Mobile: banner pinned to the top of the menu. */}
         {Platform.OS !== 'web' && <AdSlot />}
         <View style={styles.topBar}>
+          <NowPlaying />
           <MuteButton />
         </View>
         {/* Centered between the (possibly empty) ad slots. */}
@@ -112,8 +113,6 @@ export default function MenuScreen() {
           </View>
         </View>
 
-        <NowPlaying />
-
         {/* Web: banner at the bottom of the page. */}
         {Platform.OS === 'web' && <AdSlot />}
       </SafeAreaView>
@@ -144,6 +143,9 @@ const styles = StyleSheet.create({
     top: Spacing.three,
     right: Spacing.four,
     zIndex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
   },
   hero: {
     alignItems: 'center',
