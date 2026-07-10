@@ -34,6 +34,13 @@ export const deckQuerySchema = z.object({
     .optional(),
   /** How `categories` combine; ignored when the filter is empty. */
   match: categoryMatchSchema.default('any'),
+  /**
+   * Per-session shuffle seed. When present the deck is ordered by a
+   * deterministic permutation of item ids instead of ascending id, so each
+   * play session sees a different order. Bounded to keep `id * seed` inside
+   * SQLite's exact-integer range. Absent = legacy ascending-id order.
+   */
+  seed: z.coerce.number().int().positive().max(1_000_000_000).optional(),
 });
 export type DeckQuery = z.infer<typeof deckQuerySchema>;
 

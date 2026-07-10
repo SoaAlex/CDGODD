@@ -11,6 +11,16 @@ const REFILL_THRESHOLD = 5;
 /** How many upcoming card images to prefetch. */
 const PREFETCH_AHEAD = 5;
 
+/**
+ * A fresh shuffle seed for the deck order. Stays fixed for one session's
+ * pagination (so keyset paging is consistent) and is regenerated on every
+ * deck reset — first load, filter change, replay — so the order differs each
+ * time. Range [1, 1e9] matches the server's `seed` bound.
+ */
+function newSeed(): number {
+  return Math.floor(Math.random() * 1_000_000_000) + 1;
+}
+
 /** The previous card's vote: what it was, how you voted, how the crowd did. */
 export interface LastVote {
   card: DeckCard;
@@ -46,6 +56,8 @@ export function useDeck(categories: string[] = [], matchAll = false) {
   // Bumped when the category filter changes: in-flight fetches from the
   // previous filter are discarded instead of polluting the fresh queue.
   const generation = useRef(0);
+  // Per-session shuffle seed; regenerated on every reset (see resets below).
+  const seed = useRef(newSeed());
   const refillRef = useRef<() => Promise<void>>(async () => {});
 
   // Join for a stable dependency; keys are [a-z0-9-] so ',' is safe.
@@ -63,7 +75,12 @@ export function useDeck(categories: string[] = [], matchAll = false) {
       let batch: DeckCard[] = [];
       let next = cursor.current;
       do {
-        const { cards, nextCursor } = await fetchDeck(next, wanted, matchAll);
+        const { cards, nextCursor } = await fetchDeck(
+          next,
+          wanted,
+          matchAll,
+          seed.current,
+        );
         if (generation.current !== gen) return; // stale filter
         next = nextCursor;
         const unseen = cards.filter((card) => !seen.has(card.id));
@@ -101,6 +118,7 @@ export function useDeck(categories: string[] = [], matchAll = false) {
     cursor.current = undefined;
     exhausted.current = false;
     seenAny.current = false;
+    seed.current = newSeed();
     queue.current = [];
     setState({ cards: [], loading: true, error: null, lastVote: null });
     void refill();
@@ -182,6 +200,7 @@ export function useDeck(categories: string[] = [], matchAll = false) {
     cursor.current = undefined;
     exhausted.current = false;
     seenAny.current = false;
+    seed.current = newSeed();
     queue.current = [];
     setState({ cards: [], loading: true, error: null, lastVote: null });
     void clearSeen().then(() => refill());

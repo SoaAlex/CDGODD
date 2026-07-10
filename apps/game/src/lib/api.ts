@@ -35,10 +35,12 @@ export function fetchDeck(
   cursor?: number,
   categories: string[] = [],
   matchAll = false,
+  seed?: number,
   limit = 25,
 ): Promise<DeckResponse> {
   const params = new URLSearchParams({ lang: 'fr', limit: String(limit) });
   if (cursor !== undefined) params.set('cursor', String(cursor));
+  if (seed !== undefined) params.set('seed', String(seed));
   if (categories.length > 0) {
     params.set('categories', categories.join(','));
     if (matchAll) params.set('match', 'all');

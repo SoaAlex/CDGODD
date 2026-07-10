@@ -171,7 +171,7 @@ CREATE INDEX idx_votes_iphash ON votes(item_id, ip_hash);
 All write endpoints carry a **Cloudflare Turnstile token** (privacy-friendly, no PII) and an anonymous `session_id` header; the Worker rate-limits by `ip_hash` before touching the DB.
 
 **Public (game):**
-- `GET  /deck?lang=fr&cursor=…&limit=25` → next batch of approved items (label + image URL + current tallies, so the client can show results optimistically)
+- `GET  /deck?lang=fr&cursor=…&limit=25&seed=…` → next batch of approved items (label + image URL + current tallies, so the client can show results optimistically). `seed` orders the deck by a per-session permutation so each session sees a fresh order; `cursor` is the opaque keyset value echoed as `nextCursor`. Already-swiped cards are filtered on-device (stateless API).
 - `POST /items/:id/vote` `{ side, turnstileToken }` → single batched D1 transaction: insert vote (no-op on dupe), bump counters, return tallies
 - `GET  /items/search?q=…&lang=fr` → free-search mode lookup
 - `POST /submissions` `{ label, categoryKeys, image, turnstileToken }` → moderation → `pending` or auto-reject

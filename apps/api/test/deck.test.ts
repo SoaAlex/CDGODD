@@ -50,6 +50,41 @@ describe('GET /deck', () => {
     expect(page4.nextCursor).toBeUndefined();
   });
 
+  it('seed shuffles order but returns every card exactly once', async () => {
+    const ascending = [1, 2, 3, 4, 5, 6];
+    const orders = new Set<string>();
+    // Across a spread of seeds — including small ones a naive multiplier would
+    // leave in id order — every seed returns the full deck, none come back
+    // ascending, and seeds yield more than one distinct order.
+    for (let s = 1; s <= 30; s++) {
+      const order = (await deck(`?seed=${s}`)).cards.map((c) => c.id);
+      expect([...order].sort((a, b) => a - b)).toEqual(ascending);
+      expect(order).not.toEqual(ascending);
+      orders.add(order.join(','));
+    }
+    expect(orders.size).toBeGreaterThan(1);
+
+    // Same seed is deterministic — order is stable across calls (so keyset
+    // pagination within a session is consistent).
+    const first = (await deck('?seed=7')).cards.map((c) => c.id);
+    const again = (await deck('?seed=7')).cards.map((c) => c.id);
+    expect(again).toEqual(first);
+  });
+
+  it('keyset-paginates a seeded deck without skips or repeats', async () => {
+    const seen: number[] = [];
+    let cursor: number | undefined;
+    // Page until the deck is exhausted (a short page ends it).
+    for (let guard = 0; guard < 20; guard++) {
+      const q = `?seed=7&limit=2${cursor !== undefined ? `&cursor=${cursor}` : ''}`;
+      const page = await deck(q);
+      seen.push(...page.cards.map((c) => c.id));
+      cursor = page.nextCursor;
+      if (cursor === undefined) break;
+    }
+    expect([...seen].sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5, 6]);
+  });
+
   it('filters by category (any = union, all = intersection)', async () => {
     expect((await deck('?categories=food')).cards.map((c) => c.id)).toEqual([1, 2]);
     expect((await deck('?categories=culture')).cards.map((c) => c.id)).toEqual([
