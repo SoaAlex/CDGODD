@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 import { useAdsEnabled } from '@/lib/prefs';
 import { ensureAdsReady } from './consent';
 import type { AdSlotProps } from './types';
 
-/** Real unit id in prod builds; Google's test banner otherwise. */
-const BANNER_UNIT_ID = process.env.EXPO_PUBLIC_ADMOB_BANNER_ID ?? TestIds.BANNER;
+/** AdMob units are per-app: real per-platform id, Google's test banner otherwise. */
+const BANNER_UNIT_ID =
+  Platform.select({
+    ios: process.env.EXPO_PUBLIC_ADMOB_BANNER_ID_IOS,
+    android: process.env.EXPO_PUBLIC_ADMOB_BANNER_ID_ANDROID,
+  }) ?? TestIds.BANNER;
 
 /**
  * Native (iOS/Android): anchored adaptive AdMob banner, shown only after
