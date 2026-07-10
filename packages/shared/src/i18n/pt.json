@@ -1,0 +1,101 @@
+{
+  "menu": {
+    "title": "É de Esquerda ou de Direita?",
+    "play": "Jogar",
+    "multiplayer": "Multijogador",
+    "settings": "Definições",
+    "history": "Histórico",
+    "credits": "Créditos",
+    "back": "Voltar"
+  },
+  "solo": {
+    "random": "Cartas aleatórias",
+    "search": "Pesquisa livre",
+    "searchPlaceholder": "Procura um objeto, um conceito…",
+    "notFound": "Não encontras? Propõe-o!",
+    "allSeen": "Já viste tudo!",
+    "replay": "Jogar de novo",
+    "submit": "Propor",
+    "submitted": "Enviado para validação",
+    "duplicate": "Já foi proposto! Este item existe ou aguarda validação."
+  },
+  "game": {
+    "left": "Esquerda",
+    "right": "Direita",
+    "report": "Denunciar",
+    "reported": "Obrigado, foi denunciado",
+    "showResults": "Ver os resultados dos votos",
+    "hideResults": "Ocultar os resultados dos votos",
+    "lastVoteResults": "Resultados do voto anterior",
+    "imageComingSoon": "Imagem em breve",
+    "globalVotes": "Votos globais",
+    "imageCredit": "Crédito da imagem",
+    "aiGenerated": "Imagem gerada por IA"
+  },
+  "multiplayer": {
+    "create": "Criar uma sala",
+    "join": "Entrar",
+    "codePlaceholder": "Código da sala",
+    "waiting": "À espera dos jogadores…",
+    "waitingOthers": "À espera dos outros jogadores…",
+    "start": "Começar",
+    "results": "Resultados",
+    "players": "jogadores",
+    "modeBatch": "Resultados no fim",
+    "modeLive": "Resultados em direto",
+    "cards": "cartas",
+    "shareCode": "Partilha este código com os teus amigos",
+    "copyLink": "Copiar o link",
+    "linkCopied": "Link copiado!",
+    "nickname": "Escolhe o teu pseudónimo",
+    "nicknamePlaceholder": "O teu pseudónimo",
+    "playAgain": "Jogar de novo",
+    "waitingHost": "À espera do anfitrião para jogar de novo…"
+  },
+  "history": {
+    "empty": "Ainda sem votos",
+    "yourVote": "O teu voto"
+  },
+  "settings": {
+    "showResults": "Mostrar os votos em direto na carta",
+    "showLastVote": "Mostrar o resultado do voto anterior",
+    "sound": "Som",
+    "music": "Música",
+    "soundEffects": "Efeitos sonoros",
+    "language": "Idioma",
+    "anonymity": "Anonimato",
+    "sessionHint": "O jogo é 100% anónimo: sem conta, sem dados pessoais. Este identificador aleatório serve apenas para evitar votos duplicados. Existe também um mecanismo de hash do IP para combater abusos (esse hash é guardado durante 30 dias e não permite recuperar o IP original)."
+  },
+  "categories": {
+    "food": "Comida",
+    "culture": "Cultura",
+    "daily-life": "Vida quotidiana"
+  },
+  "filter": {
+    "categoriesLabel": "Categorias",
+    "allCategories": "Todas",
+    "matchAll": "Apenas os itens em todas estas categorias",
+    "done": "OK"
+  },
+  "credits": {
+    "aiTitle": "Jogo e imagens",
+    "aiBody": "Este jogo foi em grande parte criado com a ajuda da inteligência artificial: tanto o código como as imagens das cartas são maioritariamente gerados por IA.",
+    "musicTitle": "Música",
+    "musicBody": "«CHIRAC - Je serai le président de tous les Français (TOMALY House remix)» de Tomaly, a partir do som original de Malto. Um grande obrigado aos dois!",
+    "musicRemixLink": "Ouvir o remix no SoundCloud",
+    "musicOriginalLink": "Ouvir o original no YouTube",
+    "privacyTitle": "Privacidade",
+    "privacyBody": "O jogo é 100% anónimo: sem conta, sem recolha de dados pessoais. Apenas os anúncios podem recolher dados, e só com o teu consentimento (podem ser desativados nas definições).",
+    "contactTitle": "Contacto",
+    "contactBody": "Para qualquer questão ou pedido de suporte:"
+  },
+  "consent": {
+    "title": "Anúncios",
+    "body": "O jogo é gratuito e anónimo. Apenas os anúncios podem recolher dados, com o teu acordo.",
+    "adsToggle": "Os anúncios ajudam-me a financiar o jogo, mas se te irritam tanto como a mim, aqui podes desativá-los :)"
+  },
+  "errors": {
+    "network": "Erro de rede, tenta novamente",
+    "roomNotFound": "Sala não encontrada"
+  }
+}

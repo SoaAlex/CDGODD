@@ -6,7 +6,7 @@ import { ThemedSwitch } from '@/components/themed-switch';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { t } from '@/lib/i18n';
+import { useT } from '@/lib/i18n';
 import { isMusicMuted, setMusicMuted } from '@/lib/music';
 import { isSfxMuted, setSfxMuted } from '@/lib/sfx';
 
@@ -16,6 +16,7 @@ import { isSfxMuted, setSfxMuted } from '@/lib/sfx';
  * renders nothing there.
  */
 export function MuteButton() {
+  const { t } = useT();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [musicMuted, setMusicMutedState] = useState(isMusicMuted());

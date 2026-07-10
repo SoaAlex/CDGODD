@@ -5,7 +5,7 @@ import type { DeckCard, VoteTally } from '@cdgodd/shared';
 import { TallyBar } from '@/components/tally-bar';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
-import { categoryName, t } from '@/lib/i18n';
+import { useT } from '@/lib/i18n';
 
 /** Solid card colors — the card is an opaque white surface on the gradient. */
 const CARD_TEXT = '#1b1b2f';
@@ -16,6 +16,7 @@ const CARD_TEXT_SECONDARY = 'rgba(27, 27, 47, 0.55)';
  * inside the white label zone under a separator.
  */
 export function SwipeCard({ card, tally }: { card: DeckCard; tally?: VoteTally | null }) {
+  const { t, categoryName } = useT();
   const [showCredit, setShowCredit] = useState(false);
   const attribution = card.imageUrl ? card.imageAttribution : null;
   const isAi = attribution?.license === 'ai-generated';
@@ -90,7 +91,7 @@ export function SwipeCard({ card, tally }: { card: DeckCard; tally?: VoteTally |
         </ThemedText>
         {card.categoryKeys.length > 0 && (
           <ThemedText type="small" style={{ color: CARD_TEXT_SECONDARY }}>
-            {card.categoryKeys.map(categoryName).join(' · ')}
+            {card.categoryKeys.map((key) => categoryName(key)).join(' · ')}
           </ThemedText>
         )}
         {tally && tally.votesLeft + tally.votesRight > 0 && (

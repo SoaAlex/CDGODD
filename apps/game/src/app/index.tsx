@@ -17,7 +17,7 @@ import {
   Spacing,
   TEXT_SHADOW,
 } from '@/constants/theme';
-import { t } from '@/lib/i18n';
+import { useT } from '@/lib/i18n';
 
 function MenuButton({
   label,
@@ -58,6 +58,7 @@ function MenuButton({
 }
 
 export default function MenuScreen() {
+  const { t } = useT();
   return (
     <ThemedView style={styles.container}>
       <Head>

@@ -20,11 +20,12 @@ import { useInterstitial } from '@/ads/use-interstitial';
 import { useDeck } from '@/hooks/use-deck';
 import { useTheme } from '@/hooks/use-theme';
 import { fetchTallies, reportItem } from '@/lib/api';
-import { t } from '@/lib/i18n';
-import { useShowResults } from '@/lib/prefs';
+import { useT } from '@/lib/i18n';
+import { useShowLastVote, useShowResults } from '@/lib/prefs';
 import type { Side, VoteTally } from '@cdgodd/shared';
 
 export default function SoloScreen() {
+  const { t } = useT();
   // Category filter: empty = all categories. Session-only by design.
   const [categoryKeys, setCategoryKeys] = useState<string[]>([]);
   const [matchAll, setMatchAll] = useState(false);
@@ -43,6 +44,7 @@ export default function SoloScreen() {
   const theme = useTheme();
   const countSwipeForAds = useInterstitial();
   const { showResults, setShowResults } = useShowResults();
+  const { showLastVote } = useShowLastVote();
 
   function onSwipe(side: Side) {
     swipe(side);
@@ -221,10 +223,13 @@ export default function SoloScreen() {
             </View>
           )}
 
-          {/* The previous card's result is always shown once you've voted. */}
-          <View style={styles.footer}>
-            {lastVote && <LastVoteBar lastVote={lastVote} />}
-          </View>
+          {/* The previous card's result, once you've voted — the settings
+              toggle can hide it (and frees its reserved space). */}
+          {showLastVote && (
+            <View style={styles.footer}>
+              {lastVote && <LastVoteBar lastVote={lastVote} />}
+            </View>
+          )}
         </SafeAreaView>
       </AdRails>
     </ThemedView>

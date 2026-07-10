@@ -14,7 +14,7 @@ import Animated, {
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { t } from '@/lib/i18n';
+import { useT } from '@/lib/i18n';
 
 /** Trailing separator gives the loop some air between repetitions. */
 const TRACK =
@@ -30,6 +30,7 @@ const SPEED = 30;
  * play on native.
  */
 export function NowPlaying() {
+  const { t } = useT();
   const theme = useTheme();
   const router = useRouter();
   const [textWidth, setTextWidth] = useState(0);

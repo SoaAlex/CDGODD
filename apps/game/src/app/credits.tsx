@@ -6,7 +6,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { t } from '@/lib/i18n';
+import { useT } from '@/lib/i18n';
 
 const REMIX_URL =
   'https://soundcloud.com/tomaly-546558255/chirac-je-serai-le-president-de-tous-les-francais-thomaslyy-house-remix';
@@ -49,6 +49,7 @@ function LinkRow({
 }
 
 export default function CreditsScreen() {
+  const { t } = useT();
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>

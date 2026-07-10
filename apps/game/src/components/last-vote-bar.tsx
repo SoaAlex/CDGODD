@@ -4,7 +4,7 @@ import { TallyBar } from '@/components/tally-bar';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { t } from '@/lib/i18n';
+import { useT } from '@/lib/i18n';
 import type { LastVote } from '@/hooks/use-deck';
 
 /**
@@ -12,6 +12,7 @@ import type { LastVote } from '@/hooks/use-deck';
  * name, and the global tally. Always shown once you've voted.
  */
 export function LastVoteBar({ lastVote }: { lastVote: LastVote }) {
+  const { t } = useT();
   const theme = useTheme();
   const { card, tally } = lastVote;
 

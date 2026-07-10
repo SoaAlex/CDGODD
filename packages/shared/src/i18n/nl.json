@@ -1,0 +1,101 @@
+{
+  "menu": {
+    "title": "Is het Links of Rechts?",
+    "play": "Spelen",
+    "multiplayer": "Multiplayer",
+    "settings": "Instellingen",
+    "history": "Geschiedenis",
+    "credits": "Credits",
+    "back": "Terug"
+  },
+  "solo": {
+    "random": "Willekeurige kaarten",
+    "search": "Vrij zoeken",
+    "searchPlaceholder": "Zoek een voorwerp, een concept…",
+    "notFound": "Niet gevonden? Stel het voor!",
+    "allSeen": "Je hebt alles gezien!",
+    "replay": "Opnieuw spelen",
+    "submit": "Voorstellen",
+    "submitted": "Verzonden ter beoordeling",
+    "duplicate": "Al voorgesteld! Dit item bestaat al of wacht op goedkeuring."
+  },
+  "game": {
+    "left": "Links",
+    "right": "Rechts",
+    "report": "Melden",
+    "reported": "Bedankt, het is gemeld",
+    "showResults": "Stemresultaten tonen",
+    "hideResults": "Stemresultaten verbergen",
+    "lastVoteResults": "Resultaten van de vorige stem",
+    "imageComingSoon": "Afbeelding volgt",
+    "globalVotes": "Wereldwijde stemmen",
+    "imageCredit": "Afbeeldingscredit",
+    "aiGenerated": "Door AI gegenereerde afbeelding"
+  },
+  "multiplayer": {
+    "create": "Kamer aanmaken",
+    "join": "Meedoen",
+    "codePlaceholder": "Kamercode",
+    "waiting": "Wachten op spelers…",
+    "waitingOthers": "Wachten op de andere spelers…",
+    "start": "Starten",
+    "results": "Resultaten",
+    "players": "spelers",
+    "modeBatch": "Resultaten aan het einde",
+    "modeLive": "Live resultaten",
+    "cards": "kaarten",
+    "shareCode": "Deel deze code met je vrienden",
+    "copyLink": "Link kopiëren",
+    "linkCopied": "Link gekopieerd!",
+    "nickname": "Kies je bijnaam",
+    "nicknamePlaceholder": "Je bijnaam",
+    "playAgain": "Opnieuw spelen",
+    "waitingHost": "Wachten tot de host opnieuw speelt…"
+  },
+  "history": {
+    "empty": "Nog geen stemmen",
+    "yourVote": "Jouw stem"
+  },
+  "settings": {
+    "showResults": "Live stemmen op de kaart tonen",
+    "showLastVote": "Resultaat van de vorige stem tonen",
+    "sound": "Geluid",
+    "music": "Muziek",
+    "soundEffects": "Geluidseffecten",
+    "language": "Taal",
+    "anonymity": "Anonimiteit",
+    "sessionHint": "Het spel is 100% anoniem: geen account, geen persoonsgegevens. Deze willekeurige identifier dient alleen om dubbele stemmen te voorkomen. Er is ook een IP-hashmechanisme om misbruik tegen te gaan (deze hash wordt 30 dagen bewaard en kan niet worden gebruikt om het oorspronkelijke IP-adres te achterhalen)."
+  },
+  "categories": {
+    "food": "Eten",
+    "culture": "Cultuur",
+    "daily-life": "Dagelijks leven"
+  },
+  "filter": {
+    "categoriesLabel": "Categorieën",
+    "allCategories": "Alle",
+    "matchAll": "Alleen items in al deze categorieën",
+    "done": "OK"
+  },
+  "credits": {
+    "aiTitle": "Spel & afbeeldingen",
+    "aiBody": "Dit spel is grotendeels gemaakt met behulp van kunstmatige intelligentie: zowel de code als de kaartafbeeldingen zijn grotendeels door AI gegenereerd.",
+    "musicTitle": "Muziek",
+    "musicBody": "\"CHIRAC - Je serai le président de tous les Français (TOMALY House remix)\" door Tomaly, naar het originele nummer van Malto. Veel dank aan hen beiden!",
+    "musicRemixLink": "Beluister de remix op SoundCloud",
+    "musicOriginalLink": "Beluister het origineel op YouTube",
+    "privacyTitle": "Privacy",
+    "privacyBody": "Het spel is 100% anoniem: geen account, geen verzameling van persoonsgegevens. Alleen advertenties kunnen gegevens verzamelen, uitsluitend met jouw toestemming (uit te schakelen in de instellingen).",
+    "contactTitle": "Contact",
+    "contactBody": "Voor vragen of ondersteuning:"
+  },
+  "consent": {
+    "title": "Advertenties",
+    "body": "Het spel is gratis en anoniem. Alleen advertenties kunnen gegevens verzamelen, met jouw toestemming.",
+    "adsToggle": "Advertenties helpen mij het spel te financieren, maar als ze jou net zo irriteren als mij, kun je ze hier uitschakelen :)"
+  },
+  "errors": {
+    "network": "Netwerkfout, probeer het opnieuw",
+    "roomNotFound": "Kamer niet gevonden"
+  }
+}

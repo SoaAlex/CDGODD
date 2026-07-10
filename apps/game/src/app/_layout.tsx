@@ -15,7 +15,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { GameTitle } from '@/components/game-title';
 import { GradientBackground } from '@/components/gradient-background';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
-import { t } from '@/lib/i18n';
+import { useLangReady, useT } from '@/lib/i18n';
 import { startBackgroundMusic } from '@/lib/music';
 
 /**
@@ -94,6 +94,7 @@ const SNAPPY_TRANSITION = {
  * to the home screen when there is nothing to pop.
  */
 function HeaderBack() {
+  const { t } = useT();
   return (
     <Pressable
       onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
@@ -128,6 +129,11 @@ export default function RootLayout() {
     'ClashGrotesk-Variable': require('../../assets/fonts/ClashGrotesk-Variable.ttf'),
   });
   const pathname = usePathname();
+  // Screen titles render through t(); hold first paint until the stored
+  // language is read so the default French doesn't flash for players on
+  // another language.
+  const { t } = useT();
+  const langReady = useLangReady();
   const { width } = useWindowDimensions();
   // Screens center their content in a MaxContentWidth column; inset the
   // header's back arrow by the same margin so it lines up with that column
@@ -148,7 +154,7 @@ export default function RootLayout() {
     if (el instanceof HTMLElement) el.blur();
   }, [pathname]);
 
-  if (!fontsLoaded) return null;
+  if (!fontsLoaded || !langReady) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

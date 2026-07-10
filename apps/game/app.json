@@ -45,7 +45,8 @@
           "userTrackingUsageDescription": "Cet identifiant sera utilisé pour vous proposer des publicités personnalisées."
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,

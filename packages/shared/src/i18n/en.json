@@ -1,0 +1,101 @@
+{
+  "menu": {
+    "title": "Is It Left-Wing or Right-Wing?",
+    "play": "Play",
+    "multiplayer": "Multiplayer",
+    "settings": "Settings",
+    "history": "History",
+    "credits": "Credits",
+    "back": "Back"
+  },
+  "solo": {
+    "random": "Random cards",
+    "search": "Free search",
+    "searchPlaceholder": "Search for an object, a concept…",
+    "notFound": "Can't find it? Suggest it!",
+    "allSeen": "You've seen everything!",
+    "replay": "Play again",
+    "submit": "Suggest",
+    "submitted": "Sent for review",
+    "duplicate": "Already suggested! This item exists or is awaiting review."
+  },
+  "game": {
+    "left": "Left",
+    "right": "Right",
+    "report": "Report",
+    "reported": "Thanks, it's been reported",
+    "showResults": "Show vote results",
+    "hideResults": "Hide vote results",
+    "lastVoteResults": "Results of the previous vote",
+    "imageComingSoon": "Image coming soon",
+    "globalVotes": "Global votes",
+    "imageCredit": "Image credit",
+    "aiGenerated": "AI-generated image"
+  },
+  "multiplayer": {
+    "create": "Create a room",
+    "join": "Join",
+    "codePlaceholder": "Room code",
+    "waiting": "Waiting for players…",
+    "waitingOthers": "Waiting for the other players…",
+    "start": "Start",
+    "results": "Results",
+    "players": "players",
+    "modeBatch": "Results at the end",
+    "modeLive": "Live results",
+    "cards": "cards",
+    "shareCode": "Share this code with your friends",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied!",
+    "nickname": "Pick your nickname",
+    "nicknamePlaceholder": "Your nickname",
+    "playAgain": "Play again",
+    "waitingHost": "Waiting for the host to play again…"
+  },
+  "history": {
+    "empty": "No votes yet",
+    "yourVote": "Your vote"
+  },
+  "settings": {
+    "showResults": "Show live votes on the card",
+    "showLastVote": "Show the previous vote's result",
+    "sound": "Sound",
+    "music": "Music",
+    "soundEffects": "Sound effects",
+    "language": "Language",
+    "anonymity": "Anonymity",
+    "sessionHint": "The game is 100% anonymous: no account, no personal data. This random identifier is only used to prevent duplicate votes. An IP-hashing mechanism is also in place to prevent abuse (the hash is kept for 30 days and cannot be used to recover the original IP)."
+  },
+  "categories": {
+    "food": "Food",
+    "culture": "Culture",
+    "daily-life": "Daily life"
+  },
+  "filter": {
+    "categoriesLabel": "Categories",
+    "allCategories": "All",
+    "matchAll": "Only items in all of these categories",
+    "done": "OK"
+  },
+  "credits": {
+    "aiTitle": "Game & images",
+    "aiBody": "This game was largely created with the help of artificial intelligence: both the code and the card images are mostly AI-generated.",
+    "musicTitle": "Music",
+    "musicBody": "\"CHIRAC - Je serai le président de tous les Français (TOMALY House remix)\" by Tomaly, based on the original track by Malto. Big thanks to both of them!",
+    "musicRemixLink": "Listen to the remix on SoundCloud",
+    "musicOriginalLink": "Listen to the original on YouTube",
+    "privacyTitle": "Privacy",
+    "privacyBody": "The game is 100% anonymous: no account, no personal data collection. Only ads may collect data, and only with your consent (they can be disabled in the settings).",
+    "contactTitle": "Contact",
+    "contactBody": "For any question or support request:"
+  },
+  "consent": {
+    "title": "Ads",
+    "body": "The game is free and anonymous. Only ads may collect data, with your consent.",
+    "adsToggle": "Ads help me fund the game, but if they annoy you as much as they annoy me, here's how to turn them off :)"
+  },
+  "errors": {
+    "network": "Network error, please try again",
+    "roomNotFound": "Room not found"
+  }
+}

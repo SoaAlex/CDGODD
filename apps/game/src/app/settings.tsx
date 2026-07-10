@@ -1,25 +1,27 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactElement } from 'react';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Svg, { Rect } from 'react-native-svg';
+import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import { ThemedSwitch } from '@/components/themed-switch';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { t } from '@/lib/i18n';
+import { setLang, useT, type Lang } from '@/lib/i18n';
 import { isMusicMuted, setMusicMuted } from '@/lib/music';
-import { useAdsEnabled, useShowResults } from '@/lib/prefs';
+import { useAdsEnabled, useShowLastVote, useShowResults } from '@/lib/prefs';
 import { getSessionId } from '@/lib/session';
 import { isSfxMuted, setSfxMuted } from '@/lib/sfx';
 
 export default function SettingsScreen() {
   const theme = useTheme();
   const router = useRouter();
+  const { t, lang } = useT();
   const [sessionId, setSessionId] = useState<string | null>(null);
   const { showResults, setShowResults } = useShowResults();
+  const { showLastVote, setShowLastVote } = useShowLastVote();
   const { adsEnabled, setAdsEnabled } = useAdsEnabled();
   const [musicMuted, setMusicMutedState] = useState(isMusicMuted());
   const [sfxMuted, setSfxMutedState] = useState(isSfxMuted());
@@ -44,6 +46,16 @@ export default function SettingsScreen() {
               testID="show-results-switch"
               value={showResults}
               onValueChange={setShowResults}
+            />
+          </View>
+          <View style={[styles.row, { backgroundColor: theme.backgroundElement }]}>
+            <ThemedText style={styles.rowLabel}>
+              {t('settings.showLastVote')}
+            </ThemedText>
+            <ThemedSwitch
+              testID="show-last-vote-switch"
+              value={showLastVote}
+              onValueChange={setShowLastVote}
             />
           </View>
         </View>
@@ -81,23 +93,35 @@ export default function SettingsScreen() {
           </View>
         )}
 
-        {/* Language — French only for now; the i18n layer is ready for more. */}
+        {/* Language */}
         <View style={styles.section}>
           <ThemedText type="smallBold" themeColor="textSecondary">
             {t('settings.language')}
           </ThemedText>
-          <View style={[styles.row, { backgroundColor: theme.backgroundElement }]}>
-            <View style={styles.languageLabel}>
-              <FrenchFlag />
-              <ThemedText>Français</ThemedText>
-            </View>
-            <ThemedText type="small" themeColor="textSecondary">
-              ✓
-            </ThemedText>
-          </View>
-          <ThemedText type="small" themeColor="textSecondary">
-            {t('settings.moreLanguages')}
-          </ThemedText>
+          {LANGUAGES.map(({ code, label, Flag }) => (
+            <Pressable
+              key={code}
+              testID={`lang-${code}`}
+              onPress={() => setLang(code)}
+              style={({ pressed }) => [
+                styles.row,
+                {
+                  backgroundColor: theme.backgroundElement,
+                  opacity: pressed ? 0.7 : 1,
+                },
+              ]}
+            >
+              <View style={styles.languageLabel}>
+                <Flag />
+                <ThemedText>{label}</ThemedText>
+              </View>
+              {lang === code && (
+                <ThemedText type="small" themeColor="textSecondary">
+                  ✓
+                </ThemedText>
+              )}
+            </Pressable>
+          ))}
         </View>
 
         {/* Anonymous session */}
@@ -160,8 +184,8 @@ export default function SettingsScreen() {
   );
 }
 
-// SVG tricolor instead of the 🇫🇷 emoji: Windows/Chrome ships no flag
-// glyphs and renders regional-indicator pairs as bare "FR" letters.
+// SVG flags instead of emoji: Windows/Chrome ships no flag glyphs and
+// renders regional-indicator pairs as bare "FR" letters.
 function FrenchFlag() {
   return (
     <Svg width={22} height={16} viewBox="0 0 3 2">
@@ -171,6 +195,61 @@ function FrenchFlag() {
     </Svg>
   );
 }
+
+// Simplified Union Jack (no diagonal offsets at this size).
+function BritishFlag() {
+  return (
+    <Svg width={22} height={16} viewBox="0 0 60 40">
+      <Rect width={60} height={40} fill="#012169" />
+      <Path d="M0,0 L60,40 M60,0 L0,40" stroke="#ffffff" strokeWidth={8} />
+      <Path d="M0,0 L60,40 M60,0 L0,40" stroke="#C8102E" strokeWidth={3} />
+      <Path d="M30,0 V40 M0,20 H60" stroke="#ffffff" strokeWidth={13} />
+      <Path d="M30,0 V40 M0,20 H60" stroke="#C8102E" strokeWidth={8} />
+    </Svg>
+  );
+}
+
+// Portugal without the coat of arms; the circle stands in for the sphere.
+function PortugueseFlag() {
+  return (
+    <Svg width={22} height={16} viewBox="0 0 30 20">
+      <Rect width={30} height={20} fill="#DA291C" />
+      <Rect width={12} height={20} fill="#046A38" />
+      <Circle cx={12} cy={10} r={3.5} fill="#FFE900" />
+    </Svg>
+  );
+}
+
+// Spain without the coat of arms.
+function SpanishFlag() {
+  return (
+    <Svg width={22} height={16} viewBox="0 0 30 20">
+      <Rect width={30} height={20} fill="#AA151B" />
+      <Rect y={5} width={30} height={10} fill="#F1BF00" />
+    </Svg>
+  );
+}
+
+function DutchFlag() {
+  return (
+    <Svg width={22} height={16} viewBox="0 0 30 21">
+      <Rect width={30} height={7} y={0} fill="#AE1C28" />
+      <Rect width={30} height={7} y={7} fill="#ffffff" />
+      <Rect width={30} height={7} y={14} fill="#21468B" />
+    </Svg>
+  );
+}
+
+// Native names on purpose: a player who can't read the current language
+// must still be able to find their own.
+const LANGUAGES: Array<{ code: Lang; label: string; Flag: () => ReactElement }> =
+  [
+    { code: 'fr', label: 'Français', Flag: FrenchFlag },
+    { code: 'en', label: 'English', Flag: BritishFlag },
+    { code: 'pt', label: 'Português', Flag: PortugueseFlag },
+    { code: 'es', label: 'Español', Flag: SpanishFlag },
+    { code: 'nl', label: 'Nederlands', Flag: DutchFlag },
+  ];
 
 const styles = StyleSheet.create({
   container: {

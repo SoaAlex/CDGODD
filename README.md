@@ -18,7 +18,7 @@ pnpm workspaces + Turborepo, TypeScript throughout.
 | [`apps/api`](apps/api) | `cdgodd-api` | Hono API on Cloudflare Workers: deck, votes, search, submissions, reports, multiplayer rooms (Durable Objects), admin, R2 image serving. Owns D1 + R2. |
 | [`apps/admin`](apps/admin) | `cdgodd-admin-v2` | React + Vite moderation panel (assets-only Worker). |
 | [`apps/game`](apps/game) | `cdgodd-game` | Expo (React Native) app; the web export is served as an assets-only Worker. |
-| [`packages/shared`](packages/shared) | — | Shared types, zod schemas, API contracts, French i18n. |
+| [`packages/shared`](packages/shared) | — | Shared types, zod schemas, API contracts, i18n bundles (fr default, en, pt, es, nl). |
 
 Design decisions, schema, and milestone history: [`docs/PLAN.md`](docs/PLAN.md).
 

@@ -10,13 +10,14 @@ import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/t
 import { useTheme } from '@/hooks/use-theme';
 import { fetchTallies } from '@/lib/api';
 import { getHistory, type HistoryEntry } from '@/lib/history';
-import { t } from '@/lib/i18n';
+import { useT } from '@/lib/i18n';
 
 /**
  * The player's own vote history (device-local) enriched with the current
  * global tallies fetched from the API.
  */
 export default function HistoryScreen() {
+  const { t } = useT();
   const theme = useTheme();
   const [entries, setEntries] = useState<HistoryEntry[] | null>(null);
   const [tallies, setTallies] = useState<Map<number, VoteTally>>(new Map());

@@ -18,7 +18,7 @@ import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/t
 import { useTheme } from '@/hooks/use-theme';
 import { castVote, searchItems, submitItem } from '@/lib/api';
 import { recordVote } from '@/lib/history';
-import { categoryName, t } from '@/lib/i18n';
+import { useT } from '@/lib/i18n';
 
 const DEBOUNCE_MS = 300;
 
@@ -27,6 +27,7 @@ const DEBOUNCE_MS = 300;
  * propose it for admin validation.
  */
 export default function SearchScreen() {
+  const { t, categoryName } = useT();
   const theme = useTheme();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<DeckCard[]>([]);

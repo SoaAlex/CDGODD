@@ -5,7 +5,7 @@ import { ThemedText } from '@/components/themed-text';
 import { RIGHT_COLOR, Spacing } from '@/constants/theme';
 import { useCategories } from '@/hooks/use-categories';
 import { useTheme } from '@/hooks/use-theme';
-import { t } from '@/lib/i18n';
+import { useT } from '@/lib/i18n';
 
 /** Opaque card color for the picker (blend of the brand gradient). */
 const SHEET_BG = '#565393';
@@ -31,6 +31,7 @@ export function CategoryFilter({
   /** Center the trigger (solo header); default left-aligns (settings forms). */
   centered?: boolean;
 }) {
+  const { t } = useT();
   const { categories, total } = useCategories();
   const theme = useTheme();
   const [open, setOpen] = useState(false);

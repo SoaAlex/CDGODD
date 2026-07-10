@@ -5,7 +5,7 @@ import { CategoryFilter } from '@/components/category-filter';
 import { ThemedText } from '@/components/themed-text';
 import { RIGHT_COLOR, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { t } from '@/lib/i18n';
+import { useT } from '@/lib/i18n';
 
 export const MIN_ROUND_SIZE = 5;
 export const MAX_ROUND_SIZE = 50;
@@ -35,6 +35,7 @@ export function RoomSettings({
   onCategoryKeysChange: (keys: string[]) => void;
   onCategoryMatchAllChange: (matchAll: boolean) => void;
 }) {
+  const { t } = useT();
   const theme = useTheme();
   const chip = (selected: boolean) => ({
     backgroundColor: selected ? RIGHT_COLOR : theme.backgroundElement,

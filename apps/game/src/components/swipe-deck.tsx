@@ -13,7 +13,7 @@ import type { DeckCard, Side, VoteTally } from '@cdgodd/shared';
 import { SwipeCard } from '@/components/swipe-card';
 import { ThemedText } from '@/components/themed-text';
 import { LEFT_COLOR, RIGHT_COLOR, Spacing } from '@/constants/theme';
-import { t } from '@/lib/i18n';
+import { useT } from '@/lib/i18n';
 import { playSwipeSound } from '@/lib/sfx';
 
 /** Horizontal travel (as a fraction of screen width) that commits a vote. */
@@ -41,6 +41,7 @@ export const SwipeDeck = forwardRef<SwipeDeckHandle, Props>(function SwipeDeck(
   { cards, onSwipe, topTally }: Props,
   ref,
 ) {
+  const { t } = useT();
   const { width } = useWindowDimensions();
   const tx = useSharedValue(0);
   const ty = useSharedValue(0);

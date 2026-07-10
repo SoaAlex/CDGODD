@@ -1,0 +1,101 @@
+{
+  "menu": {
+    "title": "¿Es de Izquierda o de Derecha?",
+    "play": "Jugar",
+    "multiplayer": "Multijugador",
+    "settings": "Ajustes",
+    "history": "Historial",
+    "credits": "Créditos",
+    "back": "Volver"
+  },
+  "solo": {
+    "random": "Cartas aleatorias",
+    "search": "Búsqueda libre",
+    "searchPlaceholder": "Busca un objeto, un concepto…",
+    "notFound": "¿No lo encuentras? ¡Proponlo!",
+    "allSeen": "¡Lo has visto todo!",
+    "replay": "Volver a jugar",
+    "submit": "Proponer",
+    "submitted": "Enviado para validación",
+    "duplicate": "¡Ya está propuesto! Este elemento existe o está pendiente de validación."
+  },
+  "game": {
+    "left": "Izquierda",
+    "right": "Derecha",
+    "report": "Denunciar",
+    "reported": "Gracias, ya está denunciado",
+    "showResults": "Ver los resultados de los votos",
+    "hideResults": "Ocultar los resultados de los votos",
+    "lastVoteResults": "Resultados del voto anterior",
+    "imageComingSoon": "Imagen próximamente",
+    "globalVotes": "Votos globales",
+    "imageCredit": "Crédito de la imagen",
+    "aiGenerated": "Imagen generada por IA"
+  },
+  "multiplayer": {
+    "create": "Crear una sala",
+    "join": "Unirse",
+    "codePlaceholder": "Código de la sala",
+    "waiting": "Esperando a los jugadores…",
+    "waitingOthers": "Esperando a los demás jugadores…",
+    "start": "Empezar",
+    "results": "Resultados",
+    "players": "jugadores",
+    "modeBatch": "Resultados al final",
+    "modeLive": "Resultados en directo",
+    "cards": "cartas",
+    "shareCode": "Comparte este código con tus amigos",
+    "copyLink": "Copiar el enlace",
+    "linkCopied": "¡Enlace copiado!",
+    "nickname": "Elige tu apodo",
+    "nicknamePlaceholder": "Tu apodo",
+    "playAgain": "Volver a jugar",
+    "waitingHost": "Esperando al anfitrión para volver a jugar…"
+  },
+  "history": {
+    "empty": "Todavía no hay votos",
+    "yourVote": "Tu voto"
+  },
+  "settings": {
+    "showResults": "Mostrar los votos en directo en la carta",
+    "showLastVote": "Mostrar el resultado del voto anterior",
+    "sound": "Sonido",
+    "music": "Música",
+    "soundEffects": "Efectos de sonido",
+    "language": "Idioma",
+    "anonymity": "Anonimato",
+    "sessionHint": "El juego es 100% anónimo: sin cuenta, sin datos personales. Este identificador aleatorio solo sirve para evitar votos duplicados. También hay un mecanismo de hash de IP para combatir abusos (el hash se conserva 30 días y no permite recuperar la IP original)."
+  },
+  "categories": {
+    "food": "Comida",
+    "culture": "Cultura",
+    "daily-life": "Vida cotidiana"
+  },
+  "filter": {
+    "categoriesLabel": "Categorías",
+    "allCategories": "Todas",
+    "matchAll": "Solo los elementos en todas estas categorías",
+    "done": "OK"
+  },
+  "credits": {
+    "aiTitle": "Juego e imágenes",
+    "aiBody": "Este juego se creó en gran parte con ayuda de la inteligencia artificial: tanto el código como las imágenes de las cartas están generados mayoritariamente por IA.",
+    "musicTitle": "Música",
+    "musicBody": "«CHIRAC - Je serai le président de tous les Français (TOMALY House remix)» de Tomaly, a partir del sonido original de Malto. ¡Muchas gracias a los dos!",
+    "musicRemixLink": "Escuchar el remix en SoundCloud",
+    "musicOriginalLink": "Escuchar el original en YouTube",
+    "privacyTitle": "Privacidad",
+    "privacyBody": "El juego es 100% anónimo: sin cuenta, sin recopilación de datos personales. Solo los anuncios pueden recopilar datos, únicamente con tu consentimiento (se pueden desactivar en los ajustes).",
+    "contactTitle": "Contacto",
+    "contactBody": "Para cualquier pregunta o solicitud de soporte:"
+  },
+  "consent": {
+    "title": "Publicidad",
+    "body": "El juego es gratuito y anónimo. Solo los anuncios pueden recopilar datos, con tu permiso.",
+    "adsToggle": "Los anuncios me ayudan a financiar el juego, pero si te molestan tanto como a mí, aquí puedes desactivarlos :)"
+  },
+  "errors": {
+    "network": "Error de red, inténtalo de nuevo",
+    "roomNotFound": "Sala no encontrada"
+  }
+}

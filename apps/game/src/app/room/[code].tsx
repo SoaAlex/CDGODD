@@ -23,9 +23,10 @@ import { ThemedView } from '@/components/themed-view';
 import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useRoom } from '@/hooks/use-room';
-import { categoryName, t } from '@/lib/i18n';
+import { useT } from '@/lib/i18n';
 
 export default function RoomScreen() {
+  const { t, categoryName } = useT();
   const { code, name: nameParam } = useLocalSearchParams<{
     code: string;
     name?: string;

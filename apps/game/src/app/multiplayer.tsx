@@ -9,9 +9,10 @@ import { ThemedView } from '@/components/themed-view';
 import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { createRoom } from '@/lib/api';
-import { t } from '@/lib/i18n';
+import { useT } from '@/lib/i18n';
 
 export default function MultiplayerScreen() {
+  const { t } = useT();
   const theme = useTheme();
   const router = useRouter();
   const [mode, setMode] = useState<'batch' | 'live'>('batch');
