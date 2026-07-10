@@ -226,10 +226,10 @@ describe('POST /admin/items/:id/ai-image', () => {
     const { imageKey } = (await res.json()) as { imageKey: string };
 
     expect(run).toHaveBeenCalledWith(
-      '@cf/black-forest-labs/flux-1-schnell',
+      '@cf/leonardo/lucid-origin',
       expect.objectContaining({
         prompt: expect.stringContaining('Le quinoa'),
-        steps: 8,
+        steps: 20,
       }),
     );
     expect(await env.IMAGES.get(imageKey)).not.toBeNull();

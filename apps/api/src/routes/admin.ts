@@ -53,9 +53,61 @@ async function setItemCategories(
   await db.batch(statements);
 }
 
-/** GET /admin/items?status=pending — moderation queue / item list. */
+/**
+ * GET /admin/items — moderation queue / item list.
+ * Query params (all optional):
+ *  - status: pending (default) | approved | rejected | all
+ *  - q: label search, matched (case-insensitive substring) against any
+ *       language's translation
+ *  - missing: image | category | any — only items lacking that field
+ *  - limit: page size, default 100 (1..500)
+ *  - offset: page offset, default 0
+ * Returns { items, total } where total counts every matching row, ignoring
+ * limit/offset (for pagination).
+ */
 admin.get('/items', async (c) => {
   const status = c.req.query('status') ?? 'pending';
+  const q = (c.req.query('q') ?? '').trim();
+  const missing = c.req.query('missing');
+  const limit = Math.min(Math.max(Number(c.req.query('limit')) || 100, 1), 500);
+  const offset = Math.max(Number(c.req.query('offset')) || 0, 0);
+
+  const where: string[] = [];
+  const binds: unknown[] = [];
+
+  if (status !== 'all') {
+    where.push('i.status = ?');
+    binds.push(status);
+  }
+  if (q) {
+    where.push(
+      `EXISTS (SELECT 1 FROM item_translations t2
+                WHERE t2.item_id = i.id AND t2.label LIKE ? ESCAPE '\\')`,
+    );
+    // Escape LIKE wildcards so the query is a literal substring match.
+    binds.push(`%${q.replace(/[\\%_]/g, (ch) => `\\${ch}`)}%`);
+  }
+  if (missing === 'image') {
+    where.push('i.image_key IS NULL');
+  } else if (missing === 'category') {
+    where.push(
+      'NOT EXISTS (SELECT 1 FROM item_categories ic WHERE ic.item_id = i.id)',
+    );
+  } else if (missing === 'any') {
+    where.push(
+      `(i.image_key IS NULL
+        OR NOT EXISTS (SELECT 1 FROM item_categories ic WHERE ic.item_id = i.id))`,
+    );
+  }
+
+  const whereSql = where.length > 0 ? `WHERE ${where.join(' AND ')}` : '';
+
+  const totalRow = await c.env.DB.prepare(
+    `SELECT COUNT(*) AS n FROM items i ${whereSql}`,
+  )
+    .bind(...binds)
+    .first<{ n: number }>();
+
   const { results } = await c.env.DB.prepare(
     `SELECT i.*, t.label,
             (SELECT GROUP_CONCAT(c.key)
@@ -64,13 +116,14 @@ admin.get('/items', async (c) => {
               WHERE ic.item_id = i.id) AS category_keys
        FROM items i
        LEFT JOIN item_translations t ON t.item_id = i.id AND t.lang = 'fr'
-      WHERE i.status = ?1
+       ${whereSql}
       ORDER BY i.created_at DESC
-      LIMIT 100`,
+      LIMIT ? OFFSET ?`,
   )
-    .bind(status)
+    .bind(...binds, limit, offset)
     .all();
-  return c.json({ items: results });
+
+  return c.json({ items: results, total: totalRow?.n ?? 0 });
 });
 
 /** GET /admin/items/counts — item count per status, for the moderation tabs. */
@@ -437,7 +490,7 @@ admin.post('/items/:id/image-from-source', async (c) => {
 
 /**
  * POST /admin/items/:id/ai-image — generate an image with Workers AI
- * (flux-1-schnell) from the item's fr label, or an explicit { prompt }.
+ * (lucid-origin) from the item's fr label, or an explicit { prompt }.
  */
 admin.post('/items/:id/ai-image', async (c) => {
   const itemId = Number(c.req.param('id'));
@@ -457,18 +510,18 @@ admin.post('/items/:id/ai-image', async (c) => {
       .bind(itemId)
       .first<{ label: string }>();
     if (!row) return c.json({ error: 'item or fr label not found' }, 404);
-    // Flux prompts work best in English; the subject stays verbatim.
+    // Prompts work best in English; the subject stays verbatim.
     // Full-frame close-up composition: poster-like prompts ("centered
-    // subject, clean background") make flux render the label as a title.
+    // subject, clean background") make the model render the label as a title.
     prompt =
       `Detailed close-up photograph of ${row.label}, the subject fills ` +
       'the entire frame edge to edge, natural lighting, shallow depth of ' +
       'field, vibrant colors, professional stock photography';
   }
 
-  const out = (await c.env.AI.run('@cf/black-forest-labs/flux-1-schnell', {
+  const out = (await c.env.AI.run('@cf/leonardo/lucid-origin', {
     prompt,
-    steps: 8,
+    steps: 20,
   })) as { image?: string };
   if (!out.image) return c.json({ error: 'generation failed' }, 502);
   const bytes = Uint8Array.from(atob(out.image), (ch) => ch.codePointAt(0)!);

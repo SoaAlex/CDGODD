@@ -12,7 +12,7 @@ Cloudflare Worker (Hono) — the backend for the whole game.
 | `DB` | D1 database `cdgodd` | items, item_translations, categories, votes, reports |
 | `IMAGES` | R2 bucket `cdgodd-images` | card images; served publicly at `images.cestdegaucheoudedroite.com` |
 | `ROOMS` | Durable Object `Room` | one instance per multiplayer room code |
-| `AI` | Workers AI | admin fallback image generation (`flux-1-schnell`, ~$0.001/image) |
+| `AI` | Workers AI | admin fallback image generation (`lucid-origin`, ~$0.035/image at 1120²) |
 
 ## Config & secrets
 
@@ -85,7 +85,7 @@ Admin (bearer `ADMIN_TOKEN`):
   and store its attribution (`image_source/author/license/source_url` on the
   item; surfaced to clients as `DeckCard.imageAttribution` for the ⓘ credit)
 - `POST /admin/items/:id/ai-image` `{ prompt? }` — generate an image with
-  Workers AI flux-1-schnell (defaults to a template built from the fr label);
+  Workers AI lucid-origin (defaults to a template built from the fr label);
   stored with `image_license='ai-generated'` (game shows an "IA" badge)
 - `GET /admin/items/:id/translations` · `PUT|DELETE /admin/items/:id/translations/:lang`
 - `GET /admin/categories` (with all translations) · `POST /admin/categories`

@@ -201,7 +201,7 @@ export function ImagePicker({
         onClick={() => void generateAi()}
         disabled={busy}
         className="flex items-center gap-1 rounded bg-purple-50 px-3 py-1.5 text-sm text-purple-700 transition-colors hover:bg-purple-100 disabled:opacity-40"
-        title="Générer une image avec Workers AI (flux-1-schnell)"
+        title="Générer une image avec Workers AI (lucid-origin)"
       >
         <SparklesIcon className="h-4 w-4" />
         {aiBusy ? 'Génération…' : 'Générer par IA'}

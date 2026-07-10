@@ -23,18 +23,76 @@ async function createItem(
   });
 }
 
+type ItemsBody = {
+  items: Array<{
+    id: number;
+    label: string;
+    category_keys: string | null;
+    image_key: string | null;
+  }>;
+  total: number;
+};
+
 describe('GET /admin/items', () => {
   it('lists items by status with labels and category keys', async () => {
     const res = await api('/admin/items?status=approved', {
       headers: ADMIN_HEADERS,
     });
-    const body = (await res.json()) as {
-      items: Array<{ id: number; label: string; category_keys: string | null }>;
-    };
+    const body = (await res.json()) as ItemsBody;
     expect(body.items).toHaveLength(6);
+    expect(body.total).toBe(6);
     const quinoa = body.items.find((i) => i.id === 1)!;
     expect(quinoa.label).toBe('Le quinoa');
     expect(quinoa.category_keys).toBe('food');
+  });
+
+  it('status=all merges every queue, sorted by created_at', async () => {
+    await api('/admin/items/1', {
+      method: 'PATCH',
+      headers: { ...ADMIN_HEADERS, 'content-type': 'application/json' },
+      body: JSON.stringify({ status: 'rejected' }),
+    });
+    const res = await api('/admin/items?status=all', { headers: ADMIN_HEADERS });
+    const body = (await res.json()) as ItemsBody;
+    expect(body.total).toBe(6);
+    expect(body.items).toHaveLength(6);
+  });
+
+  it('q searches labels case-insensitively across languages', async () => {
+    const res = await api('/admin/items?status=all&q=quinoa', {
+      headers: ADMIN_HEADERS,
+    });
+    const body = (await res.json()) as ItemsBody;
+    expect(body.total).toBe(1);
+    expect(body.items[0]!.id).toBe(1);
+  });
+
+  it('missing=image returns only items without an image', async () => {
+    const withImage = await api('/admin/items?status=all&missing=image', {
+      headers: ADMIN_HEADERS,
+    });
+    const body = (await withImage.json()) as ItemsBody;
+    expect(body.items.every((i) => i.image_key === null)).toBe(true);
+    expect(body.total).toBe(body.items.length);
+  });
+
+  it('paginates with limit and offset while total stays constant', async () => {
+    const page1 = await api('/admin/items?status=all&limit=2&offset=0', {
+      headers: ADMIN_HEADERS,
+    });
+    const b1 = (await page1.json()) as ItemsBody;
+    expect(b1.items).toHaveLength(2);
+    expect(b1.total).toBe(6);
+
+    const page2 = await api('/admin/items?status=all&limit=2&offset=2', {
+      headers: ADMIN_HEADERS,
+    });
+    const b2 = (await page2.json()) as ItemsBody;
+    expect(b2.items).toHaveLength(2);
+    expect(b2.total).toBe(6);
+    // Disjoint pages.
+    const ids = new Set(b1.items.map((i) => i.id));
+    expect(b2.items.some((i) => ids.has(i.id))).toBe(false);
   });
 });
 

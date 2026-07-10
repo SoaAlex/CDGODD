@@ -7,6 +7,9 @@ import {
   TrashIcon,
   ChevronUpIcon,
   ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../hooks/useAuth';
 import { API, apiGet, authHeaders, imageUrl } from '../lib/api';
@@ -16,6 +19,7 @@ import type { AdminItem, Category, ItemStatus } from '../types';
 
 type Filter = 'all' | ItemStatus;
 type VoteField = 'votes_left' | 'votes_right';
+type MissingFilter = 'none' | 'image' | 'category' | 'any';
 const TABS: Filter[] = ['all', 'pending', 'approved', 'rejected'];
 const TAB_LABELS: Record<Filter, string> = {
   all: 'Tous',
@@ -23,6 +27,14 @@ const TAB_LABELS: Record<Filter, string> = {
   approved: 'Approuvés',
   rejected: 'Rejetés',
 };
+const MISSING_LABELS: Record<MissingFilter, string> = {
+  none: 'Tous les champs',
+  image: 'Image manquante',
+  category: 'Catégorie manquante',
+  any: 'Image ou catégorie manquante',
+};
+// Page size for the moderation list; matches the API's default LIMIT.
+const PAGE_SIZE = 100;
 const STATUS_STYLES: Record<ItemStatus, string> = {
   approved: 'bg-green-100 text-green-800',
   pending: 'bg-yellow-100 text-yellow-800',
@@ -115,6 +127,7 @@ export function Items() {
   const { token } = useAuth();
   const [status, setStatus] = useState<Filter>('all');
   const [items, setItems] = useState<AdminItem[]>([]);
+  const [total, setTotal] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
   const [editing, setEditing] = useState<AdminItem | null>(null);
   // Item whose category cell is expanded into a picker.
@@ -122,6 +135,11 @@ export function Items() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [counts, setCounts] = useState<Record<ItemStatus, number> | null>(null);
+  // Search box (raw) and its debounced value that actually drives the query.
+  const [search, setSearch] = useState('');
+  const [query, setQuery] = useState('');
+  const [missing, setMissing] = useState<MissingFilter>('none');
+  const [offset, setOffset] = useState(0);
 
   const loadCounts = useCallback(async () => {
     try {
@@ -138,30 +156,36 @@ export function Items() {
     setLoading(true);
     setError(null);
     try {
-      if (status === 'all') {
-        // API has no "all" filter — merge the three status queues.
-        const lists = await Promise.all(
-          (['pending', 'approved', 'rejected'] as ItemStatus[]).map((s) =>
-            apiGet<{ items: RawItem[] }>(`/admin/items?status=${s}`, token),
-          ),
-        );
-        const merged = lists
-          .flatMap((l) => l.items.map(parseItem))
-          .sort((a, b) => b.created_at - a.created_at);
-        setItems(merged);
-      } else {
-        const data = await apiGet<{ items: RawItem[] }>(
-          `/admin/items?status=${status}`,
-          token,
-        );
-        setItems(data.items.map(parseItem));
-      }
+      const params = new URLSearchParams({
+        status,
+        limit: String(PAGE_SIZE),
+        offset: String(offset),
+      });
+      if (query) params.set('q', query);
+      if (missing !== 'none') params.set('missing', missing);
+      const data = await apiGet<{ items: RawItem[]; total: number }>(
+        `/admin/items?${params.toString()}`,
+        token,
+      );
+      setItems(data.items.map(parseItem));
+      setTotal(data.total);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur');
     } finally {
       setLoading(false);
     }
-  }, [status, token]);
+  }, [status, query, missing, offset, token]);
+
+  // Debounce the search box so typing doesn't fire a request per keystroke.
+  useEffect(() => {
+    const t = setTimeout(() => setQuery(search.trim()), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  // Any filter change restarts pagination from the first page.
+  useEffect(() => {
+    setOffset(0);
+  }, [status, query, missing]);
 
   useEffect(() => {
     void load();
@@ -277,11 +301,11 @@ export function Items() {
             Approuver ou rejeter les items du jeu
           </p>
         </div>
-        <div className="text-sm text-gray-500">{items.length} items</div>
+        <div className="text-sm text-gray-500">{total} items</div>
       </div>
 
-      {/* Status tabs */}
-      <div className="card">
+      {/* Status tabs + search / missing-field filters */}
+      <div className="card space-y-4">
         <div className="flex gap-2">
           {TABS.map((s) => {
             const count = counts
@@ -314,6 +338,31 @@ export function Items() {
               </button>
             );
           })}
+        </div>
+
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="relative flex-1">
+            <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Rechercher un label…"
+              className="input-field w-full !pl-9"
+            />
+          </div>
+          <select
+            value={missing}
+            onChange={(e) => setMissing(e.target.value as MissingFilter)}
+            className="input-field sm:w-72"
+            title="Filtrer les items incomplets"
+          >
+            {(Object.keys(MISSING_LABELS) as MissingFilter[]).map((m) => (
+              <option key={m} value={m}>
+                {MISSING_LABELS[m]}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -536,6 +585,34 @@ export function Items() {
         {loading && (
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+          </div>
+        )}
+
+        {total > PAGE_SIZE && (
+          <div className="mt-4 flex items-center justify-between border-t border-gray-200 pt-4">
+            <p className="text-sm text-gray-500">
+              {offset + 1}–{Math.min(offset + PAGE_SIZE, total)} sur {total}
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setOffset((o) => Math.max(0, o - PAGE_SIZE))}
+                disabled={offset === 0}
+                className="inline-flex items-center gap-1 rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <ChevronLeftIcon className="h-4 w-4" />
+                Précédent
+              </button>
+              <button
+                type="button"
+                onClick={() => setOffset((o) => o + PAGE_SIZE)}
+                disabled={offset + PAGE_SIZE >= total}
+                className="inline-flex items-center gap-1 rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Suivant
+                <ChevronRightIcon className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         )}
       </div>
