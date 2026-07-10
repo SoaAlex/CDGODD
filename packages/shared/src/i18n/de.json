@@ -1,0 +1,101 @@
+{
+  "menu": {
+    "title": "Ist das Links oder Rechts?",
+    "play": "Spielen",
+    "multiplayer": "Mehrspieler",
+    "settings": "Einstellungen",
+    "history": "Verlauf",
+    "credits": "Credits",
+    "back": "Zurück"
+  },
+  "solo": {
+    "random": "Zufällige Karten",
+    "search": "Freie Suche",
+    "searchPlaceholder": "Such nach einem Objekt, einem Begriff…",
+    "notFound": "Nicht gefunden? Schlag es vor!",
+    "allSeen": "Du hast alles gesehen!",
+    "replay": "Nochmal spielen",
+    "submit": "Vorschlagen",
+    "submitted": "Zur Prüfung eingereicht",
+    "duplicate": "Schon vorgeschlagen! Dieses Item existiert oder wartet auf Freigabe."
+  },
+  "game": {
+    "left": "Links",
+    "right": "Rechts",
+    "report": "Melden",
+    "reported": "Danke, wurde gemeldet",
+    "showResults": "Abstimmungsergebnisse anzeigen",
+    "hideResults": "Abstimmungsergebnisse ausblenden",
+    "lastVoteResults": "Ergebnisse der letzten Abstimmung",
+    "imageComingSoon": "Bild folgt",
+    "globalVotes": "Globale Stimmen",
+    "imageCredit": "Bildnachweis",
+    "aiGenerated": "KI-generiertes Bild"
+  },
+  "multiplayer": {
+    "create": "Raum erstellen",
+    "join": "Beitreten",
+    "codePlaceholder": "Raumcode",
+    "waiting": "Warten auf Spieler…",
+    "waitingOthers": "Warten auf die anderen Spieler…",
+    "start": "Starten",
+    "results": "Ergebnisse",
+    "players": "Spieler",
+    "modeBatch": "Ergebnisse am Ende",
+    "modeLive": "Live-Ergebnisse",
+    "cards": "Karten",
+    "shareCode": "Teile diesen Code mit deinen Freunden",
+    "copyLink": "Link kopieren",
+    "linkCopied": "Link kopiert!",
+    "nickname": "Wähl deinen Spitznamen",
+    "nicknamePlaceholder": "Dein Spitzname",
+    "playAgain": "Nochmal spielen",
+    "waitingHost": "Warten auf den Host für eine neue Runde…"
+  },
+  "history": {
+    "empty": "Noch keine Stimmen",
+    "yourVote": "Deine Stimme"
+  },
+  "settings": {
+    "showResults": "Live-Stimmen auf der Karte anzeigen",
+    "showLastVote": "Ergebnis der letzten Abstimmung anzeigen",
+    "sound": "Ton",
+    "music": "Musik",
+    "soundEffects": "Soundeffekte",
+    "language": "Sprache",
+    "anonymity": "Anonymität",
+    "sessionHint": "Das Spiel ist 100% anonym: kein Konto, keine persönlichen Daten. Diese zufällige Kennung dient nur dazu, doppelte Stimmen zu verhindern. Zusätzlich gibt es einen IP-Hash-Mechanismus gegen Missbrauch (dieser Hash wird 30 Tage gespeichert und lässt keinen Rückschluss auf die ursprüngliche IP zu)."
+  },
+  "categories": {
+    "food": "Essen",
+    "culture": "Kultur",
+    "daily-life": "Alltag"
+  },
+  "filter": {
+    "categoriesLabel": "Kategorien",
+    "allCategories": "Alle",
+    "matchAll": "Nur Items in allen diesen Kategorien",
+    "done": "OK"
+  },
+  "credits": {
+    "aiTitle": "Spiel & Bilder",
+    "aiBody": "Dieses Spiel wurde zu großen Teilen mit Hilfe künstlicher Intelligenz erstellt: Sowohl der Code als auch die Kartenbilder sind größtenteils KI-generiert.",
+    "musicTitle": "Musik",
+    "musicBody": "„CHIRAC - Je serai le président de tous les Français (TOMALY House remix)“ von Tomaly, nach dem Original von Malto. Vielen Dank an die beiden!",
+    "musicRemixLink": "Remix auf SoundCloud anhören",
+    "musicOriginalLink": "Original auf YouTube anhören",
+    "privacyTitle": "Datenschutz",
+    "privacyBody": "Das Spiel ist 100% anonym: kein Konto, keine Erhebung persönlicher Daten. Nur Werbung kann Daten sammeln, und nur mit deiner Zustimmung (in den Einstellungen abschaltbar).",
+    "contactTitle": "Kontakt",
+    "contactBody": "Bei Fragen oder Support-Anliegen:"
+  },
+  "consent": {
+    "title": "Werbung",
+    "body": "Das Spiel ist kostenlos und anonym. Nur Werbung kann Daten sammeln, mit deiner Zustimmung.",
+    "adsToggle": "Werbung hilft mir, das Spiel zu finanzieren — aber wenn sie dich genauso nervt wie mich, kannst du sie hier abschalten :)"
+  },
+  "errors": {
+    "network": "Netzwerkfehler, versuch es nochmal",
+    "roomNotFound": "Raum nicht gefunden"
+  }
+}

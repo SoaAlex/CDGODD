@@ -1,3 +1,4 @@
+import de from './de.json';
 import en from './en.json';
 import es from './es.json';
 import fr from './fr.json';
@@ -12,6 +13,7 @@ export const resources = {
   en: { translation: en },
   pt: { translation: pt },
   es: { translation: es },
+  de: { translation: de },
   nl: { translation: nl },
 } as const satisfies Record<string, { translation: Messages }>;
 

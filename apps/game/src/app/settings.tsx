@@ -230,6 +230,16 @@ function SpanishFlag() {
   );
 }
 
+function GermanFlag() {
+  return (
+    <Svg width={22} height={16} viewBox="0 0 30 21">
+      <Rect width={30} height={7} y={0} fill="#000000" />
+      <Rect width={30} height={7} y={7} fill="#DD0000" />
+      <Rect width={30} height={7} y={14} fill="#FFCC00" />
+    </Svg>
+  );
+}
+
 function DutchFlag() {
   return (
     <Svg width={22} height={16} viewBox="0 0 30 21">
@@ -248,6 +258,7 @@ const LANGUAGES: Array<{ code: Lang; label: string; Flag: () => ReactElement }> 
     { code: 'en', label: 'English', Flag: BritishFlag },
     { code: 'pt', label: 'Português', Flag: PortugueseFlag },
     { code: 'es', label: 'Español', Flag: SpanishFlag },
+    { code: 'de', label: 'Deutsch', Flag: GermanFlag },
     { code: 'nl', label: 'Nederlands', Flag: DutchFlag },
   ];
 
