@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RoomMode, Side } from '@cdgodd/shared';
 import { AdRails } from '@/ads/ad-rails';
 import { AdSlot } from '@/ads/ad-slot';
+import type { FilterMode } from '@/components/category-filter';
 import { ResultReveal } from '@/components/result-reveal';
 import { MIN_ROUND_SIZE, RoomSettings } from '@/components/room-settings';
 import { SwipeDeck, type SwipeDeckHandle } from '@/components/swipe-deck';
@@ -50,6 +51,9 @@ export default function RoomScreen() {
   const [replayRoundSize, setReplayRoundSize] = useState(10);
   const [replayCategoryKeys, setReplayCategoryKeys] = useState<string[]>([]);
   const [replayCategoryMatchAll, setReplayCategoryMatchAll] = useState(false);
+  // Include mode keeps the selected categories; exclude mode drops them.
+  const [replayFilterMode, setReplayFilterMode] =
+    useState<FilterMode>('include');
   const [linkCopied, setLinkCopied] = useState(false);
   const {
     room,
@@ -175,10 +179,12 @@ export default function RoomScreen() {
           roundSize={replayRoundSize}
           categoryKeys={replayCategoryKeys}
           categoryMatchAll={replayCategoryMatchAll}
+          categoryFilterMode={replayFilterMode}
           onModeChange={setReplayMode}
           onRoundSizeChange={setReplayRoundSize}
           onCategoryKeysChange={setReplayCategoryKeys}
           onCategoryMatchAllChange={setReplayCategoryMatchAll}
+          onCategoryFilterModeChange={setReplayFilterMode}
         />
         <Pressable
           testID="restart-round"
@@ -186,8 +192,11 @@ export default function RoomScreen() {
             restart({
               mode: replayMode,
               roundSize: replayRoundSize,
-              categoryKeys: replayCategoryKeys,
+              categoryKeys:
+                replayFilterMode === 'exclude' ? [] : replayCategoryKeys,
               categoryMatch: replayCategoryMatchAll ? 'all' : 'any',
+              excludeKeys:
+                replayFilterMode === 'exclude' ? replayCategoryKeys : [],
             })
           }
           style={({ pressed }) => [
@@ -327,7 +336,13 @@ export default function RoomScreen() {
                 // roundSize can be below the minimum when the filter had
                 // fewer items than requested; snap back into the valid range.
                 setReplayRoundSize(Math.max(MIN_ROUND_SIZE, room.roundSize));
-                setReplayCategoryKeys(room.categoryKeys);
+                // The room stores either an include or an exclude filter;
+                // seed the single-list form with whichever is active.
+                const excluding = room.excludeKeys.length > 0;
+                setReplayFilterMode(excluding ? 'exclude' : 'include');
+                setReplayCategoryKeys(
+                  excluding ? room.excludeKeys : room.categoryKeys,
+                );
                 setReplayCategoryMatchAll(room.categoryMatch === 'all');
                 setConfiguring(true);
               }}
@@ -384,13 +399,22 @@ export default function RoomScreen() {
             {linkCopied ? t('multiplayer.linkCopied') : t('multiplayer.copyLink')}
           </ThemedText>
         </Pressable>
-        <ThemedText themeColor="textSecondary">
-          {room.playerCount} {t('multiplayer.players')} ·{' '}
-          {room.roundSize} {t('multiplayer.cards')} ·{' '}
-          {room.mode === 'live'
-            ? t('multiplayer.modeLive')
-            : t('multiplayer.modeBatch')}
-        </ThemedText>
+        <View style={styles.metaRow}>
+          <ThemedText themeColor="textSecondary">
+            {room.playerCount} {t('multiplayer.players')} ·{' '}
+            {room.roundSize} {t('multiplayer.cards')} ·
+          </ThemedText>
+          <Ionicons
+            name={room.mode === 'live' ? 'radio-outline' : 'flag-outline'}
+            size={14}
+            color={theme.textSecondary}
+          />
+          <ThemedText themeColor="textSecondary">
+            {room.mode === 'live'
+              ? t('multiplayer.modeLive')
+              : t('multiplayer.modeBatch')}
+          </ThemedText>
+        </View>
         {room.categoryKeys.length > 0 && (
           <ThemedText
             type="small"
@@ -399,6 +423,15 @@ export default function RoomScreen() {
           >
             {t('filter.categoriesLabel')} :{' '}
             {room.categoryKeys.map(categoryName).join(' · ')}
+          </ThemedText>
+        )}
+        {room.excludeKeys.length > 0 && (
+          <ThemedText
+            type="small"
+            themeColor="textSecondary"
+            style={styles.centerText}
+          >
+            {t('filter.without')} {room.excludeKeys.map(categoryName).join(' · ')}
           </ThemedText>
         )}
         <View style={styles.playerList}>
@@ -593,6 +626,11 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.three,
     fontSize: 22,
     textAlign: 'center',
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.one,
   },
   playerList: {
     flexDirection: 'row',

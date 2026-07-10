@@ -111,6 +111,7 @@ export function useRoom(code: string, name: string | null) {
       roundSize: number;
       categoryKeys: string[];
       categoryMatch: 'any' | 'all';
+      excludeKeys: string[];
     }) => send({ type: 'restart', ...settings }),
     [send],
   );

@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, View } from 'react-native';
 import type { RoomMode } from '@cdgodd/shared';
-import { CategoryFilter } from '@/components/category-filter';
+import { CategoryFilter, type FilterMode } from '@/components/category-filter';
 import { ThemedText } from '@/components/themed-text';
 import { RIGHT_COLOR, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
@@ -20,20 +20,25 @@ export function RoomSettings({
   roundSize,
   categoryKeys,
   categoryMatchAll,
+  categoryFilterMode,
   onModeChange,
   onRoundSizeChange,
   onCategoryKeysChange,
   onCategoryMatchAllChange,
+  onCategoryFilterModeChange,
 }: {
   mode: RoomMode;
   roundSize: number;
   categoryKeys: string[];
   /** Items must belong to every selected category (default: at least one). */
   categoryMatchAll: boolean;
+  /** Keep only the selected categories, or drop them. */
+  categoryFilterMode: FilterMode;
   onModeChange: (mode: RoomMode) => void;
   onRoundSizeChange: (roundSize: number) => void;
   onCategoryKeysChange: (keys: string[]) => void;
   onCategoryMatchAllChange: (matchAll: boolean) => void;
+  onCategoryFilterModeChange: (mode: FilterMode) => void;
 }) {
   const { t } = useT();
   const theme = useTheme();
@@ -105,6 +110,8 @@ export function RoomSettings({
         onChange={onCategoryKeysChange}
         matchAll={categoryMatchAll}
         onMatchAllChange={onCategoryMatchAllChange}
+        mode={categoryFilterMode}
+        onModeChange={onCategoryFilterModeChange}
       />
     </>
   );

@@ -10,6 +10,7 @@ import type {
   Side,
 } from '@cdgodd/shared';
 import type { Env } from '../env';
+import { categoryExcludeSql, categoryFilterSql } from '../routes/items';
 
 interface RoomConfig {
   code: string;
@@ -19,6 +20,8 @@ interface RoomConfig {
   categoryKeys: string[];
   /** 'all' = cards must belong to every key; absent (pre-existing rooms) = 'any'. */
   categoryMatch?: CategoryMatch;
+  /** Categories never dealt from; absent (pre-existing rooms) = none. */
+  excludeKeys?: string[];
 }
 
 const CATEGORY_KEY_RE = /^[a-z0-9-]{1,50}$/;
@@ -85,6 +88,7 @@ export class Room implements DurableObject {
       roundSize: this.config?.cards.length ?? 0,
       categoryKeys: this.config?.categoryKeys ?? [],
       categoryMatch: this.config?.categoryMatch ?? 'any',
+      excludeKeys: this.config?.excludeKeys ?? [],
       playerCount: sessions.size,
       players,
       currentCardIndex: this.currentCardIndex,
@@ -129,13 +133,21 @@ export class Room implements DurableObject {
     );
     const categoryMatch: CategoryMatch =
       url.searchParams.get('match') === 'all' ? 'all' : 'any';
+    const excludeKeys = sanitizeCategoryKeys(
+      (url.searchParams.get('exclude') ?? '').split(',').filter(Boolean),
+    );
 
-    const cards = await this.dealCards(roundSize, categoryKeys, categoryMatch);
+    const cards = await this.dealCards(
+      roundSize,
+      categoryKeys,
+      categoryMatch,
+      excludeKeys,
+    );
     if (cards.length === 0) {
       return Response.json({ error: 'no items available' }, { status: 503 });
     }
 
-    this.config = { code, mode, cards, categoryKeys, categoryMatch };
+    this.config = { code, mode, cards, categoryKeys, categoryMatch, excludeKeys };
     await this.ctx.storage.put('config', this.config);
     // Rooms are ephemeral: self-destruct after 24h so codes can be reused.
     await this.ctx.storage.setAlarm(Date.now() + 24 * 60 * 60 * 1000);
@@ -148,20 +160,9 @@ export class Room implements DurableObject {
     roundSize: number,
     categoryKeys: string[],
     categoryMatch: CategoryMatch = 'any',
+    excludeKeys: string[] = [],
   ): Promise<DeckCard[]> {
-    // categoryKeys.length is a trusted integer — safe to inline.
-    const having =
-      categoryMatch === 'all'
-        ? `GROUP BY ic.item_id
-                      HAVING COUNT(DISTINCT c.key) = ${categoryKeys.length}`
-        : '';
-    const categoryFilter = categoryKeys.length
-      ? `AND i.id IN (SELECT ic.item_id
-                        FROM item_categories ic
-                        JOIN categories c ON c.id = ic.category_id
-                       WHERE c.key IN (${categoryKeys.map((_, i) => `?${i + 2}`).join(',')})
-                       ${having})`
-      : '';
+    // roundSize is ?1; include keys bind from ?2, exclude keys right after.
     const { results } = await this.env.DB.prepare(
       `SELECT i.id, t.label, i.image_key, i.image_author, i.image_license,
               i.image_source_url, i.votes_left, i.votes_right,
@@ -172,11 +173,12 @@ export class Room implements DurableObject {
          FROM items i
          JOIN item_translations t ON t.item_id = i.id AND t.lang = 'fr'
         WHERE i.status = 'approved'
-        ${categoryFilter}
+        ${categoryFilterSql(categoryKeys, 2, categoryMatch === 'all')}
+        ${categoryExcludeSql(excludeKeys, 2 + categoryKeys.length)}
         ORDER BY RANDOM()
         LIMIT ?1`,
     )
-      .bind(roundSize, ...categoryKeys)
+      .bind(roundSize, ...categoryKeys, ...excludeKeys)
       .all<{
         id: number;
         label: string;
@@ -351,15 +353,31 @@ export class Room implements DurableObject {
           msg.categoryMatch === 'all' || msg.categoryMatch === 'any'
             ? msg.categoryMatch
             : (this.config.categoryMatch ?? 'any');
+        const excludeKeys =
+          msg.excludeKeys !== undefined
+            ? sanitizeCategoryKeys(msg.excludeKeys)
+            : (this.config.excludeKeys ?? []);
 
-        const cards = await this.dealCards(roundSize, categoryKeys, categoryMatch);
+        const cards = await this.dealCards(
+          roundSize,
+          categoryKeys,
+          categoryMatch,
+          excludeKeys,
+        );
         // Guard against a duplicate restart racing across the await.
         if (this.phase !== 'results') return;
         if (cards.length === 0) {
           this.send(ws, { type: 'error', message: 'no items available' });
           return;
         }
-        this.config = { ...this.config, mode, cards, categoryKeys, categoryMatch };
+        this.config = {
+          ...this.config,
+          mode,
+          cards,
+          categoryKeys,
+          categoryMatch,
+          excludeKeys,
+        };
         await this.ctx.storage.put('config', this.config);
 
         this.votes.clear();

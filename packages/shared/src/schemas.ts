@@ -81,6 +81,8 @@ export const createRoomSchema = z.object({
   categoryKeys: z.array(categoryKeySchema).max(20).default([]),
   /** How `categoryKeys` combine; ignored when the filter is empty. */
   categoryMatch: categoryMatchSchema.default('any'),
+  /** Categories to exclude: items in any of them are never dealt. */
+  excludeKeys: z.array(categoryKeySchema).max(20).default([]),
 });
 export type CreateRoomInput = z.infer<typeof createRoomSchema>;
 

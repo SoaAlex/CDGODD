@@ -60,10 +60,10 @@ Public (game):
 
 Multiplayer (Durable Object):
 
-- `POST /rooms` `{ mode, roundSize (5-50), categoryKeys?, categoryMatch? }` —
-  create a room, returns a 6-char code; cards are dealt from the chosen
-  categories (empty = all; `categoryMatch: 'all'` requires every key,
-  default `'any'`)
+- `POST /rooms` `{ mode, roundSize (5-50), categoryKeys?, categoryMatch?,
+  excludeKeys? }` — create a room, returns a 6-char code; cards are dealt from
+  the chosen categories (empty = all; `categoryMatch: 'all'` requires every
+  key, default `'any'`; `excludeKeys` drops items in any listed category)
 - `GET  /rooms/:code` — room state · `WS /rooms/:code/ws` — join & play
 - WS: players join with an ephemeral nickname (shown to the room, never
   persisted); after the reveal the room stays open and the host can send

@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { FilterMode } from '@/components/category-filter';
 import { RoomSettings } from '@/components/room-settings';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -19,6 +20,8 @@ export default function MultiplayerScreen() {
   const [roundSize, setRoundSize] = useState<number>(10);
   const [categoryKeys, setCategoryKeys] = useState<string[]>([]);
   const [categoryMatchAll, setCategoryMatchAll] = useState(false);
+  // Include mode keeps the selected categories; exclude mode drops them.
+  const [filterMode, setFilterMode] = useState<FilterMode>('include');
   const [nickname, setNickname] = useState('');
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
@@ -31,11 +34,13 @@ export default function MultiplayerScreen() {
     setBusy(true);
     setError(null);
     try {
+      const excluding = filterMode === 'exclude';
       const { room } = await createRoom(
         mode,
         roundSize,
-        categoryKeys,
+        excluding ? [] : categoryKeys,
         categoryMatchAll ? 'all' : 'any',
+        excluding ? categoryKeys : [],
       );
       router.push(`/room/${room.code}${nameParam}` as never);
     } catch {
@@ -80,10 +85,12 @@ export default function MultiplayerScreen() {
             roundSize={roundSize}
             categoryKeys={categoryKeys}
             categoryMatchAll={categoryMatchAll}
+            categoryFilterMode={filterMode}
             onModeChange={setMode}
             onRoundSizeChange={setRoundSize}
             onCategoryKeysChange={setCategoryKeys}
             onCategoryMatchAllChange={setCategoryMatchAll}
+            onCategoryFilterModeChange={setFilterMode}
           />
 
           <Pressable

@@ -105,9 +105,16 @@ export function createRoom(
   roundSize: number,
   categoryKeys: string[] = [],
   categoryMatch: 'any' | 'all' = 'any',
+  excludeKeys: string[] = [],
 ): Promise<CreateRoomResponse> {
   return request<CreateRoomResponse>('/rooms', {
     method: 'POST',
-    body: JSON.stringify({ mode, roundSize, categoryKeys, categoryMatch }),
+    body: JSON.stringify({
+      mode,
+      roundSize,
+      categoryKeys,
+      categoryMatch,
+      excludeKeys,
+    }),
   });
 }

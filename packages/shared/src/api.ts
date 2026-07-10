@@ -63,6 +63,7 @@ export type RoomClientMessage =
       roundSize?: number;
       categoryKeys?: string[];
       categoryMatch?: 'any' | 'all';
+      excludeKeys?: string[];
     };
 
 /** WebSocket messages: room -> client */

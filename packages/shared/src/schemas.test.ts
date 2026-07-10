@@ -165,6 +165,7 @@ describe('createRoomSchema', () => {
       roundSize: 10,
       categoryKeys: [],
       categoryMatch: 'any',
+      excludeKeys: [],
     });
   });
 
@@ -178,6 +179,13 @@ describe('createRoomSchema', () => {
     expect(createRoomSchema.parse({ mode: 'live' }).mode).toBe('live');
     expect(createRoomSchema.safeParse({ mode: 'solo' }).success).toBe(false);
     expect(createRoomSchema.safeParse({ categoryKeys: ['Bad!'] }).success).toBe(false);
+  });
+
+  it('validates excludeKeys like categoryKeys', () => {
+    expect(createRoomSchema.parse({ excludeKeys: ['food'] }).excludeKeys).toEqual([
+      'food',
+    ]);
+    expect(createRoomSchema.safeParse({ excludeKeys: ['Bad!'] }).success).toBe(false);
   });
 });
 

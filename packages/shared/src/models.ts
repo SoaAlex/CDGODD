@@ -76,6 +76,8 @@ export interface RoomState {
   categoryKeys: string[];
   /** 'all' = cards belong to every category in the filter; default 'any'. */
   categoryMatch: 'any' | 'all';
+  /** Categories excluded from the deal; items in any of them are dropped. */
+  excludeKeys: string[];
   playerCount: number;
   /** Currently connected players with their chosen nicknames. */
   players: RoomPlayer[];

@@ -61,6 +61,17 @@ describe('Room DO — creation', () => {
     expect(room.roundSize).toBe(2);
   });
 
+  it('never deals from excluded categories', async () => {
+    const res = await createRoom('TESTAF', {
+      roundSize: '10',
+      exclude: 'culture',
+    });
+    const { room } = (await res.json()) as { room: RoomState };
+    // Seed: culture = {3,4,5}; excluding it leaves items 1, 2, 6.
+    expect(room.roundSize).toBe(3);
+    expect(room.excludeKeys).toEqual(['culture']);
+  });
+
   it('503s when no approved items are available', async () => {
     await env.DB.prepare(`UPDATE items SET status = 'pending'`).run();
     const res = await createRoom('TESTAD');
@@ -185,6 +196,30 @@ describe('Room DO — websocket lifecycle (batch)', () => {
     // Live mode: tallies were shown during play — jump straight to summary.
     expect(state.revealIndex).toBe(5);
     await reader.until('reveal');
+    ws.close();
+  });
+
+  it('restart honors a new exclusion filter', async () => {
+    await createRoom('TESTBD', { mode: 'live', roundSize: '10' });
+    const ws = await openSocket('TESTBD');
+    const reader = wsMessages(ws);
+    send(ws, { type: 'join', sessionId: 'sess-a', name: 'Solo' });
+    await reader.until('state');
+    send(ws, { type: 'start' });
+    const deck = (await reader.until('deck')).cards as DeckCard[];
+    for (let i = 0; i < deck.length; i++) {
+      send(ws, { type: 'vote', cardIndex: i, side: 'left' });
+    }
+    let state = (await reader.until('state')).room;
+    while (state.phase !== 'results') state = (await reader.until('state')).room;
+
+    send(ws, { type: 'restart', excludeKeys: ['culture'] });
+    state = (await reader.until('state')).room;
+    expect(state.excludeKeys).toEqual(['culture']);
+    const fresh = (await reader.until('deck')).cards as DeckCard[];
+    // Seed: culture = {3,4,5}; the fresh hand is items 1, 2, 6 only.
+    expect(fresh.map((c) => c.id).sort()).toEqual([1, 2, 6]);
+    expect(fresh.every((c) => !c.categoryKeys.includes('culture'))).toBe(true);
     ws.close();
   });
 
