@@ -59,6 +59,8 @@
   "settings": {
     "showResults": "Mostrar os votos em direto na carta",
     "showLastVote": "Mostrar o resultado do voto anterior",
+    "appearance": "Aparência",
+    "auroraPulse": "Pulsação do fundo animado",
     "sound": "Som",
     "music": "Música",
     "soundEffects": "Efeitos sonoros",

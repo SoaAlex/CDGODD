@@ -59,6 +59,8 @@
   "settings": {
     "showResults": "Live stemmen op de kaart tonen",
     "showLastVote": "Resultaat van de vorige stem tonen",
+    "appearance": "Weergave",
+    "auroraPulse": "Pulserende achtergrond",
     "sound": "Geluid",
     "music": "Muziek",
     "soundEffects": "Geluidseffecten",

@@ -59,6 +59,8 @@
   "settings": {
     "showResults": "Afficher les votes en direct sur la carte",
     "showLastVote": "Afficher le résultat du vote précédent",
+    "appearance": "Affichage",
+    "auroraPulse": "Pulsation du fond animé",
     "sound": "Son",
     "music": "Musique",
     "soundEffects": "Effets sonores",

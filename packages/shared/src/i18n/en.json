@@ -59,6 +59,8 @@
   "settings": {
     "showResults": "Show live votes on the card",
     "showLastVote": "Show the previous vote's result",
+    "appearance": "Appearance",
+    "auroraPulse": "Animated background pulse",
     "sound": "Sound",
     "music": "Music",
     "soundEffects": "Sound effects",

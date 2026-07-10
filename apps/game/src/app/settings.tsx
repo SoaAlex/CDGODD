@@ -11,7 +11,12 @@ import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { setLang, useT, type Lang } from '@/lib/i18n';
 import { isMusicMuted, setMusicMuted } from '@/lib/music';
-import { useAdsEnabled, useShowLastVote, useShowResults } from '@/lib/prefs';
+import {
+  useAdsEnabled,
+  useAuroraPulse,
+  useShowLastVote,
+  useShowResults,
+} from '@/lib/prefs';
 import { getSessionId } from '@/lib/session';
 import { isSfxMuted, setSfxMuted } from '@/lib/sfx';
 
@@ -23,6 +28,7 @@ export default function SettingsScreen() {
   const { showResults, setShowResults } = useShowResults();
   const { showLastVote, setShowLastVote } = useShowLastVote();
   const { adsEnabled, setAdsEnabled } = useAdsEnabled();
+  const { auroraPulse, setAuroraPulse } = useAuroraPulse();
   const [musicMuted, setMusicMutedState] = useState(isMusicMuted());
   const [sfxMuted, setSfxMutedState] = useState(isSfxMuted());
 
@@ -56,6 +62,23 @@ export default function SettingsScreen() {
               testID="show-last-vote-switch"
               value={showLastVote}
               onValueChange={setShowLastVote}
+            />
+          </View>
+        </View>
+
+        {/* Appearance */}
+        <View style={styles.section}>
+          <ThemedText type="smallBold" themeColor="textSecondary">
+            {t('settings.appearance')}
+          </ThemedText>
+          <View style={[styles.row, { backgroundColor: theme.backgroundElement }]}>
+            <ThemedText style={styles.rowLabel}>
+              {t('settings.auroraPulse')}
+            </ThemedText>
+            <ThemedSwitch
+              testID="aurora-pulse-switch"
+              value={auroraPulse}
+              onValueChange={setAuroraPulse}
             />
           </View>
         </View>

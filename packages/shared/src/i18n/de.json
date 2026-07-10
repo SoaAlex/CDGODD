@@ -59,6 +59,8 @@
   "settings": {
     "showResults": "Live-Stimmen auf der Karte anzeigen",
     "showLastVote": "Ergebnis der letzten Abstimmung anzeigen",
+    "appearance": "Darstellung",
+    "auroraPulse": "Pulsieren des Hintergrunds",
     "sound": "Ton",
     "music": "Musik",
     "soundEffects": "Soundeffekte",
