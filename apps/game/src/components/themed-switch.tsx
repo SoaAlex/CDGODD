@@ -1,6 +1,6 @@
 import { Switch } from 'react-native';
 import type { ComponentProps } from 'react';
-import { ACCENT_COLOR } from '@/constants/theme';
+import { LEFT_COLOR } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 // react-native-web colors the on-state thumb via activeThumbColor, a prop
@@ -10,7 +10,7 @@ const webThumb = { activeThumbColor: '#ffffff' } as Partial<
 >;
 
 /**
- * Switch wired to the app palette: purple accent track when on, frosted glass
+ * Switch wired to the app palette: GAUCHE red track when on, frosted glass
  * track when off. Replaces the platform default (green on iOS/web) which
  * clashed with the gradient look.
  */
@@ -18,7 +18,7 @@ export function ThemedSwitch(props: ComponentProps<typeof Switch>) {
   const theme = useTheme();
   return (
     <Switch
-      trackColor={{ false: theme.backgroundSelected, true: ACCENT_COLOR }}
+      trackColor={{ false: theme.backgroundSelected, true: LEFT_COLOR }}
       thumbColor="#ffffff"
       ios_backgroundColor={theme.backgroundSelected}
       {...webThumb}
