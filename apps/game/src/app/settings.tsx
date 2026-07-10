@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState, type ReactElement } from 'react';
-import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import { ThemedSwitch } from '@/components/themed-switch';
@@ -38,7 +38,11 @@ export default function SettingsScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         {/* Gameplay */}
         <View style={styles.section}>
           <ThemedText type="smallBold" themeColor="textSecondary">
@@ -202,7 +206,8 @@ export default function SettingsScreen() {
             </View>
           </Pressable>
         </View>
-      </SafeAreaView>
+        </SafeAreaView>
+      </ScrollView>
     </ThemedView>
   );
 }
@@ -288,11 +293,15 @@ const LANGUAGES: Array<{ code: Lang; label: string; Flag: () => ReactElement }> 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    alignItems: 'center',
   },
   safeArea: {
-    flex: 1,
     width: '100%',
     maxWidth: MaxContentWidth,
     padding: Spacing.four,

@@ -31,6 +31,14 @@ export default function Root({ children }: PropsWithChildren) {
             __html: '@supports(height:100dvh){#root,body,html{height:100dvh}}',
           }}
         />
+        {/* AdSense marks a slot it couldn't fill with data-ad-status;
+            collapse it so an invisible ad never reserves layout space. */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html:
+              'ins.adsbygoogle[data-ad-status="unfilled"]{display:none!important}',
+          }}
+        />
       </head>
       <body>{children}</body>
     </html>

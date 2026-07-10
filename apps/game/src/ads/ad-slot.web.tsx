@@ -57,14 +57,17 @@ export function AdSlot({ placement = 'banner' }: AdSlotProps) {
     );
   }
 
+  // Fixed-height responsive unit (full width, 100px). `data-ad-format="auto"`
+  // + full-width-responsive let Google size the slot itself, which on a
+  // 375px-wide phone produced a 375×375 square that shoved the menu off the
+  // top of the viewport. A hard height keeps the layout intact whatever fill
+  // Google picks (320×50, 320×100, 728×90…).
   return (
     <ins
       className="adsbygoogle"
-      style={{ display: 'block', minHeight: 50 }}
+      style={{ display: 'block', width: '100%', height: 100 }}
       data-ad-client={ADSENSE_CLIENT}
       data-ad-slot={slot}
-      data-ad-format="auto"
-      data-full-width-responsive="true"
     />
   );
 }
