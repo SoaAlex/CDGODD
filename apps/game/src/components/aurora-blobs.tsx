@@ -51,10 +51,10 @@ interface BlobConfig {
 // Colors stay in the purple-brand family (theme Gradient #667eea → #764ba2);
 // max center opacity 0.45 keeps white text + TEXT_SHADOW legible on top.
 const BLOBS: BlobConfig[] = [
-  { color: '#7dd3fc', size: 0.9,  x0: -0.25, y0: -0.15, dx: 0.18,  dy: 0.12,  durX: 34000, durY: 26000, durScale: 30000, scaleMin: 0.9,  scaleMax: 1.15, opacity: 0.4,  phase: 0 },
-  { color: '#c084fc', size: 1.1,  x0: 0.55,  y0: 0.05,  dx: -0.15, dy: 0.18,  durX: 38000, durY: 30000, durScale: 24000, scaleMin: 0.85, scaleMax: 1.1,  opacity: 0.45, phase: 0.35 },
-  { color: '#f0abfc', size: 0.75, x0: 0.15,  y0: 0.55,  dx: 0.16,  dy: -0.14, durX: 28000, durY: 36000, durScale: 32000, scaleMin: 0.9,  scaleMax: 1.2,  opacity: 0.35, phase: 0.65 },
-  { color: '#818cf8', size: 1.0,  x0: -0.1,  y0: 0.7,   dx: 0.14,  dy: -0.16, durX: 40000, durY: 24000, durScale: 28000, scaleMin: 0.9,  scaleMax: 1.1,  opacity: 0.45, phase: 0.9 },
+  { color: '#7dd3fc', size: 0.9,  x0: -0.3,  y0: -0.2,  dx: 0.45,  dy: 0.3,   durX: 19000, durY: 15000, durScale: 17000, scaleMin: 0.85, scaleMax: 1.2,  opacity: 0.4,  phase: 0 },
+  { color: '#c084fc', size: 1.1,  x0: 0.6,   y0: -0.05, dx: -0.4,  dy: 0.35,  durX: 22000, durY: 17000, durScale: 13000, scaleMin: 0.8,  scaleMax: 1.15, opacity: 0.45, phase: 0.35 },
+  { color: '#f0abfc', size: 0.75, x0: 0.05,  y0: 0.5,   dx: 0.5,   dy: -0.3,  durX: 16000, durY: 21000, durScale: 18000, scaleMin: 0.85, scaleMax: 1.25, opacity: 0.35, phase: 0.65 },
+  { color: '#818cf8', size: 1.0,  x0: -0.15, y0: 0.75,  dx: 0.4,   dy: -0.35, durX: 23000, durY: 14000, durScale: 16000, scaleMin: 0.85, scaleMax: 1.15, opacity: 0.45, phase: 0.9 },
 ];
 
 function AuroraBlob({
