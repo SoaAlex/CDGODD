@@ -5,6 +5,7 @@ import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AdSlot } from '@/ads/ad-slot';
 import { MuteButton } from '@/components/mute-button';
+import { NowPlaying } from '@/components/now-playing';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import {
@@ -110,6 +111,8 @@ export default function MenuScreen() {
             />
           </View>
         </View>
+
+        <NowPlaying />
 
         {/* Web: banner at the bottom of the page. */}
         {Platform.OS === 'web' && <AdSlot />}
