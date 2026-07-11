@@ -106,6 +106,16 @@ export default function CreditsScreen() {
             </ThemedText>
           </View>
 
+          {/* Disclaimer */}
+          <View style={styles.section}>
+            <ThemedText type="smallBold" themeColor="textSecondary">
+              {t('credits.disclaimerTitle')}
+            </ThemedText>
+            <ThemedText type="small" themeColor="textSecondary">
+              {t('credits.disclaimerBody')}
+            </ThemedText>
+          </View>
+
           {/* Contact */}
           <View style={styles.section}>
             <ThemedText type="smallBold" themeColor="textSecondary">
