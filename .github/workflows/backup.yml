@@ -1,9 +1,9 @@
 name: Backup D1
 
 # Daily SQL dump of the prod D1 database (cdgodd) into the private R2 bucket
-# `cdgodd-backups`. Objects auto-expire after 90 days via a bucket lifecycle
+# `cdgodd-backups`. Objects auto-expire after 30 days via a bucket lifecycle
 # rule (one-time setup: `wrangler r2 bucket lifecycle add cdgodd-backups
-# expire-old-backups "" --expire-days 90`). Complements D1 Time Travel
+# expire-old-backups "" --expire-days 30`). Complements D1 Time Travel
 # (30-day point-in-time recovery) — this survives accidental database
 # deletion, Time Travel does not.
 #

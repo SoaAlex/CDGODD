@@ -112,6 +112,6 @@ Two layers, both effectively free:
   [`.github/workflows/backup.yml`](.github/workflows/backup.yml) exports the
   prod DB (`wrangler d1 export --remote`), gzips it, and uploads to the
   private `cdgodd-backups` R2 bucket at 03:30 UTC. A bucket lifecycle rule
-  expires objects after 90 days. Survives accidental DB deletion (Time
+  expires objects after 30 days. Survives accidental DB deletion (Time
   Travel does not). Restore: `gunzip` the dump, then
   `wrangler d1 execute cdgodd --remote --file <dump>.sql`.
