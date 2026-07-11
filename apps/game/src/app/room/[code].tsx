@@ -482,6 +482,8 @@ export default function RoomScreen() {
   // Live mode: show the tally only for the card we just voted on.
   const showLiveTally =
     room.mode === 'live' && liveTally?.cardIndex === myIndex - 1;
+  // Done players see who they're still waiting on.
+  const stillSwiping = room.players.filter((p) => !p.finished);
 
   return (
     <ThemedView style={styles.container}>
@@ -507,6 +509,26 @@ export default function RoomScreen() {
                 <ThemedText themeColor="textSecondary">
                   {t('multiplayer.waitingOthers')}
                 </ThemedText>
+                {stillSwiping.length > 0 && (
+                  <View style={styles.playerList}>
+                    {stillSwiping.map((p) => (
+                      <View
+                        key={p.id}
+                        style={[
+                          styles.playerChip,
+                          { backgroundColor: theme.backgroundElement },
+                        ]}
+                      >
+                        <Ionicons
+                          name="hourglass-outline"
+                          size={14}
+                          color={theme.textSecondary}
+                        />
+                        <ThemedText type="small">{p.name}</ThemedText>
+                      </View>
+                    ))}
+                  </View>
+                )}
               </View>
             )}
           </View>

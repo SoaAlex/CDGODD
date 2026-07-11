@@ -121,8 +121,9 @@ describe('Room DO — websocket lifecycle (batch)', () => {
       send(wsB, { type: 'vote', cardIndex: i, side: 'right' });
     }
 
+    // Skip the "player finished" broadcasts that precede the reveal.
     state = (await a.until('state')).room;
-    expect(state.phase).toBe('results');
+    while (state.phase !== 'results') state = (await a.until('state')).room;
     // Batch mode: the card-by-card reveal starts on the first card.
     expect(state.revealIndex).toBe(0);
     const reveal = await a.until('reveal');
@@ -221,6 +222,40 @@ describe('Room DO — websocket lifecycle (batch)', () => {
     expect(fresh.map((c) => c.id).sort()).toEqual([1, 2, 6]);
     expect(fresh.every((c) => !c.categoryKeys.includes('culture'))).toBe(true);
     ws.close();
+  });
+
+  it("broadcasts each player's finished flag as they complete the deck", async () => {
+    await createRoom('TESTBE', { mode: 'batch', roundSize: '5' });
+
+    const wsA = await openSocket('TESTBE');
+    const a = wsMessages(wsA);
+    send(wsA, { type: 'join', sessionId: 'sess-a', name: 'Alice' });
+    await a.until('state');
+    const wsB = await openSocket('TESTBE');
+    const b = wsMessages(wsB);
+    send(wsB, { type: 'join', sessionId: 'sess-b', name: 'Bob' });
+    await a.until('state');
+    await b.until('state');
+
+    send(wsA, { type: 'start' });
+    await a.until('deck');
+    // Drain Bob's start broadcasts so the next state he sees is the finish.
+    await b.until('deck');
+
+    // Alice swipes her whole deck; Bob hasn't started.
+    for (let i = 0; i < 5; i++) {
+      send(wsA, { type: 'vote', cardIndex: i, side: 'left' });
+    }
+
+    // Her last vote triggers a state broadcast flagging her as finished.
+    const state = (await b.until('state')).room;
+    expect(state.phase).toBe('playing');
+    const byId = new Map(state.players.map((p) => [p.id, p.finished]));
+    expect(byId.get('sess-a')).toBe(true);
+    expect(byId.get('sess-b')).toBe(false);
+
+    wsA.close();
+    wsB.close();
   });
 
   it('ignores duplicate votes from the same player', async () => {

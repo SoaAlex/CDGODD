@@ -64,6 +64,8 @@ export type RoomPhase = 'lobby' | 'playing' | 'results';
 export interface RoomPlayer {
   id: string;
   name: string;
+  /** Has voted every card of the current round (waiting for the others). */
+  finished: boolean;
 }
 
 export interface RoomState {

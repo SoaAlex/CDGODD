@@ -80,6 +80,7 @@ export class Room implements DurableObject {
     const players: RoomPlayer[] = [...sessions].map((id) => ({
       id,
       name: this.names.get(id) ?? 'Joueur',
+      finished: this.hasVotedAll(id),
     }));
     return {
       code: this.config?.code ?? '',
@@ -296,7 +297,8 @@ export class Room implements DurableObject {
         // One vote per player per card; a re-vote is ignored but must still
         // fall through to the completion check (e.g. a rejoined player's
         // final re-swipe).
-        if (!cardVotes.has(sessionId)) cardVotes.set(sessionId, msg.side);
+        const isNewVote = !cardVotes.has(sessionId);
+        if (isNewVote) cardVotes.set(sessionId, msg.side);
 
         // Live mode: give the voter the running tally for this card now —
         // no waiting for anyone else.
@@ -311,6 +313,16 @@ export class Room implements DurableObject {
         }
 
         this.maybeReveal();
+        // Players done with their deck watch who's still swiping: when this
+        // vote completes someone's round (and the room didn't reveal),
+        // refresh everyone's `finished` flags.
+        if (
+          isNewVote &&
+          this.phase === 'playing' &&
+          this.hasVotedAll(sessionId)
+        ) {
+          this.broadcast({ type: 'state', room: this.state });
+        }
         break;
       }
 
@@ -391,23 +403,31 @@ export class Room implements DurableObject {
     }
   }
 
+  /** Has this player voted on every card of the current round? */
+  private hasVotedAll(sessionId: string): boolean {
+    const cardCount = this.config?.cards.length ?? 0;
+    if (cardCount === 0) return false;
+    for (let i = 0; i < cardCount; i++) {
+      if (!this.votes.get(i)?.has(sessionId)) return false;
+    }
+    return true;
+  }
+
   /** Reveal once every connected player has voted on every card. */
   private maybeReveal() {
     if (this.phase !== 'playing') return;
     const sessions = new Set(this.players.values());
     if (sessions.size === 0) return;
-    const cardCount = this.config?.cards.length ?? 0;
 
     for (const session of sessions) {
-      for (let i = 0; i < cardCount; i++) {
-        if (!this.votes.get(i)?.has(session)) return; // still voting
-      }
+      if (!this.hasVotedAll(session)) return; // still voting
     }
 
     // Batch mode walks the reveal card by card (host-paced, starts at 0);
     // live mode already showed tallies during play, so it jumps straight
     // past the walk to the summary.
-    this.revealIndex = this.config?.mode === 'live' ? cardCount : 0;
+    this.revealIndex =
+      this.config?.mode === 'live' ? (this.config?.cards.length ?? 0) : 0;
     this.phase = 'results';
     this.broadcast({ type: 'state', room: this.state });
     this.broadcast(this.revealMessage());
