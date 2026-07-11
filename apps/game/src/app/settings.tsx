@@ -1,5 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import { useEffect, useState, type ReactElement } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -22,7 +20,6 @@ import { isSfxMuted, setSfxMuted } from '@/lib/sfx';
 
 export default function SettingsScreen() {
   const theme = useTheme();
-  const router = useRouter();
   const { t, lang } = useT();
   const [sessionId, setSessionId] = useState<string | null>(null);
   const { showResults, setShowResults } = useShowResults();
@@ -186,26 +183,6 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        {/* Credits */}
-        <View style={styles.section}>
-          <Pressable
-            testID="credits-button"
-            onPress={() => router.push('/credits')}
-            style={({ pressed }) => [
-              styles.row,
-              styles.button,
-              {
-                backgroundColor: theme.backgroundElement,
-                opacity: pressed ? 0.7 : 1,
-              },
-            ]}
-          >
-            <View style={styles.buttonContent}>
-              <Ionicons name="heart" size={18} color={theme.text} />
-              <ThemedText>{t('menu.credits')}</ThemedText>
-            </View>
-          </Pressable>
-        </View>
         </SafeAreaView>
       </ScrollView>
     </ThemedView>
@@ -318,19 +295,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.three,
   },
-  button: {
-    justifyContent: 'center',
-  },
   rowLabel: {
     flex: 1,
     marginRight: Spacing.two,
   },
   languageLabel: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.two,
-  },
-  buttonContent: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.two,

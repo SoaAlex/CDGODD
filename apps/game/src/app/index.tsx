@@ -111,6 +111,11 @@ export default function MenuScreen() {
               href="/settings"
               icon="settings"
             />
+            <MenuButton
+              label={t('menu.credits')}
+              href="/credits"
+              icon="information-circle"
+            />
           </View>
         </View>
 

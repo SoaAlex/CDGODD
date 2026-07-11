@@ -5,7 +5,7 @@
     "multiplayer": "Mehrspieler",
     "settings": "Einstellungen",
     "history": "Verlauf",
-    "credits": "Credits",
+    "credits": "Credits & Hinweise",
     "back": "Zurück"
   },
   "solo": {
@@ -99,7 +99,7 @@
     "musicRemixLink": "Remix auf SoundCloud anhören",
     "musicOriginalLink": "Original auf YouTube anhören",
     "privacyTitle": "Datenschutz",
-    "privacyBody": "Das Spiel ist 100% anonym: kein Konto, keine Erhebung persönlicher Daten. Nur Werbung kann Daten sammeln, und nur mit deiner Zustimmung (in den Einstellungen abschaltbar).",
+    "privacyBody": "Das Spiel ist 100% anonym: kein Konto, keine Erhebung persönlicher Daten. Nur Werbung kann Daten sammeln, und nur mit deiner Zustimmung (in den Einstellungen abschaltbar). Zum Schutz vor Missbrauch wird ein IP-Hash verwendet: Er wird 30 Tage gespeichert und lässt keinen Rückschluss auf die ursprüngliche IP zu.",
     "disclaimerTitle": "Haftungsausschluss",
     "disclaimerBody": "Dieses Spiel dient ausschließlich dem Spaß. Die Stimmen werden niemals manipuliert, und die Ergebnisse spiegeln nur wider, wie die Spieler wischen — nicht die Realität und keine politische Wahrheit. Nichts davon sollte ernst genommen oder dazu benutzt werden, jemanden zu beurteilen, anzuprangern oder zu belästigen. Ich lehne jegliche Verbindung und jegliche Verantwortung für die Auslegung der Inhalte ab und ermutige von Herzen zu Freundlichkeit, Respekt und guten Werten. Spielt, lacht und seid nett zueinander.",
     "contactTitle": "Kontakt",

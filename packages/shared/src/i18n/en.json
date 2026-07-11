@@ -5,7 +5,7 @@
     "multiplayer": "Multiplayer",
     "settings": "Settings",
     "history": "History",
-    "credits": "Credits",
+    "credits": "Credits & Disclaimers",
     "back": "Back"
   },
   "solo": {
@@ -99,7 +99,7 @@
     "musicRemixLink": "Listen to the remix on SoundCloud",
     "musicOriginalLink": "Listen to the original on YouTube",
     "privacyTitle": "Privacy",
-    "privacyBody": "The game is 100% anonymous: no account, no personal data collection. Only ads may collect data, and only with your consent (they can be disabled in the settings).",
+    "privacyBody": "The game is 100% anonymous: no account, no personal data collection. Only ads may collect data, and only with your consent (they can be disabled in the settings). An IP hash is used to prevent abuse: it is kept for 30 days and cannot be traced back to the original IP.",
     "disclaimerTitle": "Disclaimer",
     "disclaimerBody": "This game is meant purely for fun. The votes are never manipulated, and the results reflect only how players swipe — not reality, and no political truth of any kind. Nothing here should be taken seriously, nor used to judge, target, or harass anyone. I decline any affiliation and any responsibility for how the content is interpreted, and I wholeheartedly encourage kindness, respect, and good values. Play, laugh, and be nice to one another.",
     "contactTitle": "Contact",

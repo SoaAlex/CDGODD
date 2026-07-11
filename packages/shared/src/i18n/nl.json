@@ -5,7 +5,7 @@
     "multiplayer": "Multiplayer",
     "settings": "Instellingen",
     "history": "Geschiedenis",
-    "credits": "Credits",
+    "credits": "Credits & disclaimers",
     "back": "Terug"
   },
   "solo": {
@@ -99,7 +99,7 @@
     "musicRemixLink": "Beluister de remix op SoundCloud",
     "musicOriginalLink": "Beluister het origineel op YouTube",
     "privacyTitle": "Privacy",
-    "privacyBody": "Het spel is 100% anoniem: geen account, geen verzameling van persoonsgegevens. Alleen advertenties kunnen gegevens verzamelen, uitsluitend met jouw toestemming (uit te schakelen in de instellingen).",
+    "privacyBody": "Het spel is 100% anoniem: geen account, geen verzameling van persoonsgegevens. Alleen advertenties kunnen gegevens verzamelen, uitsluitend met jouw toestemming (uit te schakelen in de instellingen). Er wordt een IP-hash gebruikt om misbruik tegen te gaan: deze wordt 30 dagen bewaard en kan niet worden herleid tot het oorspronkelijke IP-adres.",
     "disclaimerTitle": "Disclaimer",
     "disclaimerBody": "Dit spel is puur bedoeld voor de lol. De stemmen worden nooit gemanipuleerd, en de resultaten weerspiegelen alleen hoe spelers swipen — niet de werkelijkheid, en geen enkele politieke waarheid. Niets hiervan mag serieus genomen worden of gebruikt worden om iemand te beoordelen, te viseren of lastig te vallen. Ik wijs elke band en elke verantwoordelijkheid voor de interpretatie van de inhoud af, en ik moedig van harte vriendelijkheid, respect en goede waarden aan. Speel, lach en wees aardig voor elkaar.",
     "contactTitle": "Contact",
