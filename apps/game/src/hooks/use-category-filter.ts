@@ -31,24 +31,29 @@ export interface CategoryFilterState {
 }
 
 /**
- * Category-filter state that starts by excluding the sensitive categories
- * (NSFW, Programmation). The exclusion is seeded once the category list loads
- * and only while the player hasn't touched the filter, so any deliberate
- * choice — including re-including those categories — wins. Session-only: it
- * resets on remount by design. If none of the loaded categories match, the
- * filter behaves as "all categories".
+ * Category-filter state that starts in include mode with every category
+ * selected except the sensitive ones (NSFW, Programmation). The selection is
+ * seeded once the category list loads and only while the player hasn't
+ * touched the filter, so any deliberate choice — including re-adding those
+ * categories — wins. Session-only: it resets on remount by design. If none
+ * of the loaded categories match the exclusion list, the filter stays empty,
+ * which reads as "all categories".
  */
 export function useCategoryFilter(): CategoryFilterState {
   const { categories } = useCategories();
   const [keys, setKeysState] = useState<string[]>([]);
-  const [mode, setModeState] = useState<FilterMode>('exclude');
+  const [mode, setModeState] = useState<FilterMode>('include');
   const [matchAll, setMatchAllState] = useState(false);
   const touched = useRef(false);
 
   useEffect(() => {
     if (touched.current || categories.length === 0) return;
     const excluded = defaultExcludedKeys(categories);
-    if (excluded.length > 0) setKeysState(excluded);
+    if (excluded.length > 0) {
+      setKeysState(
+        categories.map((c) => c.key).filter((k) => !excluded.includes(k)),
+      );
+    }
   }, [categories]);
 
   const setKeys = useCallback((next: string[]) => {
