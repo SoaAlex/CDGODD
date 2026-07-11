@@ -14,6 +14,7 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { GameTitle } from '@/components/game-title';
 import { GradientBackground } from '@/components/gradient-background';
+import { MuteButton } from '@/components/mute-button';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useLangReady, useT } from '@/lib/i18n';
 import { startBackgroundMusic } from '@/lib/music';
@@ -171,6 +172,8 @@ export default function RootLayout() {
               // screen's `title` still names the browser tab on web.
               headerTitle: () => <GameTitle />,
               headerTitleAlign: 'center',
+              // Sound menu on every screen; renders null on native.
+              headerRight: () => <MuteButton />,
               // Web-only (see Stack above). `animation` just switches the JS
               // stack's animation on; forSlideFade defines the actual motion.
               // The overlay stays off: cards are transparent, so the preset's
