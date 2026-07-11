@@ -54,24 +54,28 @@ export function CategoryFilter({
     );
   }
 
-  // Trigger label: "Toutes", the names when short, a count when not.
-  // Exclude mode prefixes with "Sans" so the trigger reads as a negation.
+  // The checklist always reads as "categories shown". In exclude mode a
+  // checked row is a *kept* category (the unchecked few are dropped); in
+  // include mode a checked row is one of the chosen few. `selected` still
+  // holds the operated-on set (excluded keys in exclude mode), so the deck
+  // query wiring is unchanged — this is presentation only.
   const excluding = mode === 'exclude';
-  const allSelected =
-    categories.length > 0 && selected.length === categories.length;
-  const selectedNames = categories
-    .filter(({ key }) => selected.includes(key))
+  const isShown = (key: string) =>
+    excluding ? !selected.includes(key) : selected.includes(key);
+  // Every category shown (nothing narrowed) is `selected` empty in both modes.
+  const everythingShown = excluding
+    ? selected.length === 0
+    : selected.length === categories.length;
+  const shownNames = categories
+    .filter(({ key }) => isShown(key))
     .map(({ name }) => name);
+  // Trigger label: "Toutes" when nothing is narrowed, the names when short,
+  // a count otherwise (0 when everything is unchecked).
   const names =
-    selectedNames.length <= 2
-      ? selectedNames.join(' · ')
-      : `${selectedNames.length} ${t('filter.categoriesLabel').toLowerCase()}`;
-  const label =
-    selectedNames.length === 0
-      ? t('filter.allCategories')
-      : excluding
-        ? `${t('filter.without')} ${names}`
-        : names;
+    shownNames.length >= 1 && shownNames.length <= 2
+      ? shownNames.join(' · ')
+      : `${shownNames.length} ${t('filter.categoriesLabel').toLowerCase()}`;
+  const label = selected.length === 0 ? t('filter.allCategories') : names;
 
   const row = (isSelected: boolean, key: string, name: string, count: number) => (
     <Pressable
@@ -99,11 +103,7 @@ export function CategoryFilter({
           styles.trigger,
           {
             backgroundColor:
-              selected.length > 0
-                ? excluding
-                  ? LEFT_COLOR
-                  : RIGHT_COLOR
-                : theme.backgroundElement,
+              selected.length > 0 ? RIGHT_COLOR : theme.backgroundElement,
             opacity: pressed ? 0.8 : 1,
           },
         ]}
@@ -160,29 +160,32 @@ export function CategoryFilter({
                 ))}
               </View>
             )}
-            {/* Check every category (then untick a few) or start over. */}
+            {/* Show every category, or clear the checks. Same gesture in both
+                modes: "select all" always ends up showing everything. */}
             <Pressable
               testID="category-filter-select-all"
-              onPress={() =>
-                onChange(
-                  allSelected ? [] : categories.map(({ key }) => key),
-                )
-              }
+              onPress={() => {
+                const allKeys = categories.map(({ key }) => key);
+                if (excluding) onChange(everythingShown ? allKeys : []);
+                else onChange(everythingShown ? [] : allKeys);
+              }}
               style={styles.selectAllRow}
             >
               <Ionicons
-                name={allSelected ? 'close-circle-outline' : 'checkmark-done'}
+                name={everythingShown ? 'close-circle-outline' : 'checkmark-done'}
                 size={16}
                 color="#fff"
               />
               <ThemedText type="small">
-                {allSelected ? t('filter.unselectAll') : t('filter.selectAll')}
+                {everythingShown
+                  ? t('filter.unselectAll')
+                  : t('filter.selectAll')}
               </ThemedText>
             </Pressable>
             <ScrollView style={styles.optionList}>
               {row(selected.length === 0, 'all', t('filter.allCategories'), total)}
               {categories.map(({ key, name, count }) =>
-                row(selected.includes(key), key, name, count),
+                row(isShown(key), key, name, count),
               )}
             </ScrollView>
             {/* AND/OR switch — only meaningful once 2+ categories combine,
