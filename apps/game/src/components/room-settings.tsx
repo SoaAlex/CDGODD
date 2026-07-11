@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { parseCustomWords, type RoomMode } from '@cdgodd/shared';
 import { CategoryFilter, type FilterMode } from '@/components/category-filter';
@@ -53,6 +54,9 @@ export function RoomSettings({
   const { t } = useT();
   const theme = useTheme();
   const customWordCount = parseCustomWords(customWordsText).length;
+  // The words field hides behind a button; a prefilled list (host replay)
+  // starts open so the words are visible right away.
+  const [wordsOpen, setWordsOpen] = useState(customWordCount > 0);
   // Custom-only round: the deck is exactly the words, the stepper is a no-op.
   const showStepper = customWordCount === 0 || includeDbItems;
   const chip = (selected: boolean) => ({
@@ -84,41 +88,57 @@ export function RoomSettings({
         ))}
       </View>
 
-      {/* Host's own words, dealt as image-less cards. */}
-      <ThemedText type="small" themeColor="textSecondary">
-        {t('multiplayer.customWords')}
-      </ThemedText>
-      <TextInput
-        testID="custom-words"
-        value={customWordsText}
-        onChangeText={onCustomWordsTextChange}
-        placeholder={t('multiplayer.customWordsPlaceholder')}
-        placeholderTextColor={theme.textSecondaryOnSurface}
-        autoCorrect={false}
-        multiline
-        style={[
-          styles.wordsInput,
-          { backgroundColor: theme.surface, color: theme.textOnSurface },
-        ]}
-      />
-      {customWordCount > 0 && (
-        <View style={styles.chipRow}>
-          <ThemedText type="small" themeColor="textSecondary">
-            {t('multiplayer.customWordsCount').replace(
-              '{count}',
-              String(customWordCount),
-            )}
+      {/* Host's own words, dealt as image-less cards: a button reveals the
+          field; the word count and the DB-mix toggle appear once it has any. */}
+      <View style={styles.chipRow}>
+        <Pressable
+          testID="custom-words-toggle"
+          onPress={() => setWordsOpen((open) => !open)}
+          style={[styles.chip, styles.wordsToggle, chip(wordsOpen)]}
+        >
+          <Ionicons
+            name={wordsOpen ? 'chevron-up' : 'create-outline'}
+            size={14}
+            color={wordsOpen ? '#fff' : theme.text}
+          />
+          <ThemedText type="small" style={chipText(wordsOpen)}>
+            {t('multiplayer.customWords')}
           </ThemedText>
-          <Pressable
-            testID="mix-db-items"
-            onPress={() => onIncludeDbItemsChange(!includeDbItems)}
-            style={[styles.chip, chip(includeDbItems)]}
-          >
-            <ThemedText type="small" style={chipText(includeDbItems)}>
-              {t('multiplayer.mixDbItems')}
+        </Pressable>
+        {customWordCount > 0 && (
+          <>
+            <Pressable
+              testID="mix-db-items"
+              onPress={() => onIncludeDbItemsChange(!includeDbItems)}
+              style={[styles.chip, chip(includeDbItems)]}
+            >
+              <ThemedText type="small" style={chipText(includeDbItems)}>
+                {t('multiplayer.mixDbItems')}
+              </ThemedText>
+            </Pressable>
+            <ThemedText type="small" themeColor="textSecondary">
+              {t('multiplayer.customWordsCount').replace(
+                '{count}',
+                String(customWordCount),
+              )}
             </ThemedText>
-          </Pressable>
-        </View>
+          </>
+        )}
+      </View>
+      {wordsOpen && (
+        <TextInput
+          testID="custom-words"
+          value={customWordsText}
+          onChangeText={onCustomWordsTextChange}
+          placeholder={t('multiplayer.customWordsPlaceholder')}
+          placeholderTextColor={theme.textSecondaryOnSurface}
+          autoCorrect={false}
+          multiline
+          style={[
+            styles.wordsInput,
+            { backgroundColor: theme.surface, color: theme.textOnSurface },
+          ]}
+        />
       )}
 
       {/* 5-50 cards, ±5 per tap. */}
@@ -172,8 +192,14 @@ export function RoomSettings({
 const styles = StyleSheet.create({
   chipRow: {
     flexDirection: 'row',
+    alignItems: 'center',
     gap: Spacing.two,
     flexWrap: 'wrap',
+  },
+  wordsToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.one,
   },
   chip: {
     paddingHorizontal: Spacing.three,

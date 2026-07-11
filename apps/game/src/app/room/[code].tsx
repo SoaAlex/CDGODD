@@ -7,6 +7,7 @@ import {
   FlatList,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   TextInput,
   View,
@@ -625,10 +626,17 @@ export default function RoomScreen() {
 }
 
 function Centered({ children }: { children: React.ReactNode }) {
+  // Scrolls when the content overflows (long player lists, replay settings
+  // with the words field open); short content stays vertically centered.
   return (
     <ThemedView style={styles.container}>
-      <SafeAreaView style={[styles.safeArea, styles.centered]} edges={['bottom']}>
-        {children}
+      <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+        <ScrollView
+          contentContainerStyle={styles.centered}
+          keyboardShouldPersistTaps="handled"
+        >
+          {children}
+        </ScrollView>
       </SafeAreaView>
     </ThemedView>
   );
@@ -648,6 +656,7 @@ const styles = StyleSheet.create({
     gap: Spacing.three,
   },
   centered: {
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.three,
