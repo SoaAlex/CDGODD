@@ -30,7 +30,7 @@ export const deckQuerySchema = z.object({
   categories: z
     .string()
     .transform((s) => s.split(',').filter(Boolean))
-    .pipe(z.array(categoryKeySchema).max(20))
+    .pipe(z.array(categoryKeySchema).max(100))
     .optional(),
   /** How `categories` combine; ignored when the filter is empty. */
   match: categoryMatchSchema.default('any'),
@@ -42,7 +42,7 @@ export const deckQuerySchema = z.object({
   exclude: z
     .string()
     .transform((s) => s.split(',').filter(Boolean))
-    .pipe(z.array(categoryKeySchema).max(20))
+    .pipe(z.array(categoryKeySchema).max(100))
     .optional(),
   /**
    * Per-session shuffle seed. When present the deck is ordered by a
@@ -78,11 +78,11 @@ export const createRoomSchema = z.object({
   mode: z.enum(['batch', 'live']).default('batch'),
   roundSize: z.coerce.number().int().min(5).max(50).default(10),
   /** Empty/absent = deal from every category. */
-  categoryKeys: z.array(categoryKeySchema).max(20).default([]),
+  categoryKeys: z.array(categoryKeySchema).max(100).default([]),
   /** How `categoryKeys` combine; ignored when the filter is empty. */
   categoryMatch: categoryMatchSchema.default('any'),
   /** Categories to exclude: items in any of them are never dealt. */
-  excludeKeys: z.array(categoryKeySchema).max(20).default([]),
+  excludeKeys: z.array(categoryKeySchema).max(100).default([]),
   /**
    * Host-provided words/phrases dealt as image-less cards. Empty = classic
    * DB-only round.

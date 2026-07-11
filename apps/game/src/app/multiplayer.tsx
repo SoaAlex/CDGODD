@@ -9,7 +9,8 @@ import { ThemedView } from '@/components/themed-view';
 import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { parseCustomWords } from '@cdgodd/shared';
-import { useCategoryFilter } from '@/hooks/use-category-filter';
+import { useCategories } from '@/hooks/use-categories';
+import { toApiFilter, useCategoryFilter } from '@/hooks/use-category-filter';
 import { createRoom } from '@/lib/api';
 import { useT } from '@/lib/i18n';
 
@@ -29,6 +30,7 @@ export default function MultiplayerScreen() {
     setMode: setFilterMode,
     setMatchAll: setCategoryMatchAll,
   } = useCategoryFilter();
+  const { categories: allCategories } = useCategories();
   // Host's custom word list (comma-separated free text) and whether random
   // DB items are mixed in with it (off by default: the list plays alone).
   const [customWordsText, setCustomWordsText] = useState('');
@@ -45,14 +47,19 @@ export default function MultiplayerScreen() {
     setBusy(true);
     setError(null);
     try {
-      const excluding = filterMode === 'exclude';
+      const apiFilter = toApiFilter(
+        filterMode,
+        categoryKeys,
+        categoryMatchAll,
+        allCategories.map((c) => c.key),
+      );
       const customWords = parseCustomWords(customWordsText);
       const { room } = await createRoom(
         mode,
         roundSize,
-        excluding ? [] : categoryKeys,
+        apiFilter.include,
         categoryMatchAll ? 'all' : 'any',
-        excluding ? categoryKeys : [],
+        apiFilter.exclude,
         customWords,
         // Only meaningful alongside custom words; a wordless room always
         // deals from the DB.

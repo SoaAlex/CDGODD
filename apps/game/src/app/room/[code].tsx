@@ -25,13 +25,15 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { useCategoryName } from '@/hooks/use-categories';
+import { useCategories, useCategoryName } from '@/hooks/use-categories';
+import { toApiFilter } from '@/hooks/use-category-filter';
 import { useRoom } from '@/hooks/use-room';
 import { useT } from '@/lib/i18n';
 
 export default function RoomScreen() {
   const { t } = useT();
   const categoryName = useCategoryName();
+  const { categories: allCategories } = useCategories();
   const { code, name: nameParam } = useLocalSearchParams<{
     code: string;
     name?: string;
@@ -196,21 +198,25 @@ export default function RoomScreen() {
         />
         <Pressable
           testID="restart-round"
-          onPress={() =>
+          onPress={() => {
+            const apiFilter = toApiFilter(
+              replayFilterMode,
+              replayCategoryKeys,
+              replayCategoryMatchAll,
+              allCategories.map((c) => c.key),
+            );
             restart({
               mode: replayMode,
               roundSize: replayRoundSize,
-              categoryKeys:
-                replayFilterMode === 'exclude' ? [] : replayCategoryKeys,
+              categoryKeys: apiFilter.include,
               categoryMatch: replayCategoryMatchAll ? 'all' : 'any',
-              excludeKeys:
-                replayFilterMode === 'exclude' ? replayCategoryKeys : [],
+              excludeKeys: apiFilter.exclude,
               customWords: parseCustomWords(replayCustomWordsText),
               includeDbItems:
                 parseCustomWords(replayCustomWordsText).length === 0 ||
                 replayIncludeDbItems,
-            })
-          }
+            });
+          }}
           style={({ pressed }) => [
             styles.startButton,
             { backgroundColor: RIGHT_COLOR, opacity: pressed ? 0.8 : 1 },

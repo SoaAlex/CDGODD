@@ -17,7 +17,8 @@ import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/t
 import { AdRails } from '@/ads/ad-rails';
 import { AdSlot } from '@/ads/ad-slot';
 import { useInterstitial } from '@/ads/use-interstitial';
-import { useCategoryFilter } from '@/hooks/use-category-filter';
+import { useCategories } from '@/hooks/use-categories';
+import { toApiFilter, useCategoryFilter } from '@/hooks/use-category-filter';
 import { useDeck } from '@/hooks/use-deck';
 import { useTheme } from '@/hooks/use-theme';
 import { fetchTallies, reportItem } from '@/lib/api';
@@ -38,7 +39,13 @@ export default function SoloScreen() {
     setMode: setFilterMode,
     setMatchAll,
   } = useCategoryFilter();
-  const excluding = filterMode === 'exclude';
+  const { categories: allCategories } = useCategories();
+  const apiFilter = toApiFilter(
+    filterMode,
+    categoryKeys,
+    matchAll,
+    allCategories.map((c) => c.key),
+  );
   const {
     cards,
     loading,
@@ -49,11 +56,7 @@ export default function SoloScreen() {
     restart,
     exhausted,
     allSeen,
-  } = useDeck(
-    excluding ? [] : categoryKeys,
-    matchAll,
-    excluding ? categoryKeys : [],
-  );
+  } = useDeck(apiFilter.include, matchAll, apiFilter.exclude);
   const deck = useRef<SwipeDeckHandle>(null);
   const theme = useTheme();
   const countSwipeForAds = useInterstitial();

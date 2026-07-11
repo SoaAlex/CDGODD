@@ -113,7 +113,11 @@ describe('deckQuerySchema', () => {
 
   it('rejects bad category keys, too many keys, bad lang and match', () => {
     expect(deckQuerySchema.safeParse({ categories: 'Food' }).success).toBe(false);
-    const tooMany = Array.from({ length: 21 }, (_, i) => `c${i}`).join(',');
+    // Cap is 100: prod already has 33+ categories and the client may send a
+    // full include list, so leave generous headroom.
+    const many = Array.from({ length: 100 }, (_, i) => `c${i}`).join(',');
+    expect(deckQuerySchema.safeParse({ categories: many }).success).toBe(true);
+    const tooMany = Array.from({ length: 101 }, (_, i) => `c${i}`).join(',');
     expect(deckQuerySchema.safeParse({ categories: tooMany }).success).toBe(false);
     expect(deckQuerySchema.safeParse({ lang: 'FR' }).success).toBe(false);
     expect(deckQuerySchema.safeParse({ match: 'some' }).success).toBe(false);

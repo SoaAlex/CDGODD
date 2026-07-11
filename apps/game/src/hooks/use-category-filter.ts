@@ -21,6 +21,33 @@ export function defaultExcludedKeys(categories: CategoryOption[]): string[] {
     .map((c) => c.key);
 }
 
+/**
+ * Maps the filter UI state to the include/exclude pair sent to the API.
+ * Broad include selections (most categories left checked) are sent as an
+ * exclude list of the unchecked complement: the request stays far under the
+ * API's category cap, and items tagged with an unchecked category are
+ * dropped even when they also carry a checked one — unchecking NSFW means
+ * "no NSFW", not "NSFW is fine when it's also Food". Narrow selections and
+ * matchAll keep the include list, where "in at least one / every selected
+ * category" is the point.
+ */
+export function toApiFilter(
+  mode: FilterMode,
+  keys: string[],
+  matchAll: boolean,
+  allKeys: string[],
+): { include: string[]; exclude: string[] } {
+  if (mode === 'exclude') return { include: [], exclude: keys };
+  if (matchAll || keys.length === 0 || allKeys.length === 0)
+    return { include: keys, exclude: [] };
+  const selected = new Set(keys);
+  const unchecked = allKeys.filter((k) => !selected.has(k));
+  if (unchecked.length === 0) return { include: [], exclude: [] };
+  if (unchecked.length < keys.length)
+    return { include: [], exclude: unchecked };
+  return { include: keys, exclude: [] };
+}
+
 export interface CategoryFilterState {
   keys: string[];
   mode: FilterMode;

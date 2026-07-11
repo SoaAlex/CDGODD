@@ -35,7 +35,7 @@ function sanitizeCategoryKeys(keys: unknown): string[] {
   if (!Array.isArray(keys)) return [];
   return keys
     .filter((k): k is string => typeof k === 'string' && CATEGORY_KEY_RE.test(k))
-    .slice(0, 20);
+    .slice(0, 100);
 }
 
 /** Keep only non-empty custom words, capped (defense in depth, like above). */
