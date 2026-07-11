@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import type { RoomMode, Side } from '@cdgodd/shared';
+import { parseCustomWords, type RoomMode, type Side } from '@cdgodd/shared';
 import { AdRails } from '@/ads/ad-rails';
 import { AdSlot } from '@/ads/ad-slot';
 import type { FilterMode } from '@/components/category-filter';
@@ -54,6 +54,8 @@ export default function RoomScreen() {
   // Include mode keeps the selected categories; exclude mode drops them.
   const [replayFilterMode, setReplayFilterMode] =
     useState<FilterMode>('include');
+  const [replayCustomWordsText, setReplayCustomWordsText] = useState('');
+  const [replayIncludeDbItems, setReplayIncludeDbItems] = useState(true);
   const [linkCopied, setLinkCopied] = useState(false);
   const {
     room,
@@ -181,11 +183,15 @@ export default function RoomScreen() {
           categoryKeys={replayCategoryKeys}
           categoryMatchAll={replayCategoryMatchAll}
           categoryFilterMode={replayFilterMode}
+          customWordsText={replayCustomWordsText}
+          includeDbItems={replayIncludeDbItems}
           onModeChange={setReplayMode}
           onRoundSizeChange={setReplayRoundSize}
           onCategoryKeysChange={setReplayCategoryKeys}
           onCategoryMatchAllChange={setReplayCategoryMatchAll}
           onCategoryFilterModeChange={setReplayFilterMode}
+          onCustomWordsTextChange={setReplayCustomWordsText}
+          onIncludeDbItemsChange={setReplayIncludeDbItems}
         />
         <Pressable
           testID="restart-round"
@@ -198,6 +204,10 @@ export default function RoomScreen() {
               categoryMatch: replayCategoryMatchAll ? 'all' : 'any',
               excludeKeys:
                 replayFilterMode === 'exclude' ? replayCategoryKeys : [],
+              customWords: parseCustomWords(replayCustomWordsText),
+              includeDbItems:
+                parseCustomWords(replayCustomWordsText).length === 0 ||
+                replayIncludeDbItems,
             })
           }
           style={({ pressed }) => [
@@ -345,6 +355,8 @@ export default function RoomScreen() {
                   excluding ? room.excludeKeys : room.categoryKeys,
                 );
                 setReplayCategoryMatchAll(room.categoryMatch === 'all');
+                setReplayCustomWordsText(room.customWords.join(', '));
+                setReplayIncludeDbItems(room.includeDbItems);
                 setConfiguring(true);
               }}
               style={({ pressed }) => [

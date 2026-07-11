@@ -83,6 +83,16 @@ export const createRoomSchema = z.object({
   categoryMatch: categoryMatchSchema.default('any'),
   /** Categories to exclude: items in any of them are never dealt. */
   excludeKeys: z.array(categoryKeySchema).max(20).default([]),
+  /**
+   * Host-provided words/phrases dealt as image-less cards. Empty = classic
+   * DB-only round.
+   */
+  customWords: z.array(z.string().trim().min(1).max(80)).max(50).default([]),
+  /**
+   * With customWords: also mix in `roundSize` random DB items. Ignored when
+   * customWords is empty (a round always needs cards).
+   */
+  includeDbItems: z.boolean().default(true),
 });
 export type CreateRoomInput = z.infer<typeof createRoomSchema>;
 

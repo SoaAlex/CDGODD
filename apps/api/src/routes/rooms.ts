@@ -23,16 +23,12 @@ rooms.post('/rooms', async (c) => {
   for (let attempt = 0; attempt < 5; attempt++) {
     const code = randomCode();
     const stub = c.env.ROOMS.get(c.env.ROOMS.idFromName(code));
-    const params = new URLSearchParams({
-      code,
-      mode: parsed.data.mode,
-      roundSize: String(parsed.data.roundSize),
-      categories: parsed.data.categoryKeys.join(','),
-      match: parsed.data.categoryMatch,
-      exclude: parsed.data.excludeKeys.join(','),
-    });
-    const res = await stub.fetch(`https://room.internal/create?${params}`, {
+    // JSON body, not query params: custom words are free text (commas, any
+    // unicode) that a CSV query string can't carry.
+    const res = await stub.fetch('https://room.internal/create', {
       method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ code, ...parsed.data }),
     });
     if (res.status !== 409) return new Response(res.body, res);
   }

@@ -9,11 +9,12 @@ function roomStub(code: string): DurableObjectStub {
 
 function createRoom(
   code: string,
-  params: Record<string, string> = {},
+  params: Record<string, unknown> = {},
 ): Promise<Response> {
-  const qs = new URLSearchParams({ code, ...params });
-  return roomStub(code).fetch(`https://room.internal/create?${qs}`, {
+  return roomStub(code).fetch('https://room.internal/create', {
     method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ code, ...params }),
   });
 }
 
@@ -54,7 +55,7 @@ describe('Room DO — creation', () => {
   it('deals only from the requested categories', async () => {
     const res = await createRoom('TESTAC', {
       roundSize: '5',
-      categories: 'food',
+      categoryKeys: ['food'],
     });
     const { room } = (await res.json()) as { room: RoomState };
     // Only 2 approved food items exist — the hand is capped by availability.
@@ -64,7 +65,7 @@ describe('Room DO — creation', () => {
   it('never deals from excluded categories', async () => {
     const res = await createRoom('TESTAF', {
       roundSize: '10',
-      exclude: 'culture',
+      excludeKeys: ['culture'],
     });
     const { room } = (await res.json()) as { room: RoomState };
     // Seed: culture = {3,4,5}; excluding it leaves items 1, 2, 6.
@@ -82,6 +83,61 @@ describe('Room DO — creation', () => {
   it('404s before creation', async () => {
     const res = await roomStub('TESTAE').fetch('https://room.internal/');
     expect(res.status).toBe(404);
+  });
+
+  it('deals a custom-only deck: the words as image-less cards', async () => {
+    const words = ['pizza', 'ananas', 'télétravail'];
+    const res = await createRoom('TESTAG', {
+      customWords: words,
+      includeDbItems: false,
+      roundSize: 10,
+    });
+    expect(res.status).toBe(200);
+    const { room } = (await res.json()) as { room: RoomState };
+    // roundSize is ignored: the deck is exactly the words, even below 5.
+    expect(room.roundSize).toBe(3);
+    expect(room.customWords).toEqual(words);
+    expect(room.includeDbItems).toBe(false);
+
+    const ws = await openSocket('TESTAG');
+    const reader = wsMessages(ws);
+    send(ws, { type: 'join', sessionId: 'sess-a', name: 'Solo' });
+    await reader.until('state');
+    send(ws, { type: 'start' });
+    const deck = (await reader.until('deck')).cards as DeckCard[];
+    expect(deck.map((c) => c.label).sort()).toEqual([...words].sort());
+    for (const card of deck) {
+      expect(card.id).toBeLessThan(0);
+      expect(card.imageUrl).toBeNull();
+      expect(card.categoryKeys).toEqual([]);
+      expect(card.votesLeft).toBe(0);
+      expect(card.votesRight).toBe(0);
+    }
+    // Synthetic ids stay unique (React keys on the client).
+    expect(new Set(deck.map((c) => c.id)).size).toBe(deck.length);
+    ws.close();
+  });
+
+  it('mixes custom words with a random DB hand when asked', async () => {
+    const res = await createRoom('TESTAH', {
+      customWords: ['pizza', 'ananas'],
+      includeDbItems: true,
+      roundSize: 5,
+    });
+    const { room } = (await res.json()) as { room: RoomState };
+    // 2 words + 5 DB items (seed has 6 approved).
+    expect(room.roundSize).toBe(7);
+  });
+
+  it('custom words survive an over-filtered (empty) DB draw', async () => {
+    await env.DB.prepare(`UPDATE items SET status = 'pending'`).run();
+    const res = await createRoom('TESTAJ', {
+      customWords: ['pizza'],
+      includeDbItems: true,
+    });
+    expect(res.status).toBe(200);
+    const { room } = (await res.json()) as { room: RoomState };
+    expect(room.roundSize).toBe(1);
   });
 });
 
@@ -221,6 +277,54 @@ describe('Room DO — websocket lifecycle (batch)', () => {
     // Seed: culture = {3,4,5}; the fresh hand is items 1, 2, 6 only.
     expect(fresh.map((c) => c.id).sort()).toEqual([1, 2, 6]);
     expect(fresh.every((c) => !c.categoryKeys.includes('culture'))).toBe(true);
+    ws.close();
+  });
+
+  it('restart keeps stored custom words, or replaces them when sent', async () => {
+    await createRoom('TESTBI', {
+      mode: 'live',
+      customWords: ['pizza', 'ananas'],
+      includeDbItems: false,
+    });
+    const ws = await openSocket('TESTBI');
+    const reader = wsMessages(ws);
+    send(ws, { type: 'join', sessionId: 'sess-a', name: 'Solo' });
+    await reader.until('state');
+    send(ws, { type: 'start' });
+    const deck = (await reader.until('deck')).cards as DeckCard[];
+    expect(deck).toHaveLength(2);
+    for (let i = 0; i < deck.length; i++) {
+      send(ws, { type: 'vote', cardIndex: i, side: 'left' });
+    }
+    let state = (await reader.until('state')).room;
+    while (state.phase !== 'results') state = (await reader.until('state')).room;
+
+    // Omitted customWords: the stored list is dealt again.
+    send(ws, { type: 'restart' });
+    state = (await reader.until('state')).room;
+    expect(state.customWords).toEqual(['pizza', 'ananas']);
+    const again = (await reader.until('deck')).cards as DeckCard[];
+    expect(again.map((c) => c.label).sort()).toEqual(['ananas', 'pizza']);
+
+    for (let i = 0; i < again.length; i++) {
+      send(ws, { type: 'vote', cardIndex: i, side: 'right' });
+    }
+    state = (await reader.until('state')).room;
+    while (state.phase !== 'results') state = (await reader.until('state')).room;
+
+    // Explicit customWords replace the stored list; DB items mix back in.
+    send(ws, {
+      type: 'restart',
+      customWords: ['kebab'],
+      includeDbItems: true,
+      roundSize: 5,
+    });
+    state = (await reader.until('state')).room;
+    expect(state.customWords).toEqual(['kebab']);
+    expect(state.includeDbItems).toBe(true);
+    const mixed = (await reader.until('deck')).cards as DeckCard[];
+    expect(mixed).toHaveLength(6); // 1 word + 5 DB items
+    expect(mixed.some((c) => c.label === 'kebab' && c.id < 0)).toBe(true);
     ws.close();
   });
 

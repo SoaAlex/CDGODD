@@ -106,6 +106,8 @@ export function createRoom(
   categoryKeys: string[] = [],
   categoryMatch: 'any' | 'all' = 'any',
   excludeKeys: string[] = [],
+  customWords: string[] = [],
+  includeDbItems = true,
 ): Promise<CreateRoomResponse> {
   return request<CreateRoomResponse>('/rooms', {
     method: 'POST',
@@ -115,6 +117,8 @@ export function createRoom(
       categoryKeys,
       categoryMatch,
       excludeKeys,
+      customWords,
+      includeDbItems,
     }),
   });
 }

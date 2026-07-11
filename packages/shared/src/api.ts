@@ -70,6 +70,8 @@ export type RoomClientMessage =
       categoryKeys?: string[];
       categoryMatch?: 'any' | 'all';
       excludeKeys?: string[];
+      customWords?: string[];
+      includeDbItems?: boolean;
     };
 
 /** WebSocket messages: room -> client */

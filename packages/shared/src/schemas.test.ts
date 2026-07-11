@@ -166,6 +166,8 @@ describe('createRoomSchema', () => {
       categoryKeys: [],
       categoryMatch: 'any',
       excludeKeys: [],
+      customWords: [],
+      includeDbItems: true,
     });
   });
 
@@ -179,6 +181,22 @@ describe('createRoomSchema', () => {
     expect(createRoomSchema.parse({ mode: 'live' }).mode).toBe('live');
     expect(createRoomSchema.safeParse({ mode: 'solo' }).success).toBe(false);
     expect(createRoomSchema.safeParse({ categoryKeys: ['Bad!'] }).success).toBe(false);
+  });
+
+  it('trims customWords, bounds length and count', () => {
+    expect(createRoomSchema.parse({ customWords: [' pizza '] }).customWords).toEqual([
+      'pizza',
+    ]);
+    expect(createRoomSchema.safeParse({ customWords: [''] }).success).toBe(false);
+    expect(
+      createRoomSchema.safeParse({ customWords: ['a'.repeat(81)] }).success,
+    ).toBe(false);
+    expect(
+      createRoomSchema.safeParse({
+        customWords: Array.from({ length: 51 }, (_, i) => `mot${i}`),
+      }).success,
+    ).toBe(false);
+    expect(createRoomSchema.parse({ includeDbItems: false }).includeDbItems).toBe(false);
   });
 
   it('validates excludeKeys like categoryKeys', () => {

@@ -39,3 +39,31 @@ export function normalizeLabel(label: string): string {
   }
   return s;
 }
+
+/** Hard cap on custom words per multiplayer room. */
+export const MAX_CUSTOM_WORDS = 50;
+
+/** Longest custom word/phrase accepted (same cap as submitted item labels). */
+export const MAX_CUSTOM_WORD_LENGTH = 80;
+
+/**
+ * Parse the host's free-text custom list (comma- or newline-separated) into
+ * clean words: trimmed, empties dropped, overlong entries truncated,
+ * duplicates removed (first occurrence's casing wins, compared via
+ * normalizeLabel so "Le Quinoa" and "quinoa" collide), capped at
+ * MAX_CUSTOM_WORDS.
+ */
+export function parseCustomWords(text: string): string[] {
+  const words: string[] = [];
+  const seen = new Set<string>();
+  for (const part of text.split(/[,\n]/)) {
+    const word = part.trim().slice(0, MAX_CUSTOM_WORD_LENGTH).trim();
+    if (!word) continue;
+    const key = normalizeLabel(word);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    words.push(word);
+    if (words.length >= MAX_CUSTOM_WORDS) break;
+  }
+  return words;
+}

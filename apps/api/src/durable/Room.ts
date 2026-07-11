@@ -22,6 +22,10 @@ interface RoomConfig {
   categoryMatch?: CategoryMatch;
   /** Categories never dealt from; absent (pre-existing rooms) = none. */
   excludeKeys?: string[];
+  /** Host-provided words dealt as image-less cards; absent = DB-only. */
+  customWords?: string[];
+  /** With customWords: mix in random DB items too; absent = true. */
+  includeDbItems?: boolean;
 }
 
 const CATEGORY_KEY_RE = /^[a-z0-9-]{1,50}$/;
@@ -32,6 +36,27 @@ function sanitizeCategoryKeys(keys: unknown): string[] {
   return keys
     .filter((k): k is string => typeof k === 'string' && CATEGORY_KEY_RE.test(k))
     .slice(0, 20);
+}
+
+/** Keep only non-empty custom words, capped (defense in depth, like above). */
+function sanitizeCustomWords(words: unknown): string[] {
+  if (!Array.isArray(words)) return [];
+  return words
+    .filter((w): w is string => typeof w === 'string')
+    .map((w) => w.trim().slice(0, 80).trim())
+    .filter(Boolean)
+    .slice(0, 50);
+}
+
+/** In-place Fisher-Yates so custom words don't cluster before DB cards. */
+function shuffle<T>(cards: T[]): T[] {
+  for (let i = cards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const a = cards[i] as T;
+    cards[i] = cards[j] as T;
+    cards[j] = a;
+  }
+  return cards;
 }
 
 /**
@@ -90,6 +115,8 @@ export class Room implements DurableObject {
       categoryKeys: this.config?.categoryKeys ?? [],
       categoryMatch: this.config?.categoryMatch ?? 'any',
       excludeKeys: this.config?.excludeKeys ?? [],
+      customWords: this.config?.customWords ?? [],
+      includeDbItems: this.config?.includeDbItems ?? true,
       playerCount: sessions.size,
       players,
       currentCardIndex: this.currentCardIndex,
@@ -103,7 +130,7 @@ export class Room implements DurableObject {
     const url = new URL(request.url);
 
     if (url.pathname.endsWith('/create') && request.method === 'POST') {
-      return this.create(url);
+      return this.create(request);
     }
 
     if (!this.config) {
@@ -119,41 +146,87 @@ export class Room implements DurableObject {
     return Response.json({ room: this.state });
   }
 
-  private async create(url: URL): Promise<Response> {
+  private async create(request: Request): Promise<Response> {
     if (this.config) {
       return Response.json({ error: 'room already exists' }, { status: 409 });
     }
-    const code = url.searchParams.get('code') ?? '';
-    const mode = (url.searchParams.get('mode') === 'live' ? 'live' : 'batch') as RoomMode;
-    const roundSize = Math.min(
-      Math.max(Number(url.searchParams.get('roundSize')) || 10, 5),
-      50,
-    );
-    const categoryKeys = sanitizeCategoryKeys(
-      (url.searchParams.get('categories') ?? '').split(',').filter(Boolean),
-    );
-    const categoryMatch: CategoryMatch =
-      url.searchParams.get('match') === 'all' ? 'all' : 'any';
-    const excludeKeys = sanitizeCategoryKeys(
-      (url.searchParams.get('exclude') ?? '').split(',').filter(Boolean),
-    );
+    // The API worker validated the body against createRoomSchema; everything
+    // below is defense in depth against a stale or hand-rolled caller.
+    const body = (await request.json().catch(() => ({}))) as Record<
+      string,
+      unknown
+    >;
+    const code = typeof body.code === 'string' ? body.code : '';
+    const mode: RoomMode = body.mode === 'live' ? 'live' : 'batch';
+    const roundSize = Math.min(Math.max(Number(body.roundSize) || 10, 5), 50);
+    const categoryKeys = sanitizeCategoryKeys(body.categoryKeys);
+    const categoryMatch: CategoryMatch = body.categoryMatch === 'all' ? 'all' : 'any';
+    const excludeKeys = sanitizeCategoryKeys(body.excludeKeys);
+    const customWords = sanitizeCustomWords(body.customWords);
+    const includeDbItems = body.includeDbItems !== false;
 
-    const cards = await this.dealCards(
+    const cards = await this.buildDeck(
       roundSize,
       categoryKeys,
       categoryMatch,
       excludeKeys,
+      customWords,
+      includeDbItems,
     );
     if (cards.length === 0) {
       return Response.json({ error: 'no items available' }, { status: 503 });
     }
 
-    this.config = { code, mode, cards, categoryKeys, categoryMatch, excludeKeys };
+    this.config = {
+      code,
+      mode,
+      cards,
+      categoryKeys,
+      categoryMatch,
+      excludeKeys,
+      customWords,
+      includeDbItems,
+    };
     await this.ctx.storage.put('config', this.config);
     // Rooms are ephemeral: self-destruct after 24h so codes can be reused.
     await this.ctx.storage.setAlarm(Date.now() + 24 * 60 * 60 * 1000);
 
     return Response.json({ room: this.state });
+  }
+
+  /**
+   * Assemble a round: the host's custom words as image-less cards (synthetic
+   * negative ids so React keys never collide with D1 ids), plus a random DB
+   * hand unless the host opted out. Custom-only rounds ignore roundSize; a
+   * mixed round survives an over-filtered (empty) DB draw.
+   */
+  private async buildDeck(
+    roundSize: number,
+    categoryKeys: string[],
+    categoryMatch: CategoryMatch,
+    excludeKeys: string[],
+    customWords: string[],
+    includeDbItems: boolean,
+  ): Promise<DeckCard[]> {
+    const customCards: DeckCard[] = customWords.map((label, i) => ({
+      id: -(i + 1),
+      label,
+      categoryKeys: [],
+      imageUrl: null,
+      imageAttribution: null,
+      votesLeft: 0,
+      votesRight: 0,
+    }));
+    if (customWords.length > 0 && !includeDbItems) return shuffle(customCards);
+    const dbCards = await this.dealCards(
+      roundSize,
+      categoryKeys,
+      categoryMatch,
+      excludeKeys,
+    );
+    return customCards.length > 0
+      ? shuffle([...customCards, ...dbCards])
+      : dbCards;
   }
 
   /** Draw a fresh random hand of approved cards from D1. */
@@ -388,12 +461,22 @@ export class Room implements DurableObject {
           msg.excludeKeys !== undefined
             ? sanitizeCategoryKeys(msg.excludeKeys)
             : (this.config.excludeKeys ?? []);
+        const customWords =
+          msg.customWords !== undefined
+            ? sanitizeCustomWords(msg.customWords)
+            : (this.config.customWords ?? []);
+        const includeDbItems =
+          typeof msg.includeDbItems === 'boolean'
+            ? msg.includeDbItems
+            : (this.config.includeDbItems ?? true);
 
-        const cards = await this.dealCards(
+        const cards = await this.buildDeck(
           roundSize,
           categoryKeys,
           categoryMatch,
           excludeKeys,
+          customWords,
+          includeDbItems,
         );
         // Guard against a duplicate restart racing across the await.
         if (this.phase !== 'results') return;
@@ -408,6 +491,8 @@ export class Room implements DurableObject {
           categoryKeys,
           categoryMatch,
           excludeKeys,
+          customWords,
+          includeDbItems,
         };
         await this.ctx.storage.put('config', this.config);
 

@@ -80,6 +80,10 @@ export interface RoomState {
   categoryMatch: 'any' | 'all';
   /** Categories excluded from the deal; items in any of them are dropped. */
   excludeKeys: string[];
+  /** Host-provided words dealt as image-less cards; empty = DB-only round. */
+  customWords: string[];
+  /** With customWords: whether random DB items were mixed into the deck. */
+  includeDbItems: boolean;
   playerCount: number;
   /** Currently connected players with their chosen nicknames. */
   players: RoomPlayer[];

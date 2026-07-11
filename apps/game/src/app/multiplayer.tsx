@@ -8,6 +8,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { parseCustomWords } from '@cdgodd/shared';
 import { useCategoryFilter } from '@/hooks/use-category-filter';
 import { createRoom } from '@/lib/api';
 import { useT } from '@/lib/i18n';
@@ -28,6 +29,10 @@ export default function MultiplayerScreen() {
     setMode: setFilterMode,
     setMatchAll: setCategoryMatchAll,
   } = useCategoryFilter();
+  // Host's custom word list (comma-separated free text) and whether random
+  // DB items are mixed in with it (off by default: the list plays alone).
+  const [customWordsText, setCustomWordsText] = useState('');
+  const [includeDbItems, setIncludeDbItems] = useState(false);
   const [nickname, setNickname] = useState('');
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
@@ -41,12 +46,17 @@ export default function MultiplayerScreen() {
     setError(null);
     try {
       const excluding = filterMode === 'exclude';
+      const customWords = parseCustomWords(customWordsText);
       const { room } = await createRoom(
         mode,
         roundSize,
         excluding ? [] : categoryKeys,
         categoryMatchAll ? 'all' : 'any',
         excluding ? categoryKeys : [],
+        customWords,
+        // Only meaningful alongside custom words; a wordless room always
+        // deals from the DB.
+        customWords.length === 0 || includeDbItems,
       );
       router.push(`/room/${room.code}${nameParam}` as never);
     } catch {
@@ -92,11 +102,15 @@ export default function MultiplayerScreen() {
             categoryKeys={categoryKeys}
             categoryMatchAll={categoryMatchAll}
             categoryFilterMode={filterMode}
+            customWordsText={customWordsText}
+            includeDbItems={includeDbItems}
             onModeChange={setMode}
             onRoundSizeChange={setRoundSize}
             onCategoryKeysChange={setCategoryKeys}
             onCategoryMatchAllChange={setCategoryMatchAll}
             onCategoryFilterModeChange={setFilterMode}
+            onCustomWordsTextChange={setCustomWordsText}
+            onIncludeDbItemsChange={setIncludeDbItems}
           />
 
           <Pressable

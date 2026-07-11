@@ -123,6 +123,8 @@ export function useRoom(code: string, name: string | null) {
       categoryKeys: string[];
       categoryMatch: 'any' | 'all';
       excludeKeys: string[];
+      customWords: string[];
+      includeDbItems: boolean;
     }) => send({ type: 'restart', ...settings }),
     [send],
   );

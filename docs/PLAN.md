@@ -178,7 +178,9 @@ All write endpoints carry a **Cloudflare Turnstile token** (privacy-friendly, no
 - `POST /items/:id/report` `{ reason, turnstileToken }` → increments report_count, inserts report row
 
 **Multiplayer (rooms):**
-- `POST /rooms` → create room, returns short code (routes to a Durable Object)
+- `POST /rooms` → create room, returns short code (routes to a Durable Object).
+  Optional `customWords[]`: host-provided words dealt as image-less cards,
+  alone or mixed with random DB items (`includeDbItems`)
 - `GET  /rooms/:code` → room meta / status
 - `WS   /rooms/:code/ws` → join, receive cards, submit votes, get reveals
 

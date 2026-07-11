@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { normalizeLabel } from './text';
+import { MAX_CUSTOM_WORDS, normalizeLabel, parseCustomWords } from './text';
 
 describe('normalizeLabel', () => {
   it('lowercases and drops one leading determiner', () => {
@@ -46,5 +46,37 @@ describe('normalizeLabel', () => {
 
   it('strips only one determiner', () => {
     expect(normalizeLabel('le le vélo')).toBe('le velo');
+  });
+});
+
+describe('parseCustomWords', () => {
+  it('splits on commas and newlines, trims, drops empties', () => {
+    expect(parseCustomWords(' pizza , ananas ,\n télétravail ,, ')).toEqual([
+      'pizza',
+      'ananas',
+      'télétravail',
+    ]);
+  });
+
+  it('returns [] for blank input', () => {
+    expect(parseCustomWords('')).toEqual([]);
+    expect(parseCustomWords(' , ,\n')).toEqual([]);
+  });
+
+  it('dedupes via normalizeLabel, first casing wins', () => {
+    expect(parseCustomWords('Le Quinoa, quinoa, QUINOA, riz')).toEqual([
+      'Le Quinoa',
+      'riz',
+    ]);
+  });
+
+  it('truncates overlong entries to 80 chars', () => {
+    const long = 'a'.repeat(120);
+    expect(parseCustomWords(long)).toEqual(['a'.repeat(80)]);
+  });
+
+  it('caps the list at MAX_CUSTOM_WORDS', () => {
+    const text = Array.from({ length: 60 }, (_, i) => `mot${i}`).join(',');
+    expect(parseCustomWords(text)).toHaveLength(MAX_CUSTOM_WORDS);
   });
 });

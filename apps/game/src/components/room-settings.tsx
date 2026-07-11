@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, StyleSheet, View } from 'react-native';
-import type { RoomMode } from '@cdgodd/shared';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { parseCustomWords, type RoomMode } from '@cdgodd/shared';
 import { CategoryFilter, type FilterMode } from '@/components/category-filter';
 import { ThemedText } from '@/components/themed-text';
 import { RIGHT_COLOR, Spacing } from '@/constants/theme';
@@ -21,11 +21,15 @@ export function RoomSettings({
   categoryKeys,
   categoryMatchAll,
   categoryFilterMode,
+  customWordsText,
+  includeDbItems,
   onModeChange,
   onRoundSizeChange,
   onCategoryKeysChange,
   onCategoryMatchAllChange,
   onCategoryFilterModeChange,
+  onCustomWordsTextChange,
+  onIncludeDbItemsChange,
 }: {
   mode: RoomMode;
   roundSize: number;
@@ -34,14 +38,23 @@ export function RoomSettings({
   categoryMatchAll: boolean;
   /** Keep only the selected categories, or drop them. */
   categoryFilterMode: FilterMode;
+  /** Raw comma-separated custom word list as typed by the host. */
+  customWordsText: string;
+  /** With custom words: also deal `roundSize` random DB items. */
+  includeDbItems: boolean;
   onModeChange: (mode: RoomMode) => void;
   onRoundSizeChange: (roundSize: number) => void;
   onCategoryKeysChange: (keys: string[]) => void;
   onCategoryMatchAllChange: (matchAll: boolean) => void;
   onCategoryFilterModeChange: (mode: FilterMode) => void;
+  onCustomWordsTextChange: (text: string) => void;
+  onIncludeDbItemsChange: (include: boolean) => void;
 }) {
   const { t } = useT();
   const theme = useTheme();
+  const customWordCount = parseCustomWords(customWordsText).length;
+  // Custom-only round: the deck is exactly the words, the stepper is a no-op.
+  const showStepper = customWordCount === 0 || includeDbItems;
   const chip = (selected: boolean) => ({
     backgroundColor: selected ? RIGHT_COLOR : theme.backgroundElement,
   });
@@ -71,7 +84,45 @@ export function RoomSettings({
         ))}
       </View>
 
+      {/* Host's own words, dealt as image-less cards. */}
+      <ThemedText type="small" themeColor="textSecondary">
+        {t('multiplayer.customWords')}
+      </ThemedText>
+      <TextInput
+        testID="custom-words"
+        value={customWordsText}
+        onChangeText={onCustomWordsTextChange}
+        placeholder={t('multiplayer.customWordsPlaceholder')}
+        placeholderTextColor={theme.textSecondaryOnSurface}
+        autoCorrect={false}
+        multiline
+        style={[
+          styles.wordsInput,
+          { backgroundColor: theme.surface, color: theme.textOnSurface },
+        ]}
+      />
+      {customWordCount > 0 && (
+        <View style={styles.chipRow}>
+          <ThemedText type="small" themeColor="textSecondary">
+            {t('multiplayer.customWordsCount').replace(
+              '{count}',
+              String(customWordCount),
+            )}
+          </ThemedText>
+          <Pressable
+            testID="mix-db-items"
+            onPress={() => onIncludeDbItemsChange(!includeDbItems)}
+            style={[styles.chip, chip(includeDbItems)]}
+          >
+            <ThemedText type="small" style={chipText(includeDbItems)}>
+              {t('multiplayer.mixDbItems')}
+            </ThemedText>
+          </Pressable>
+        </View>
+      )}
+
       {/* 5-50 cards, ±5 per tap. */}
+      {showStepper && (
       <View style={styles.stepperRow}>
         <Pressable
           testID="size-minus"
@@ -101,6 +152,7 @@ export function RoomSettings({
           <Ionicons name="add" size={20} color={theme.text} />
         </Pressable>
       </View>
+      )}
 
       <ThemedText type="small" themeColor="textSecondary">
         {t('filter.categoriesLabel')}
@@ -141,5 +193,13 @@ const styles = StyleSheet.create({
   stepperValue: {
     minWidth: 96,
     textAlign: 'center',
+  },
+  wordsInput: {
+    borderRadius: Spacing.three,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
+    fontSize: 16,
+    minHeight: 64,
+    textAlignVertical: 'top',
   },
 });
