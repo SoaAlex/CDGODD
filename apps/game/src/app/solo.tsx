@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { CategoryFilter, type FilterMode } from '@/components/category-filter';
+import { CategoryFilter } from '@/components/category-filter';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { SwipeDeck, type SwipeDeckHandle } from '@/components/swipe-deck';
@@ -17,6 +17,7 @@ import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/t
 import { AdRails } from '@/ads/ad-rails';
 import { AdSlot } from '@/ads/ad-slot';
 import { useInterstitial } from '@/ads/use-interstitial';
+import { useCategoryFilter } from '@/hooks/use-category-filter';
 import { useDeck } from '@/hooks/use-deck';
 import { useTheme } from '@/hooks/use-theme';
 import { fetchTallies, reportItem } from '@/lib/api';
@@ -26,11 +27,17 @@ import type { Side, VoteTally } from '@cdgodd/shared';
 
 export default function SoloScreen() {
   const { t } = useT();
-  // Category filter: empty = all categories. Session-only by design.
-  // In exclude mode the selected keys are dropped instead of kept.
-  const [categoryKeys, setCategoryKeys] = useState<string[]>([]);
-  const [matchAll, setMatchAll] = useState(false);
-  const [filterMode, setFilterMode] = useState<FilterMode>('include');
+  // Category filter: empty = all categories. Session-only by design, and
+  // seeded to exclude the sensitive categories (NSFW, Programmation) until the
+  // player changes it. In exclude mode the selected keys are dropped, not kept.
+  const {
+    keys: categoryKeys,
+    mode: filterMode,
+    matchAll,
+    setKeys: setCategoryKeys,
+    setMode: setFilterMode,
+    setMatchAll,
+  } = useCategoryFilter();
   const excluding = filterMode === 'exclude';
   const {
     cards,

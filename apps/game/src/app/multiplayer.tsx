@@ -3,12 +3,12 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import type { FilterMode } from '@/components/category-filter';
 import { RoomSettings } from '@/components/room-settings';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { useCategoryFilter } from '@/hooks/use-category-filter';
 import { createRoom } from '@/lib/api';
 import { useT } from '@/lib/i18n';
 
@@ -18,10 +18,16 @@ export default function MultiplayerScreen() {
   const router = useRouter();
   const [mode, setMode] = useState<'batch' | 'live'>('batch');
   const [roundSize, setRoundSize] = useState<number>(10);
-  const [categoryKeys, setCategoryKeys] = useState<string[]>([]);
-  const [categoryMatchAll, setCategoryMatchAll] = useState(false);
-  // Include mode keeps the selected categories; exclude mode drops them.
-  const [filterMode, setFilterMode] = useState<FilterMode>('include');
+  // Seeded to exclude the sensitive categories (NSFW, Programmation) until the
+  // host changes it. Include mode keeps the selected categories; exclude drops.
+  const {
+    keys: categoryKeys,
+    mode: filterMode,
+    matchAll: categoryMatchAll,
+    setKeys: setCategoryKeys,
+    setMode: setFilterMode,
+    setMatchAll: setCategoryMatchAll,
+  } = useCategoryFilter();
   const [nickname, setNickname] = useState('');
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
