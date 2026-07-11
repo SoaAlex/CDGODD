@@ -73,6 +73,7 @@ export default function RoomScreen() {
     done,
     start,
     next,
+    prev,
     finish,
     restart,
     vote,
@@ -246,6 +247,7 @@ export default function RoomScreen() {
             myVotes={myVotes}
             isHost={isHost}
             onNext={next}
+            onPrev={prev}
           />
         </SafeAreaView>
       </ThemedView>

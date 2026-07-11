@@ -1,13 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, {
   Easing,
   FadeInUp,
   FadeOut,
+  SlideInLeft,
   SlideInRight,
   SlideOutLeft,
+  SlideOutRight,
   interpolate,
   useAnimatedStyle,
   useSharedValue,
@@ -45,6 +47,7 @@ interface Props {
   myVotes: Side[];
   isHost: boolean;
   onNext: () => void;
+  onPrev: () => void;
 }
 
 /**
@@ -58,11 +61,20 @@ export function ResultReveal({
   myVotes,
   isHost,
   onNext,
+  onPrev,
 }: Props) {
   const { t } = useT();
   // Splash only when the reveal starts from the top — a late joiner lands
   // straight on the card the room is already debating.
   const [splashing, setSplashing] = useState(() => revealIndex === 0);
+
+  // Which way the last host step moved, so the card slides in from the side
+  // it's coming from (back = from the left, forward = from the right).
+  const prevRevealIndex = useRef(revealIndex);
+  const goingBack = revealIndex < prevRevealIndex.current;
+  useEffect(() => {
+    prevRevealIndex.current = revealIndex;
+  }, [revealIndex]);
 
   useEffect(() => {
     if (!splashing) return;
@@ -94,8 +106,11 @@ export function ResultReveal({
                 and springs the next one in. */}
             <Animated.View
               key={revealIndex}
-              entering={SlideInRight.springify().damping(18).stiffness(160)}
-              exiting={SlideOutLeft.duration(200)}
+              entering={(goingBack ? SlideInLeft : SlideInRight)
+                .springify()
+                .damping(18)
+                .stiffness(160)}
+              exiting={(goingBack ? SlideOutRight : SlideOutLeft).duration(200)}
               style={styles.cardSlot}
             >
               <RevealCard result={result} myVote={myVotes[revealIndex]} />
@@ -103,21 +118,39 @@ export function ResultReveal({
           </View>
           <View style={styles.footer}>
             {isHost ? (
-              <Pressable
-                testID="next-card"
-                onPress={onNext}
-                style={({ pressed }) => [
-                  styles.nextButton,
-                  { backgroundColor: RIGHT_COLOR, opacity: pressed ? 0.8 : 1 },
-                ]}
-              >
-                <ThemedText type="subtitle" style={styles.nextText}>
-                  {revealIndex === results.length - 1
-                    ? t('multiplayer.showSummary')
-                    : t('multiplayer.nextCard')}
-                </ThemedText>
-                <Ionicons name="arrow-forward" size={22} color="#fff" />
-              </Pressable>
+              <View style={styles.hostControls}>
+                {revealIndex > 0 && (
+                  <Pressable
+                    testID="prev-card"
+                    onPress={onPrev}
+                    accessibilityLabel={t('multiplayer.previousCard')}
+                    style={({ pressed }) => [
+                      styles.prevButton,
+                      { opacity: pressed ? 0.6 : 1 },
+                    ]}
+                  >
+                    <Ionicons name="arrow-back" size={22} color="#fff" />
+                    <ThemedText type="subtitle" style={styles.prevText}>
+                      {t('multiplayer.previousCard')}
+                    </ThemedText>
+                  </Pressable>
+                )}
+                <Pressable
+                  testID="next-card"
+                  onPress={onNext}
+                  style={({ pressed }) => [
+                    styles.nextButton,
+                    { backgroundColor: RIGHT_COLOR, opacity: pressed ? 0.8 : 1 },
+                  ]}
+                >
+                  <ThemedText type="subtitle" style={styles.nextText}>
+                    {revealIndex === results.length - 1
+                      ? t('multiplayer.showSummary')
+                      : t('multiplayer.nextCard')}
+                  </ThemedText>
+                  <Ionicons name="arrow-forward" size={22} color="#fff" />
+                </Pressable>
+              </View>
             ) : (
               <ThemedText themeColor="textSecondary" style={styles.counter}>
                 {t('multiplayer.waitingHostReveal')}
@@ -453,17 +486,38 @@ const styles = StyleSheet.create({
     minHeight: 56,
     justifyContent: 'center',
   },
+  hostControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    gap: Spacing.two,
+  },
   nextButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.two,
-    alignSelf: 'center',
     paddingHorizontal: Spacing.six,
     paddingVertical: Spacing.three,
     borderRadius: Spacing.three,
   },
   nextText: {
+    color: '#fff',
+    fontSize: 20,
+    lineHeight: 28,
+  },
+  prevButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.two,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.three,
+    borderRadius: Spacing.three,
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+  },
+  prevText: {
     color: '#fff',
     fontSize: 20,
     lineHeight: 28,

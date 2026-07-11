@@ -60,6 +60,11 @@ export type RoomClientMessage =
    */
   | { type: 'next' }
   /**
+   * Host only, batch mode, from the results phase: step the shared
+   * card-by-card reveal back to the previous card.
+   */
+  | { type: 'prev' }
+  /**
    * Host only, from the results phase: deal fresh cards and replay.
    * New settings are optional; omitted fields keep the room's current ones.
    */

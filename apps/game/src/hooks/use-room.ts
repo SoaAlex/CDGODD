@@ -113,6 +113,9 @@ export function useRoom(code: string, name: string | null) {
   /** Host, batch results: advance the shared card-by-card reveal. */
   const next = useCallback(() => send({ type: 'next' }), [send]);
 
+  /** Host, batch results: step the shared reveal back to the previous card. */
+  const prev = useCallback(() => send({ type: 'prev' }), [send]);
+
   /** Host, while playing: end the round now without waiting for everyone. */
   const finish = useCallback(() => send({ type: 'finish' }), [send]);
 
@@ -163,6 +166,7 @@ export function useRoom(code: string, name: string | null) {
     done,
     start,
     next,
+    prev,
     finish,
     restart,
     vote,

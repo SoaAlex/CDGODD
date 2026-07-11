@@ -432,6 +432,19 @@ export class Room implements DurableObject {
         break;
       }
 
+      case 'prev': {
+        // Host walks the batch-mode reveal back to re-debate an earlier card.
+        if (this.players.get(ws) !== this.hostId) {
+          this.send(ws, { type: 'error', message: 'host only' });
+          return;
+        }
+        if (this.phase !== 'results' || this.config?.mode !== 'batch') return;
+        if (this.revealIndex <= 0) return;
+        this.revealIndex -= 1;
+        this.broadcast({ type: 'state', room: this.state });
+        break;
+      }
+
       case 'restart': {
         // Room stays open after a round: from the results screen the host
         // can relaunch with the same players, a fresh random hand and,

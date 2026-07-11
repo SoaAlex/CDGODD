@@ -59,6 +59,7 @@
     "waitingHost": "En attente de l'hôte pour rejouer…",
     "voteResults": "Résultats des votes",
     "nextCard": "Carte suivante",
+    "previousCard": "Précédente",
     "showSummary": "Voir le récap",
     "waitingHostReveal": "L'hôte passe à la carte suivante…"
   },

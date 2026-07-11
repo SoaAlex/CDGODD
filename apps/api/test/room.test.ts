@@ -201,6 +201,20 @@ describe('Room DO — websocket lifecycle (batch)', () => {
     expect((await a.until('state')).room.revealIndex).toBe(1);
     expect((await b.until('state')).room.revealIndex).toBe(1);
 
+    // Guests cannot step the reveal back either.
+    send(wsB, { type: 'prev' });
+    expect((await b.until('error')).message).toBe('host only');
+
+    // Host steps back to re-debate the previous card; the room follows.
+    send(wsA, { type: 'prev' });
+    expect((await a.until('state')).room.revealIndex).toBe(0);
+    expect((await b.until('state')).room.revealIndex).toBe(0);
+    // 'prev' before the first card is a no-op — advance again to continue.
+    send(wsA, { type: 'prev' });
+    send(wsA, { type: 'next' });
+    expect((await a.until('state')).room.revealIndex).toBe(1);
+    expect((await b.until('state')).room.revealIndex).toBe(1);
+
     // A late joiner lands on the card currently being discussed.
     const wsC = await openSocket('TESTBA');
     const c = wsMessages(wsC);
