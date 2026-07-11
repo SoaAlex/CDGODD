@@ -519,6 +519,94 @@ describe('Room DO — websocket lifecycle (batch)', () => {
   });
 });
 
+describe('Room DO — tally persistence', () => {
+  /** Poll items counters until the fire-and-forget reveal batch lands. */
+  async function waitForTotals(left: number, right: number): Promise<void> {
+    for (let attempt = 0; attempt < 50; attempt++) {
+      const row = await env.DB.prepare(
+        `SELECT SUM(votes_left) AS l, SUM(votes_right) AS r FROM items`,
+      ).first<{ l: number; r: number }>();
+      if (row?.l === left && row?.r === right) return;
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    }
+    throw new Error('items counters never reached expected totals');
+  }
+
+  it('folds the round tallies into items counters at reveal', async () => {
+    await createRoom('TESTDA', { mode: 'batch', roundSize: '5' });
+
+    const wsA = await openSocket('TESTDA');
+    const a = wsMessages(wsA);
+    send(wsA, { type: 'join', sessionId: 'sess-a', name: 'Alice' });
+    await a.until('state');
+    const wsB = await openSocket('TESTDA');
+    const b = wsMessages(wsB);
+    send(wsB, { type: 'join', sessionId: 'sess-b', name: 'Bob' });
+    await b.until('state');
+
+    send(wsA, { type: 'start' });
+    const deck = (await a.until('deck')).cards as DeckCard[];
+    await b.until('deck');
+    for (let i = 0; i < 5; i++) {
+      send(wsA, { type: 'vote', cardIndex: i, side: 'left' });
+      send(wsB, { type: 'vote', cardIndex: i, side: 'right' });
+    }
+    await a.until('reveal');
+
+    // 5 of the 6 seeded items were dealt: +1 left and +1 right each.
+    await waitForTotals(5, 5);
+    const dealtIds = deck.map((c) => c.id);
+    const { results } = await env.DB.prepare(
+      `SELECT id, votes_left, votes_right FROM items`,
+    ).all<{ id: number; votes_left: number; votes_right: number }>();
+    for (const row of results) {
+      const dealt = dealtIds.includes(row.id);
+      expect(row.votes_left).toBe(dealt ? 1 : 0);
+      expect(row.votes_right).toBe(dealt ? 1 : 0);
+    }
+
+    wsA.close();
+    wsB.close();
+  });
+
+  it('skips custom-word cards and items unapproved mid-round', async () => {
+    await createRoom('TESTDB', {
+      mode: 'live',
+      roundSize: '5',
+      customWords: ['pizza'],
+      includeDbItems: true,
+    });
+    const ws = await openSocket('TESTDB');
+    const reader = wsMessages(ws);
+    send(ws, { type: 'join', sessionId: 'sess-a', name: 'Solo' });
+    await reader.until('state');
+    send(ws, { type: 'start' });
+    const deck = (await reader.until('deck')).cards as DeckCard[];
+    expect(deck).toHaveLength(6); // 1 word + 5 DB items
+
+    // An admin pulls one dealt item mid-round: its tally must not land.
+    const pulledId = deck.find((c) => c.id > 0)!.id;
+    await env.DB.prepare(`UPDATE items SET status = 'pending' WHERE id = ?1`)
+      .bind(pulledId)
+      .run();
+
+    for (let i = 0; i < deck.length; i++) {
+      send(ws, { type: 'vote', cardIndex: i, side: 'left' });
+    }
+    await reader.until('reveal');
+
+    // 5 dealt DB items minus the pulled one; the custom word writes nothing.
+    await waitForTotals(4, 0);
+    const pulled = await env.DB.prepare(
+      `SELECT votes_left FROM items WHERE id = ?1`,
+    )
+      .bind(pulledId)
+      .first<{ votes_left: number }>();
+    expect(pulled?.votes_left).toBe(0);
+    ws.close();
+  });
+});
+
 describe('Room DO — expiry alarm', () => {
   it('wipes the room and 404s afterwards', async () => {
     await createRoom('TESTCA');

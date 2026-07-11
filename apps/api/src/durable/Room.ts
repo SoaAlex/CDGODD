@@ -70,8 +70,10 @@ function shuffle<T>(cards: T[]): T[] {
  *
  * Vote validity is enforced here — one vote per player per card — which
  * makes multiplayer results immune to external stuffing. Votes live in
- * memory only (room results are ephemeral by design; global item stats
- * come from solo votes).
+ * memory during the round (per-card results are ephemeral); at reveal the
+ * per-card tallies are folded into the global items counters in a single
+ * D1 batch — aggregate only, no `votes` rows, so multiplayer stays
+ * anonymous and cheap (one write per round, not per vote).
  */
 export class Room implements DurableObject {
   private config: RoomConfig | null = null;
@@ -552,6 +554,42 @@ export class Room implements DurableObject {
     this.phase = 'results';
     this.broadcast({ type: 'state', room: this.state });
     this.broadcast(this.revealMessage());
+    // Fire-and-forget: the reveal must not wait on D1, and a failed write
+    // only costs global stats, never the room.
+    void this.persistTallies()?.catch((err) => {
+      console.error('room tally persist failed', err);
+    });
+  }
+
+  /**
+   * Fold the round's tallies into the global items counters — one D1 batch
+   * per round instead of a write per vote. Aggregate only: no `votes` rows,
+   * so multiplayer never collides with the solo per-session dedupe and adds
+   * nothing identifying. In-room dedupe (one vote per player per card)
+   * already happened in memory. Custom-word cards (negative ids) have no D1
+   * row; items unapproved mid-round are skipped by the status guard.
+   * Statements are built synchronously so a concurrent restart can't swap
+   * the deck under the tallies.
+   */
+  private persistTallies(): Promise<unknown> | undefined {
+    const cards = this.config?.cards ?? [];
+    const stmts: D1PreparedStatement[] = [];
+    for (let i = 0; i < cards.length; i++) {
+      const card = cards[i];
+      if (!card || card.id <= 0) continue;
+      const { votesLeft, votesRight } = this.tallyOf(i);
+      if (votesLeft === 0 && votesRight === 0) continue;
+      stmts.push(
+        this.env.DB.prepare(
+          `UPDATE items
+              SET votes_left  = votes_left  + ?2,
+                  votes_right = votes_right + ?3
+            WHERE id = ?1 AND status = 'approved'`,
+        ).bind(card.id, votesLeft, votesRight),
+      );
+    }
+    if (stmts.length === 0) return undefined;
+    return this.env.DB.batch(stmts);
   }
 
   private tallyOf(index: number): { votesLeft: number; votesRight: number } {
