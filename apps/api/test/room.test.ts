@@ -258,6 +258,122 @@ describe('Room DO — websocket lifecycle (batch)', () => {
     wsB.close();
   });
 
+  it('host can end the round early; missing votes simply do not count', async () => {
+    await createRoom('TESTBF', { mode: 'batch', roundSize: '5' });
+
+    const wsA = await openSocket('TESTBF');
+    const a = wsMessages(wsA);
+    send(wsA, { type: 'join', sessionId: 'sess-a', name: 'Alice' });
+    await a.until('state');
+    const wsB = await openSocket('TESTBF');
+    const b = wsMessages(wsB);
+    send(wsB, { type: 'join', sessionId: 'sess-b', name: 'Bob' });
+    await b.until('state');
+
+    send(wsA, { type: 'start' });
+    await a.until('deck');
+    await b.until('deck');
+
+    // Guests cannot end the round.
+    send(wsB, { type: 'finish' });
+    expect((await b.until('error')).message).toBe('host only');
+
+    // Alice finishes, Bob voted a single card; the host ends the round.
+    for (let i = 0; i < 5; i++) {
+      send(wsA, { type: 'vote', cardIndex: i, side: 'left' });
+    }
+    send(wsB, { type: 'vote', cardIndex: 0, side: 'right' });
+    send(wsA, { type: 'finish' });
+
+    let state = (await a.until('state')).room;
+    while (state.phase !== 'results') state = (await a.until('state')).room;
+    const reveal = await a.until('reveal');
+    expect(reveal.results[0]).toMatchObject({ votesLeft: 1, votesRight: 1 });
+    expect(reveal.results[1]).toMatchObject({ votesLeft: 1, votesRight: 0 });
+
+    // A second 'finish' out of the playing phase is a no-op.
+    send(wsA, { type: 'finish' });
+
+    wsA.close();
+    wsB.close();
+  });
+
+  it('hands the room to a remaining player when the host disconnects', async () => {
+    await createRoom('TESTBG', { mode: 'batch', roundSize: '5' });
+
+    const wsA = await openSocket('TESTBG');
+    const a = wsMessages(wsA);
+    send(wsA, { type: 'join', sessionId: 'sess-a', name: 'Alice' });
+    await a.until('state');
+    const wsB = await openSocket('TESTBG');
+    const b = wsMessages(wsB);
+    send(wsB, { type: 'join', sessionId: 'sess-b', name: 'Bob' });
+    let state = (await b.until('state')).room;
+    expect(state.hostId).toBe('sess-a');
+
+    // Host leaves: Bob inherits the room and can start the round.
+    wsA.close();
+    state = (await b.until('state')).room;
+    expect(state.hostId).toBe('sess-b');
+    send(wsB, { type: 'start' });
+    state = (await b.until('state')).room;
+    expect(state.phase).toBe('playing');
+    wsB.close();
+  });
+
+  it('replays a rejoining player their own votes mid-round', async () => {
+    await createRoom('TESTBH', { mode: 'batch', roundSize: '5' });
+
+    const wsA = await openSocket('TESTBH');
+    const a = wsMessages(wsA);
+    send(wsA, { type: 'join', sessionId: 'sess-a', name: 'Alice' });
+    await a.until('state');
+    const wsB = await openSocket('TESTBH');
+    const b = wsMessages(wsB);
+    send(wsB, { type: 'join', sessionId: 'sess-b', name: 'Bob' });
+    await b.until('state');
+
+    send(wsA, { type: 'start' });
+    // A fresh round starts with no votes to replay.
+    const dealt = await b.until('deck');
+    expect(dealt.myVotes).toEqual([null, null, null, null, null]);
+
+    // Bob votes two cards, then drops mid-round.
+    send(wsB, { type: 'vote', cardIndex: 0, side: 'left' });
+    send(wsB, { type: 'vote', cardIndex: 1, side: 'right' });
+    wsB.close();
+    // Skip queued join/start broadcasts until Bob's drop lands.
+    let state = (await a.until('state')).room;
+    while (state.playerCount !== 1) state = (await a.until('state')).room;
+
+    // He reconnects with the same session: same deck, his votes restored.
+    const wsB2 = await openSocket('TESTBH');
+    const b2 = wsMessages(wsB2);
+    send(wsB2, { type: 'join', sessionId: 'sess-b', name: 'Bob' });
+    const rejoin = await b2.until('deck');
+    expect(rejoin.myVotes).toEqual(['left', 'right', null, null, null]);
+    expect((rejoin.cards as DeckCard[]).map((c) => c.id)).toEqual(
+      (dealt.cards as DeckCard[]).map((c) => c.id),
+    );
+
+    // Finishing the round from where he left off still reveals for all.
+    for (let i = 2; i < 5; i++) {
+      send(wsB2, { type: 'vote', cardIndex: i, side: 'right' });
+      send(wsA, { type: 'vote', cardIndex: i, side: 'left' });
+    }
+    send(wsA, { type: 'vote', cardIndex: 0, side: 'left' });
+    send(wsA, { type: 'vote', cardIndex: 1, side: 'left' });
+    state = (await a.until('state')).room;
+    while (state.phase !== 'results') state = (await a.until('state')).room;
+    const reveal = await a.until('reveal');
+    // Card 0: both voted left. Card 1: Bob's pre-drop right + Alice's left.
+    expect(reveal.results[0]).toMatchObject({ votesLeft: 2, votesRight: 0 });
+    expect(reveal.results[1]).toMatchObject({ votesLeft: 1, votesRight: 1 });
+
+    wsA.close();
+    wsB2.close();
+  });
+
   it('ignores duplicate votes from the same player', async () => {
     await createRoom('TESTBB', { mode: 'live', roundSize: '5' });
     const ws = await openSocket('TESTBB');

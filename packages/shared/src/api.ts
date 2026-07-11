@@ -49,6 +49,12 @@ export type RoomClientMessage =
   | { type: 'start' }
   | { type: 'vote'; cardIndex: number; side: Side }
   /**
+   * Host only, while playing: end the round now and reveal the results,
+   * without waiting for the remaining players (their missing votes simply
+   * don't count).
+   */
+  | { type: 'finish' }
+  /**
    * Host only, batch mode, from the results phase: advance the shared
    * card-by-card reveal to the next card.
    */
@@ -69,8 +75,13 @@ export type RoomClientMessage =
 /** WebSocket messages: room -> client */
 export type RoomServerMessage =
   | { type: 'state'; room: RoomState }
-  /** The full round dealt at start; players swipe it at their own pace. */
-  | { type: 'deck'; cards: DeckCard[] }
+  /**
+   * The full round dealt at start; players swipe it at their own pace.
+   * `myVotes` replays the receiving player's own votes (index-aligned with
+   * `cards`, null = not voted yet) so a rejoining player resumes where they
+   * left off instead of re-swiping the whole deck.
+   */
+  | { type: 'deck'; cards: DeckCard[]; myVotes: (Side | null)[] }
   /** Live mode only: running tally of a card the voter just voted on. */
   | { type: 'tally'; cardIndex: number; votesLeft: number; votesRight: number }
   | { type: 'reveal'; results: RoomCardResult[] }

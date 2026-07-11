@@ -68,6 +68,7 @@ export default function RoomScreen() {
     done,
     start,
     next,
+    finish,
     restart,
     vote,
   } = useRoom(code ?? '', name);
@@ -528,6 +529,27 @@ export default function RoomScreen() {
                       </View>
                     ))}
                   </View>
+                )}
+                {/* Host can cut the wait short; missing votes don't count. */}
+                {isHost && stillSwiping.length > 0 && (
+                  <Pressable
+                    testID="end-round"
+                    onPress={finish}
+                    style={({ pressed }) => [
+                      styles.startButton,
+                      {
+                        backgroundColor: RIGHT_COLOR,
+                        opacity: pressed ? 0.8 : 1,
+                      },
+                    ]}
+                  >
+                    <View style={styles.buttonContent}>
+                      <Ionicons name="flag" size={18} color="#fff" />
+                      <ThemedText type="subtitle" style={{ color: '#fff' }}>
+                        {t('multiplayer.endRound')}
+                      </ThemedText>
+                    </View>
+                  </Pressable>
                 )}
               </View>
             )}

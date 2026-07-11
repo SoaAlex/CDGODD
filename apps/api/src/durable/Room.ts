@@ -214,6 +214,7 @@ export class Room implements DurableObject {
     this.config = null;
     this.phase = 'lobby';
     this.revealIndex = 0;
+    this.hostId = null;
     for (const ws of this.players.keys()) ws.close(1000, 'room expired');
     this.players.clear();
     this.names.clear();
@@ -237,6 +238,13 @@ export class Room implements DurableObject {
     const drop = () => {
       const wasPlayer = this.players.delete(ws);
       if (!wasPlayer) return;
+      // Host gone (no other socket for their session): hand the room to a
+      // remaining player so it can still be started, paced and replayed.
+      // An empty room resets to null; the next joiner becomes host.
+      const sessions = new Set(this.players.values());
+      if (this.hostId !== null && !sessions.has(this.hostId)) {
+        this.hostId = sessions.values().next().value ?? null;
+      }
       this.broadcast({ type: 'state', room: this.state });
       // Someone leaving may be the last vote we were waiting on.
       if (this.phase === 'playing') this.maybeReveal();
@@ -260,10 +268,10 @@ export class Room implements DurableObject {
         this.players.set(ws, msg.sessionId);
         this.hostId ??= msg.sessionId;
         this.broadcast({ type: 'state', room: this.state });
-        // Late/rejoining player during a round: hand them the whole deck so
-        // they can swipe it at their own pace (already-cast votes are
-        // ignored server-side, so re-swiping is harmless).
-        if (this.phase === 'playing') this.sendDeck(ws);
+        // Late/rejoining player during a round: hand them the whole deck
+        // along with their own past votes, so they resume right where they
+        // left off (already-cast votes are ignored server-side anyway).
+        if (this.phase === 'playing') this.sendDeck(ws, msg.sessionId);
         if (this.phase === 'results') this.send(ws, this.revealMessage());
         break;
       }
@@ -277,7 +285,18 @@ export class Room implements DurableObject {
         this.phase = 'playing';
         this.broadcast({ type: 'state', room: this.state });
         // Deal the full round to everyone; each player paces themselves.
-        for (const player of this.players.keys()) this.sendDeck(player);
+        for (const [player, sid] of this.players) this.sendDeck(player, sid);
+        break;
+      }
+
+      case 'finish': {
+        // Host ends the round early: reveal now, missing votes don't count.
+        if (this.players.get(ws) !== this.hostId) {
+          this.send(ws, { type: 'error', message: 'host only' });
+          return;
+        }
+        if (this.phase !== 'playing') return;
+        this.reveal();
         break;
       }
 
@@ -397,7 +416,7 @@ export class Room implements DurableObject {
         this.revealIndex = 0;
         this.phase = 'playing';
         this.broadcast({ type: 'state', room: this.state });
-        for (const player of this.players.keys()) this.sendDeck(player);
+        for (const [player, sid] of this.players) this.sendDeck(player, sid);
         break;
       }
     }
@@ -422,7 +441,11 @@ export class Room implements DurableObject {
     for (const session of sessions) {
       if (!this.hasVotedAll(session)) return; // still voting
     }
+    this.reveal();
+  }
 
+  /** Move the room to the results phase and broadcast the reveal. */
+  private reveal() {
     // Batch mode walks the reveal card by card (host-paced, starts at 0);
     // live mode already showed tallies during play, so it jumps straight
     // past the walk to the summary.
@@ -465,8 +488,13 @@ export class Room implements DurableObject {
     return { type: 'reveal', results };
   }
 
-  private sendDeck(ws: WebSocket) {
-    this.send(ws, { type: 'deck', cards: this.config?.cards ?? [] });
+  private sendDeck(ws: WebSocket, sessionId: string) {
+    const cards = this.config?.cards ?? [];
+    // Replay the player's own votes so a rejoin resumes mid-deck.
+    const myVotes = cards.map(
+      (_, i) => this.votes.get(i)?.get(sessionId) ?? null,
+    );
+    this.send(ws, { type: 'deck', cards, myVotes });
   }
 
   private send(ws: WebSocket, msg: RoomServerMessage) {

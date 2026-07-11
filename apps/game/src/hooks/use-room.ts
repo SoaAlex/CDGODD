@@ -63,16 +63,24 @@ export function useRoom(code: string, name: string | null) {
           case 'state':
             setRoom(msg.room);
             break;
-          case 'deck':
+          case 'deck': {
             // A fresh deck also means a fresh round (host replay): wipe
-            // everything left over from the previous one.
-            indexRef.current = 0;
-            setMyIndex(0);
+            // everything left over from the previous one. On a rejoin the
+            // server replays our own votes — resume after the last card we
+            // voted on instead of re-swiping the whole deck.
+            const restored: Side[] = [];
+            for (const side of msg.myVotes) {
+              if (!side) break;
+              restored.push(side);
+            }
+            indexRef.current = restored.length;
+            setMyIndex(restored.length);
             setResults(null);
             setLiveTally(null);
-            setMyVotes([]);
+            setMyVotes(restored);
             setDeck(msg.cards);
             break;
+          }
           case 'tally':
             setLiveTally(msg);
             break;
@@ -104,6 +112,9 @@ export function useRoom(code: string, name: string | null) {
 
   /** Host, batch results: advance the shared card-by-card reveal. */
   const next = useCallback(() => send({ type: 'next' }), [send]);
+
+  /** Host, while playing: end the round now without waiting for everyone. */
+  const finish = useCallback(() => send({ type: 'finish' }), [send]);
 
   const restart = useCallback(
     (settings?: {
@@ -150,6 +161,7 @@ export function useRoom(code: string, name: string | null) {
     done,
     start,
     next,
+    finish,
     restart,
     vote,
   };
