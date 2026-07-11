@@ -101,3 +101,17 @@ pnpm --dir apps/game deploy
 ```
 
 See each app's README for its own bindings, secrets, and env vars.
+
+## Backups
+
+Two layers, both effectively free:
+
+- **D1 Time Travel** (built-in, automatic): 30-day point-in-time recovery.
+  `wrangler d1 time-travel restore cdgodd --timestamp=<unix|ISO>`.
+- **Daily SQL dump to R2**:
+  [`.github/workflows/backup.yml`](.github/workflows/backup.yml) exports the
+  prod DB (`wrangler d1 export --remote`), gzips it, and uploads to the
+  private `cdgodd-backups` R2 bucket at 03:30 UTC. A bucket lifecycle rule
+  expires objects after 90 days. Survives accidental DB deletion (Time
+  Travel does not). Restore: `gunzip` the dump, then
+  `wrangler d1 execute cdgodd --remote --file <dump>.sql`.

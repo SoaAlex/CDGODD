@@ -95,6 +95,12 @@ seed means updating tests.
 - **Durable Objects** (`apps/api/src/durable/Room.ts`) hold live multiplayer
   state. Renaming a DO class or its binding needs a migration and can drop
   active rooms — coordinate, don't rename casually.
+- **Recovery nets if prod data gets damaged:** D1 Time Travel (30-day PITR,
+  `wrangler d1 time-travel restore`) plus a daily gzipped SQL dump to the
+  private `cdgodd-backups` R2 bucket
+  ([`.github/workflows/backup.yml`](.github/workflows/backup.yml), 90-day
+  retention, see README "Backups"). Nets, not a license — rules above still
+  apply.
 - **Deploys happen in CI on push.** Every push to any branch uploads a preview
   version of the prod Workers; pushing to `main` deploys live. CI gates:
   typecheck + `turbo test` (blocking); Playwright e2e runs as a parallel
