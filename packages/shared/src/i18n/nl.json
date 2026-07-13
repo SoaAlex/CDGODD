@@ -100,11 +100,15 @@
     "musicRemixLink": "Beluister de remix op SoundCloud",
     "musicOriginalLink": "Beluister het origineel op YouTube",
     "privacyTitle": "Privacy",
-    "privacyBody": "Het spel is 100% anoniem: geen account, geen verzameling van persoonsgegevens. Alleen advertenties kunnen gegevens verzamelen, uitsluitend met jouw toestemming (uit te schakelen in de instellingen). Er wordt een IP-hash gebruikt om misbruik tegen te gaan: deze wordt 30 dagen bewaard en kan niet worden herleid tot het oorspronkelijke IP-adres.",
+    "privacyBody": "Het spel is 100% anoniem: geen account, geen verzameling van persoonsgegevens. Alleen advertenties kunnen gegevens verzamelen, uitsluitend met jouw toestemming (uit te schakelen in de instellingen). Er wordt een IP-hash gebruikt om misbruik tegen te gaan: deze wordt 30 dagen bewaard en kan niet worden herleid tot het oorspronkelijke IP-adres. Wanneer een kaart een echte persoon toont, kennen de stemmen die persoon geen echte mening toe: ze weerspiegelen alleen geaggregeerde, anonieme percepties van spelers, voor de lol. Iedereen die wordt afgebeeld kan om verwijdering van zijn kaart vragen (zie Melden & verwijdering).",
     "disclaimerTitle": "Disclaimer",
-    "disclaimerBody": "Dit spel is puur bedoeld voor de lol. De stemmen worden nooit gemanipuleerd, en de resultaten weerspiegelen alleen hoe spelers swipen — niet de werkelijkheid, en geen enkele politieke waarheid. Niets hiervan mag serieus genomen worden of gebruikt worden om iemand te beoordelen, te viseren of lastig te vallen. Ik wijs elke band en elke verantwoordelijkheid voor de interpretatie van de inhoud af, en ik moedig van harte vriendelijkheid, respect en goede waarden aan. Speel, lach en wees aardig voor elkaar.",
+    "disclaimerBody": "Dit spel is puur bedoeld voor de lol. De stemmen worden nooit gemanipuleerd, en de resultaten weerspiegelen alleen hoe spelers swipen — niet de werkelijkheid, en geen enkele politieke waarheid. Niets hiervan mag serieus genomen worden of gebruikt worden om iemand te beoordelen, te viseren of lastig te vallen. Ik wijs elke band en elke verantwoordelijkheid voor de interpretatie van de inhoud af, en ik moedig van harte vriendelijkheid, respect en goede waarden aan. Speel, lach en wees aardig voor elkaar. Merken en personen die in het spel voorkomen, worden alleen ter referentie genoemd: er wordt geen band, samenwerking of goedkeuring gesuggereerd.",
+    "takedownTitle": "Melden & verwijdering",
+    "takedownBody": "Elke kaart kan worden gemeld met de knop 'Melden': na een bepaald aantal meldingen wordt ze automatisch verborgen in afwachting van moderatie. Sta je op een kaart, of ben je rechthebbende (merk, beeld, auteursrecht), dan kun je per e-mail om verwijdering vragen (zie Contact): duidelijk onrechtmatige inhoud wordt snel verwijderd.",
     "contactTitle": "Contact",
-    "contactBody": "Voor vragen of ondersteuning:"
+    "contactBody": "Voor vragen of ondersteuning:",
+    "legalTitle": "Juridische vermeldingen",
+    "legalBody": "Uitgever: SOARES Cloud Engineering Services, SARL, SIREN 999 871 148, 78 F rue de Lambersart, 59350 Saint-André-lez-Lille, Frankrijk. Publicatieverantwoordelijke: de wettelijke vertegenwoordiger van het bedrijf. Hosting: Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, VS."
   },
   "consent": {
     "title": "Advertenties",

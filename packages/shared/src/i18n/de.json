@@ -100,11 +100,15 @@
     "musicRemixLink": "Remix auf SoundCloud anhören",
     "musicOriginalLink": "Original auf YouTube anhören",
     "privacyTitle": "Datenschutz",
-    "privacyBody": "Das Spiel ist 100% anonym: kein Konto, keine Erhebung persönlicher Daten. Nur Werbung kann Daten sammeln, und nur mit deiner Zustimmung (in den Einstellungen abschaltbar). Zum Schutz vor Missbrauch wird ein IP-Hash verwendet: Er wird 30 Tage gespeichert und lässt keinen Rückschluss auf die ursprüngliche IP zu.",
+    "privacyBody": "Das Spiel ist 100% anonym: kein Konto, keine Erhebung persönlicher Daten. Nur Werbung kann Daten sammeln, und nur mit deiner Zustimmung (in den Einstellungen abschaltbar). Zum Schutz vor Missbrauch wird ein IP-Hash verwendet: Er wird 30 Tage gespeichert und lässt keinen Rückschluss auf die ursprüngliche IP zu. Stellt eine Karte eine reale Person dar, schreiben ihr die Stimmen keine tatsächliche Meinung zu: Sie spiegeln nur aggregierte, anonyme Wahrnehmungen der Spieler wider – zum Spaß. Jede dargestellte Person kann die Entfernung ihrer Karte beantragen (siehe Melden & Entfernung).",
     "disclaimerTitle": "Haftungsausschluss",
-    "disclaimerBody": "Dieses Spiel dient ausschließlich dem Spaß. Die Stimmen werden niemals manipuliert, und die Ergebnisse spiegeln nur wider, wie die Spieler wischen — nicht die Realität und keine politische Wahrheit. Nichts davon sollte ernst genommen oder dazu benutzt werden, jemanden zu beurteilen, anzuprangern oder zu belästigen. Ich lehne jegliche Verbindung und jegliche Verantwortung für die Auslegung der Inhalte ab und ermutige von Herzen zu Freundlichkeit, Respekt und guten Werten. Spielt, lacht und seid nett zueinander.",
+    "disclaimerBody": "Dieses Spiel dient ausschließlich dem Spaß. Die Stimmen werden niemals manipuliert, und die Ergebnisse spiegeln nur wider, wie die Spieler wischen — nicht die Realität und keine politische Wahrheit. Nichts davon sollte ernst genommen oder dazu benutzt werden, jemanden zu beurteilen, anzuprangern oder zu belästigen. Ich lehne jegliche Verbindung und jegliche Verantwortung für die Auslegung der Inhalte ab und ermutige von Herzen zu Freundlichkeit, Respekt und guten Werten. Spielt, lacht und seid nett zueinander. Marken und Personen im Spiel werden nur als Referenz genannt: Es wird keine Verbindung, Partnerschaft oder Billigung suggeriert.",
+    "takedownTitle": "Melden & Entfernung",
+    "takedownBody": "Jede Karte kann über den Button „Melden“ gemeldet werden: Ab einer bestimmten Anzahl von Meldungen wird sie automatisch ausgeblendet, bis sie moderiert wurde. Wenn du auf einer Karte dargestellt bist oder Rechte daran hältst (Marke, Bild, Urheberrecht), kannst du ihre Entfernung per E-Mail beantragen (siehe Kontakt): Offensichtlich rechtswidrige Inhalte werden umgehend entfernt.",
     "contactTitle": "Kontakt",
-    "contactBody": "Bei Fragen oder Support-Anliegen:"
+    "contactBody": "Bei Fragen oder Support-Anliegen:",
+    "legalTitle": "Impressum",
+    "legalBody": "Herausgeber: SOARES Cloud Engineering Services, SARL, SIREN 999 871 148, 78 F rue de Lambersart, 59350 Saint-André-lez-Lille, Frankreich. Verantwortlich für die Veröffentlichung: der gesetzliche Vertreter des Unternehmens. Hosting: Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, USA."
   },
   "consent": {
     "title": "Werbung",

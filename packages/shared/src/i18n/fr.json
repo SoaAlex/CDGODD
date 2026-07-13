@@ -100,11 +100,15 @@
     "musicRemixLink": "Écouter le remix sur SoundCloud",
     "musicOriginalLink": "Écouter l'original sur YouTube",
     "privacyTitle": "Vie privée",
-    "privacyBody": "Le jeu est 100% anonyme : aucun compte, aucune collecte de données personnelles. Seules les publicités peuvent en collecter, uniquement avec votre consentement (désactivables dans les paramètres). Un hachage d'IP est utilisé pour contrer les abus : il est conservé 30 jours et ne permet pas de retrouver l'IP d'origine.",
+    "privacyBody": "Le jeu est 100% anonyme : aucun compte, aucune collecte de données personnelles. Seules les publicités peuvent en collecter, uniquement avec votre consentement (désactivables dans les paramètres). Un hachage d'IP est utilisé pour contrer les abus : il est conservé 30 jours et ne permet pas de retrouver l'IP d'origine. Lorsqu'une carte représente une personne réelle, les votes ne lui attribuent aucune opinion réelle : ils reflètent uniquement des perceptions agrégées et anonymes de joueurs, à visée ludique. Toute personne représentée peut demander le retrait de sa carte (voir Signalement & retrait).",
     "disclaimerTitle": "Avertissement",
-    "disclaimerBody": "Ce jeu est purement destiné à s'amuser. Les votes ne sont jamais manipulés, et les résultats reflètent uniquement la façon dont les joueurs swipent — ni la réalité, ni une quelconque vérité politique. Rien ici ne doit être pris au sérieux, ni servir à juger, cibler ou harceler qui que ce soit. Je décline toute affiliation et toute responsabilité quant à l'interprétation du contenu, et j'encourage de tout cœur la bienveillance, le respect et les bonnes valeurs. Jouez, riez, et soyez gentils les uns envers les autres.",
+    "disclaimerBody": "Ce jeu est purement destiné à s'amuser. Les votes ne sont jamais manipulés, et les résultats reflètent uniquement la façon dont les joueurs swipent — ni la réalité, ni une quelconque vérité politique. Rien ici ne doit être pris au sérieux, ni servir à juger, cibler ou harceler qui que ce soit. Je décline toute affiliation et toute responsabilité quant à l'interprétation du contenu, et j'encourage de tout cœur la bienveillance, le respect et les bonnes valeurs. Jouez, riez, et soyez gentils les uns envers les autres. Les marques et personnes apparaissant dans le jeu ne sont citées qu'à titre de référence : aucune affiliation, aucun partenariat ni aucune approbation n'est suggéré.",
+    "takedownTitle": "Signalement & retrait",
+    "takedownBody": "Chaque carte peut être signalée via le bouton « Signaler » : au-delà d'un certain nombre de signalements, elle est automatiquement masquée en attendant modération. Si vous êtes représenté sur une carte, ou titulaire de droits (marque, image, droit d'auteur), vous pouvez en demander le retrait par e-mail (voir Contact) : tout contenu manifestement illicite est retiré rapidement.",
     "contactTitle": "Contact",
-    "contactBody": "Pour toute question ou demande de support :"
+    "contactBody": "Pour toute question ou demande de support :",
+    "legalTitle": "Mentions légales",
+    "legalBody": "Éditeur : SOARES Cloud Engineering Services, SARL, SIREN 999 871 148, 78 F rue de Lambersart, 59350 Saint-André-lez-Lille, France. Directeur de la publication : le représentant légal de la société. Hébergeur : Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, États-Unis."
   },
   "consent": {
     "title": "Publicités",

@@ -100,11 +100,15 @@
     "musicRemixLink": "Ouvir o remix no SoundCloud",
     "musicOriginalLink": "Ouvir o original no YouTube",
     "privacyTitle": "Privacidade",
-    "privacyBody": "O jogo é 100% anónimo: sem conta, sem recolha de dados pessoais. Apenas os anúncios podem recolher dados, e só com o teu consentimento (podem ser desativados nas definições). É usado um hash de IP para combater abusos: é conservado 30 dias e não permite recuperar o IP original.",
+    "privacyBody": "O jogo é 100% anónimo: sem conta, sem recolha de dados pessoais. Apenas os anúncios podem recolher dados, e só com o teu consentimento (podem ser desativados nas definições). É usado um hash de IP para combater abusos: é conservado 30 dias e não permite recuperar o IP original. Quando uma carta representa uma pessoa real, os votos não lhe atribuem nenhuma opinião real: refletem apenas perceções agregadas e anónimas dos jogadores, por diversão. Qualquer pessoa representada pode pedir a remoção da sua carta (ver Denúncia & remoção).",
     "disclaimerTitle": "Aviso",
-    "disclaimerBody": "Este jogo é puramente para divertir. Os votos nunca são manipulados, e os resultados refletem apenas a forma como os jogadores deslizam — não a realidade, nem qualquer verdade política. Nada aqui deve ser levado a sério, nem servir para julgar, visar ou assediar quem quer que seja. Declino qualquer afiliação e qualquer responsabilidade quanto à interpretação do conteúdo, e encorajo de todo o coração a bondade, o respeito e os bons valores. Joga, ri-te e sê simpático com os outros.",
+    "disclaimerBody": "Este jogo é puramente para divertir. Os votos nunca são manipulados, e os resultados refletem apenas a forma como os jogadores deslizam — não a realidade, nem qualquer verdade política. Nada aqui deve ser levado a sério, nem servir para julgar, visar ou assediar quem quer que seja. Declino qualquer afiliação e qualquer responsabilidade quanto à interpretação do conteúdo, e encorajo de todo o coração a bondade, o respeito e os bons valores. Joga, ri-te e sê simpático com os outros. As marcas e pessoas que aparecem no jogo são mencionadas apenas como referência: não é sugerida qualquer afiliação, parceria ou aprovação.",
+    "takedownTitle": "Denúncia & remoção",
+    "takedownBody": "Cada carta pode ser denunciada com o botão «Denunciar»: a partir de um certo número de denúncias, é automaticamente ocultada até ser moderada. Se apareces numa carta, ou és titular de direitos (marca, imagem, direitos de autor), podes pedir a sua remoção por e-mail (ver Contacto): qualquer conteúdo manifestamente ilícito é removido rapidamente.",
     "contactTitle": "Contacto",
-    "contactBody": "Para qualquer questão ou pedido de suporte:"
+    "contactBody": "Para qualquer questão ou pedido de suporte:",
+    "legalTitle": "Menções legais",
+    "legalBody": "Editor: SOARES Cloud Engineering Services, SARL, SIREN 999 871 148, 78 F rue de Lambersart, 59350 Saint-André-lez-Lille, França. Diretor da publicação: o representante legal da empresa. Alojamento: Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, EUA."
   },
   "consent": {
     "title": "Anúncios",

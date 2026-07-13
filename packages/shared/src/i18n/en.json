@@ -100,11 +100,15 @@
     "musicRemixLink": "Listen to the remix on SoundCloud",
     "musicOriginalLink": "Listen to the original on YouTube",
     "privacyTitle": "Privacy",
-    "privacyBody": "The game is 100% anonymous: no account, no personal data collection. Only ads may collect data, and only with your consent (they can be disabled in the settings). An IP hash is used to prevent abuse: it is kept for 30 days and cannot be traced back to the original IP.",
+    "privacyBody": "The game is 100% anonymous: no account, no personal data collection. Only ads may collect data, and only with your consent (they can be disabled in the settings). An IP hash is used to prevent abuse: it is kept for 30 days and cannot be traced back to the original IP. When a card depicts a real person, votes do not attribute any actual opinion to them: they only reflect aggregated, anonymous player perceptions, for fun. Anyone depicted can request the removal of their card (see Reporting & removal).",
     "disclaimerTitle": "Disclaimer",
-    "disclaimerBody": "This game is meant purely for fun. The votes are never manipulated, and the results reflect only how players swipe — not reality, and no political truth of any kind. Nothing here should be taken seriously, nor used to judge, target, or harass anyone. I decline any affiliation and any responsibility for how the content is interpreted, and I wholeheartedly encourage kindness, respect, and good values. Play, laugh, and be nice to one another.",
+    "disclaimerBody": "This game is meant purely for fun. The votes are never manipulated, and the results reflect only how players swipe — not reality, and no political truth of any kind. Nothing here should be taken seriously, nor used to judge, target, or harass anyone. I decline any affiliation and any responsibility for how the content is interpreted, and I wholeheartedly encourage kindness, respect, and good values. Play, laugh, and be nice to one another. Brands and people appearing in the game are mentioned for reference only: no affiliation, partnership or endorsement is implied.",
+    "takedownTitle": "Reporting & removal",
+    "takedownBody": "Every card can be flagged with the “Report” button: past a certain number of reports, it is automatically hidden pending moderation. If you are depicted on a card, or hold rights to it (trademark, image, copyright), you can request its removal by email (see Contact): any manifestly unlawful content is removed promptly.",
     "contactTitle": "Contact",
-    "contactBody": "For any question or support request:"
+    "contactBody": "For any question or support request:",
+    "legalTitle": "Legal notice",
+    "legalBody": "Publisher: SOARES Cloud Engineering Services, SARL (French LLC), SIREN 999 871 148, 78 F rue de Lambersart, 59350 Saint-André-lez-Lille, France. Publication director: the company's legal representative. Host: Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, USA."
   },
   "consent": {
     "title": "Ads",

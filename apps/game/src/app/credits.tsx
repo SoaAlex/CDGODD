@@ -116,6 +116,16 @@ export default function CreditsScreen() {
             </ThemedText>
           </View>
 
+          {/* Reporting & takedown */}
+          <View style={styles.section}>
+            <ThemedText type="smallBold" themeColor="textSecondary">
+              {t('credits.takedownTitle')}
+            </ThemedText>
+            <ThemedText type="small" themeColor="textSecondary">
+              {t('credits.takedownBody')}
+            </ThemedText>
+          </View>
+
           {/* Contact */}
           <View style={styles.section}>
             <ThemedText type="smallBold" themeColor="textSecondary">
@@ -130,6 +140,16 @@ export default function CreditsScreen() {
               label={SUPPORT_EMAIL}
               url={`mailto:${SUPPORT_EMAIL}`}
             />
+          </View>
+
+          {/* Legal notice (LCEN mentions légales) */}
+          <View style={styles.section}>
+            <ThemedText type="smallBold" themeColor="textSecondary">
+              {t('credits.legalTitle')}
+            </ThemedText>
+            <ThemedText type="small" themeColor="textSecondary">
+              {t('credits.legalBody')}
+            </ThemedText>
           </View>
         </ScrollView>
       </SafeAreaView>
