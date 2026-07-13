@@ -6,7 +6,9 @@
     "settings": "Instellingen",
     "history": "Geschiedenis",
     "credits": "Credits & disclaimers",
-    "back": "Terug"
+    "back": "Terug",
+    "beta": "BÈTA",
+    "betaTooltip": "Het spel is in ontwikkeling; nieuwe items en functies worden geleidelijk toegevoegd. Stuur gerust je feedback naar support@cestdegaucheoudedroite.com"
   },
   "solo": {
     "random": "Willekeurige kaarten",

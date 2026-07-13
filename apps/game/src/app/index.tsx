@@ -4,6 +4,7 @@ import Head from 'expo-router/head';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AdSlot } from '@/ads/ad-slot';
+import { BetaBadge } from '@/components/beta-badge';
 import { MuteButton } from '@/components/mute-button';
 import { NowPlaying } from '@/components/now-playing';
 import { ThemedText } from '@/components/themed-text';
@@ -78,17 +79,20 @@ export default function MenuScreen() {
         {/* Centered between the (possibly empty) ad slots. */}
         <View style={styles.content}>
           <View style={styles.hero}>
-            <Text
-              style={styles.logo}
-              accessibilityLabel={t('menu.title')}
-              allowFontScaling={false}
-            >
-              <Text style={styles.logoWhite}>C’EST DE{'\n'}</Text>
-              <Text style={styles.logoGauche}>GAUCHE{'\n'}</Text>
-              <Text style={styles.logoWhite}>OU DE{'\n'}</Text>
-              <Text style={styles.logoDroite}>DROITE</Text>
-              <Text style={styles.logoWhite}> ?</Text>
-            </Text>
+            <View style={styles.titleWrap}>
+              <Text
+                style={styles.logo}
+                accessibilityLabel={t('menu.title')}
+                allowFontScaling={false}
+              >
+                <Text style={styles.logoWhite}>C’EST DE{'\n'}</Text>
+                <Text style={styles.logoGauche}>GAUCHE{'\n'}</Text>
+                <Text style={styles.logoWhite}>OU DE{'\n'}</Text>
+                <Text style={styles.logoDroite}>DROITE</Text>
+                <Text style={styles.logoWhite}> ?</Text>
+              </Text>
+              <BetaBadge />
+            </View>
           </View>
 
           <View style={styles.menu}>
@@ -155,6 +159,16 @@ const styles = StyleSheet.create({
   },
   hero: {
     alignItems: 'center',
+    // Keeps the beta tooltip painting above the menu buttons below.
+    position: 'relative',
+    zIndex: 10,
+  },
+  titleWrap: {
+    // Shrinks to the width of the title so the beta badge can anchor to its
+    // top-right corner instead of the full-width hero (which collides with the
+    // now-playing / mute controls).
+    alignSelf: 'center',
+    position: 'relative',
   },
   logo: {
     fontFamily: Fonts.display,

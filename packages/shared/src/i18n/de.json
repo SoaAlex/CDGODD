@@ -6,7 +6,9 @@
     "settings": "Einstellungen",
     "history": "Verlauf",
     "credits": "Credits & Hinweise",
-    "back": "Zurück"
+    "back": "Zurück",
+    "beta": "BETA",
+    "betaTooltip": "Das Spiel befindet sich in der Entwicklung; neue Inhalte und Funktionen werden schrittweise hinzugefügt. Sende dein Feedback gerne an support@cestdegaucheoudedroite.com"
   },
   "solo": {
     "random": "Zufällige Karten",

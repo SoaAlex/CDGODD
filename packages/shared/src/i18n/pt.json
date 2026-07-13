@@ -6,7 +6,9 @@
     "settings": "Definições",
     "history": "Histórico",
     "credits": "Créditos e avisos",
-    "back": "Voltar"
+    "back": "Voltar",
+    "beta": "BETA",
+    "betaTooltip": "O jogo está em desenvolvimento; novos itens e funcionalidades são adicionados gradualmente. Não hesites em enviar feedback para support@cestdegaucheoudedroite.com"
   },
   "solo": {
     "random": "Cartas aleatórias",
