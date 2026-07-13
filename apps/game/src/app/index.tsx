@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import Head from 'expo-router/head';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -57,6 +58,15 @@ function MenuButton({
     </Pressable>
   );
 }
+
+/**
+ * Version shown in the footer. In CI the deploy workflow injects the semver the
+ * commit is about to be tagged with (EXPO_PUBLIC_APP_VERSION); locally it falls
+ * back to the static app.json version. `||` so an empty injected value also
+ * falls back.
+ */
+const APP_VERSION =
+  process.env.EXPO_PUBLIC_APP_VERSION || Constants.expoConfig?.version || '';
 
 export default function MenuScreen() {
   const { t } = useT();
@@ -125,6 +135,12 @@ export default function MenuScreen() {
 
         {/* Web: banner at the bottom of the page. */}
         {Platform.OS === 'web' && <AdSlot />}
+
+        {/* Version footer. Kept flagged "beta" while the game is still in
+            development, even after main releases. */}
+        <ThemedText type="small" style={styles.version} allowFontScaling={false}>
+          v{APP_VERSION} · {t('menu.beta')}
+        </ThemedText>
       </SafeAreaView>
     </ThemedView>
   );
@@ -202,5 +218,12 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 20,
     lineHeight: 28,
+  },
+  version: {
+    textAlign: 'center',
+    opacity: 0.6,
+    letterSpacing: 0.5,
+    paddingTop: Spacing.two,
+    paddingBottom: Spacing.one,
   },
 });

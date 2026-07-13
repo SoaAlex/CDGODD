@@ -29,6 +29,10 @@ jobs:
       url: ${{ vars.DEPLOY_URL }}
     steps:
       - uses: actions/checkout@v5
+        # Full history + tags so the version can be computed from Conventional
+        # Commits below.
+        with:
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
 
@@ -39,6 +43,20 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      # Dry-run of the same tag computation the Version workflow does after this
+      # deploy succeeds. Deterministic from the same commit, so the semver baked
+      # into the game build matches the git tag that gets pushed. new_version is
+      # bare (no "v"); the footer adds the "v" prefix.
+      - name: Compute app version
+        id: version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: patch
+          release_branches: main
+          tag_prefix: v
+          dry_run: true
 
       - name: Typecheck
         run: pnpm turbo typecheck
@@ -72,6 +90,7 @@ jobs:
         working-directory: apps/game
         run: pnpm build:web
         env:
+          EXPO_PUBLIC_APP_VERSION: ${{ steps.version.outputs.new_version }}
           EXPO_PUBLIC_API_URL: https://api.cestdegaucheoudedroite.com
           EXPO_PUBLIC_TURNSTILE_SITEKEY: 0x4AAAAAADxcifQdjBeiuVUB
           # AdSense ids are public by design (visible in page source).
