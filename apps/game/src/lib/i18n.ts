@@ -58,22 +58,34 @@ function syncDocumentLang(): void {
   }
 }
 
-// Resolve once at startup: stored choice wins, then device language, then
-// French. RootLayout gates first paint on `useLangReady` to avoid a flash.
-void AsyncStorage.getItem(LANG_KEY)
-  .then(
-    (stored) => {
-      current = isLang(stored) ? stored : detectLang();
-    },
-    () => {
-      current = detectLang();
-    },
-  )
-  .finally(() => {
-    ready = true;
-    syncDocumentLang();
-    notify();
-  });
+// Web static export (`expo export`) renders in Node with no `window`. Keep the
+// canonical default language for the prerendered HTML — its <title>/<meta> are
+// what link scrapers and search engines read — and let the client re-resolve
+// the real language after hydration. Native always runs at runtime, so it
+// resolves normally.
+const isWebPrerender = Platform.OS === 'web' && typeof window === 'undefined';
+
+if (isWebPrerender) {
+  current = defaultLang;
+  ready = true;
+} else {
+  // Resolve once at startup: stored choice wins, then device language, then
+  // French. RootLayout gates first paint on `useLangReady` to avoid a flash.
+  void AsyncStorage.getItem(LANG_KEY)
+    .then(
+      (stored) => {
+        current = isLang(stored) ? stored : detectLang();
+      },
+      () => {
+        current = detectLang();
+      },
+    )
+    .finally(() => {
+      ready = true;
+      syncDocumentLang();
+      notify();
+    });
+}
 
 export function getLang(): Lang {
   return current;

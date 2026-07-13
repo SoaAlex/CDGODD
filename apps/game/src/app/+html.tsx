@@ -20,6 +20,40 @@ export default function Root({ children }: PropsWithChildren) {
           content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
         />
         <meta name="google-adsense-account" content="ca-pub-5889686672909524" />
+
+        {/* Canonical French metadata for link previews and search engines.
+            Kept here (not in a route's <Head>) so every scraped URL gets the
+            same French card regardless of the visitor's runtime language. */}
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="C'est de Gauche ou de Droite ?" />
+        <meta property="og:locale" content="fr_FR" />
+        <meta property="og:url" content="https://cestdegaucheoudedroite.com" />
+        <meta
+          property="og:title"
+          content="C'est de Gauche ou de Droite ?"
+        />
+        <meta
+          property="og:description"
+          content="Classe des objets et concepts entre la gauche et la droite."
+        />
+        <meta
+          property="og:image"
+          content="https://cestdegaucheoudedroite.com/og-image.png"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          name="twitter:title"
+          content="C'est de Gauche ou de Droite ?"
+        />
+        <meta
+          name="twitter:description"
+          content="Classe des objets et concepts entre la gauche et la droite."
+        />
+        <meta
+          name="twitter:image"
+          content="https://cestdegaucheoudedroite.com/og-image.png"
+        />
+
         <ScrollViewStyleReset />
         {/* ScrollViewStyleReset sizes the app with `height:100%`, which mobile
             browsers resolve against the large viewport (URL bar hidden): the
