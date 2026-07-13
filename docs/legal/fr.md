@@ -2,8 +2,7 @@
 
 > ⚠️ Ce document est un modèle de départ rédigé de bonne foi ; il ne remplace
 > pas l'avis d'un avocat. Faites-le relire par un avocat français avant toute
-> mise en ligne à grande échelle. Reste à compléter : le capital social
-> (`{{CAPITAL}}`).
+> mise en ligne à grande échelle.
 
 Dernière mise à jour : 13 juillet 2026
 
@@ -16,7 +15,7 @@ confiance dans l'économie numérique (LCEN).
 
 **Éditeur du service**
 SOARES Cloud Engineering Services
-Société à responsabilité limitée (SARL) au capital de `{{CAPITAL}}` €
+Société à responsabilité limitée (SARL) au capital de 1 000 €
 SIREN 999 871 148 — RCS Lille Métropole
 Siège social : 78 F rue de Lambersart, 59350 Saint-André-lez-Lille, France
 Courriel : support@cestdegaucheoudedroite.com

@@ -2,8 +2,7 @@
 
 > ⚠️ This is a good-faith starting template, not a substitute for a lawyer.
 > Because the game targets a French audience ("gauche/droite"), French law
-> (LCEN, GDPR) governs — have a French lawyer review before scaling. Still to
-> fill in: share capital (`{{CAPITAL}}`).
+> (LCEN, GDPR) governs — have a French lawyer review before scaling.
 
 Last updated: 13 July 2026
 
@@ -15,7 +14,7 @@ Per Article 6 III of French law no. 2004-575 (LCEN).
 
 **Publisher**
 SOARES Cloud Engineering Services
-Société à responsabilité limitée (SARL — French LLC) with share capital of `{{CAPITAL}}` €
+Société à responsabilité limitée (SARL — French LLC) with share capital of €1,000
 SIREN 999 871 148 — RCS Lille Métropole
 Registered office: 78 F rue de Lambersart, 59350 Saint-André-lez-Lille, France
 Email: support@cestdegaucheoudedroite.com
