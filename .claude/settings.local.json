@@ -5,7 +5,16 @@
       "Bash(rtk read *)",
       "Bash(echo \"NO_INDEX\")",
       "Bash(rtk git *)",
-      "Bash(rtk ls *)"
+      "Bash(rtk ls *)",
+      "Bash(node -e \"const o=require\\('./fr.json'\\); for\\(const k of Object.keys\\(o\\)\\){console.log\\(k, '->', Array.isArray\\(o[k]\\)?'[]':typeof o[k]==='object'?Object.keys\\(o[k]\\).join\\(','\\):JSON.stringify\\(o[k]\\)\\)}\")",
+      "Bash(node -e \"const o=require\\('./fr.json'\\); console.log\\('--consent--'\\); console.log\\(JSON.stringify\\(o.consent,null,1\\)\\); console.log\\('--credits.privacyBody--'\\); console.log\\(o.credits.privacyBody\\); console.log\\('--credits.legalBody--'\\); console.log\\(o.credits.legalBody\\); console.log\\('--credits.takedownBody--'\\); console.log\\(o.credits.takedownBody\\); console.log\\('--menu.betaTooltip--'\\); console.log\\(o.menu.betaTooltip\\)\")",
+      "Bash(node -e \"console.log\\(require\\('/home/user/CDGODD-V2/node_modules/expo-router/package.json'\\).version\\)\")",
+      "Bash(node -e \"console.log\\(require\\('/home/user/CDGODD-V2/apps/game/node_modules/expo-router/package.json'\\).version\\)\")",
+      "Bash(python3 -c ' *)",
+      "Bash(git -C /home/user/CDGODD-V2 status --porcelain)",
+      "Bash(git -C /home/user/CDGODD-V2 branch --show-current)",
+      "Bash(curl -s https://cestdegaucheoudedroite.com/credits --cacert /root/.ccr/ca-bundle.crt)",
+      "Bash(python3 -c \"import sys,html,re; s=sys.stdin.read\\(\\); print\\(len\\(s\\)\\); body=re.search\\(r'<body.*',s,re.S\\).group\\(0\\); import textwrap; txt=re.sub\\(r'<script.*?</script>','',body,flags=re.S\\); txt=re.sub\\(r'<[^>]+>',' ',txt\\); print\\(' '.join\\(txt.split\\(\\)\\)[:600]\\)\")"
     ]
   }
 }

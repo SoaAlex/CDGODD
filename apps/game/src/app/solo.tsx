@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import Head from 'expo-router/head';
 import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -117,6 +118,10 @@ export default function SoloScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      <Head>
+        <title>{t('menu.play')}</title>
+        <meta name="description" content={t('seo.soloDesc')} />
+      </Head>
       <AdRails>
         <SafeAreaView style={styles.safeArea} edges={['bottom']}>
           {/* Mobile: banner at the top; web gets side rails instead. */}

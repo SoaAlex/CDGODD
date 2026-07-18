@@ -253,6 +253,27 @@ export default function RootLayout() {
               headerBackButtonDisplayMode: 'minimal',
             }}
           />
+          <Stack.Screen
+            name="privacy"
+            options={{
+              title: t('privacy.title'),
+              headerBackButtonDisplayMode: 'minimal',
+            }}
+          />
+          <Stack.Screen
+            name="items"
+            options={{
+              title: t('menu.browse'),
+              headerBackButtonDisplayMode: 'minimal',
+            }}
+          />
+          <Stack.Screen
+            name="item/[id]"
+            options={{
+              title: t('menu.title'),
+              headerBackButtonDisplayMode: 'minimal',
+            }}
+          />
           </Stack>
         </ThemeProvider>
       </GradientBackground>

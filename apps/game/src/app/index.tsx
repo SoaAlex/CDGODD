@@ -1,11 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
-import { useRouter } from 'expo-router';
+import { Link } from 'expo-router';
 import Head from 'expo-router/head';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AdSlot } from '@/ads/ad-slot';
-import { BetaBadge } from '@/components/beta-badge';
 import { MuteButton } from '@/components/mute-button';
 import { NowPlaying } from '@/components/now-playing';
 import { ThemedText } from '@/components/themed-text';
@@ -33,29 +32,26 @@ function MenuButton({
   /** Filled accent color; default is a white surface with dark content. */
   color?: string;
 }) {
-  const router = useRouter();
   const filled = color !== undefined;
   const backgroundColor = color ?? '#fff';
   const contentColor = filled ? '#fff' : ACCENT_COLOR;
   return (
-    <Pressable
-      onPress={() => router.push(href as never)}
-      style={({ pressed }) => [
-        styles.button,
-        {
-          backgroundColor,
-          opacity: pressed ? 0.8 : 1,
-        },
-      ]}
-    >
-      <Ionicons name={icon} size={22} color={contentColor} />
-      <ThemedText
-        type="subtitle"
-        style={[styles.buttonText, { color: contentColor }]}
-      >
-        {label}
-      </ThemedText>
-    </Pressable>
+    // Link + asChild renders a real <a href> on web (react-native-web passes
+    // `href` through to the anchor) so the navigation is crawlable, unlike
+    // router.push which leaves no links in the static HTML. The style must be
+    // a single static object: asChild's prop merge drops function styles and
+    // mangles arrays, so flatten before passing.
+    <Link href={href as never} asChild>
+      <Pressable style={StyleSheet.flatten([styles.button, { backgroundColor }])}>
+        <Ionicons name={icon} size={22} color={contentColor} />
+        <ThemedText
+          type="subtitle"
+          style={[styles.buttonText, { color: contentColor }]}
+        >
+          {label}
+        </ThemedText>
+      </Pressable>
+    </Link>
   );
 }
 
@@ -74,10 +70,7 @@ export default function MenuScreen() {
     <ThemedView style={styles.container}>
       <Head>
         <title>{t('menu.title')}</title>
-        <meta
-          name="description"
-          content="Classe des objets et concepts entre la gauche et la droite."
-        />
+        <meta name="description" content={t('seo.homeDesc')} />
       </Head>
       <SafeAreaView style={styles.safeArea}>
         {/* Mobile: banner pinned to the top of the menu. */}
@@ -86,61 +79,110 @@ export default function MenuScreen() {
           <NowPlaying />
           <MuteButton />
         </View>
-        {/* Centered between the (possibly empty) ad slots. */}
-        <View style={styles.content}>
-          <View style={styles.hero}>
-            <View style={styles.titleWrap}>
-              <Text
-                style={styles.logo}
-                accessibilityLabel={t('menu.title')}
-                allowFontScaling={false}
-              >
-                <Text style={styles.logoWhite}>C’EST DE{'\n'}</Text>
-                <Text style={styles.logoGauche}>GAUCHE{'\n'}</Text>
-                <Text style={styles.logoWhite}>OU DE{'\n'}</Text>
-                <Text style={styles.logoDroite}>DROITE</Text>
-                <Text style={styles.logoWhite}> ?</Text>
-              </Text>
-              <BetaBadge />
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Fills the viewport so hero + menu stay centered; the about text
+              sits below the fold and scrolls into view. */}
+          <View style={styles.content}>
+            <View style={styles.hero}>
+              <View style={styles.titleWrap}>
+                <Text
+                  style={styles.logo}
+                  accessibilityLabel={t('menu.title')}
+                  allowFontScaling={false}
+                >
+                  <Text style={styles.logoWhite}>C’EST DE{'\n'}</Text>
+                  <Text style={styles.logoGauche}>GAUCHE{'\n'}</Text>
+                  <Text style={styles.logoWhite}>OU DE{'\n'}</Text>
+                  <Text style={styles.logoDroite}>DROITE</Text>
+                  <Text style={styles.logoWhite}> ?</Text>
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.menu}>
+              <MenuButton
+                label={t('menu.play')}
+                href="/solo"
+                icon="play"
+                color={LEFT_COLOR}
+              />
+              <MenuButton
+                label={t('menu.multiplayer')}
+                href="/multiplayer"
+                icon="people"
+                color={RIGHT_COLOR}
+              />
+              <MenuButton label={t('solo.search')} href="/search" icon="search" />
+              <MenuButton label={t('menu.history')} href="/history" icon="time" />
+              <MenuButton
+                label={t('menu.settings')}
+                href="/settings"
+                icon="settings"
+              />
+              <MenuButton
+                label={t('menu.credits')}
+                href="/credits"
+                icon="information-circle"
+              />
             </View>
           </View>
 
-          <View style={styles.menu}>
-            <MenuButton
-              label={t('menu.play')}
-              href="/solo"
-              icon="play"
-              color={LEFT_COLOR}
-            />
-            <MenuButton
-              label={t('menu.multiplayer')}
-              href="/multiplayer"
-              icon="people"
-              color={RIGHT_COLOR}
-            />
-            <MenuButton label={t('solo.search')} href="/search" icon="search" />
-            <MenuButton label={t('menu.history')} href="/history" icon="time" />
-            <MenuButton
-              label={t('menu.settings')}
-              href="/settings"
-              icon="settings"
-            />
-            <MenuButton
-              label={t('menu.credits')}
-              href="/credits"
-              icon="information-circle"
-            />
+          {/* Editorial description of the game: real publisher content for
+              visitors, crawlers and ad reviewers alike. */}
+          <View style={styles.about}>
+            <ThemedText type="subtitle" style={styles.aboutTitle}>
+              {t('home.aboutTitle')}
+            </ThemedText>
+            <ThemedText type="small" style={styles.aboutBody}>
+              {t('home.aboutWhat')}
+            </ThemedText>
+            <ThemedText type="small" style={styles.aboutBody}>
+              {t('home.aboutHow')}
+            </ThemedText>
+            <ThemedText type="small" style={styles.aboutBody}>
+              {t('home.aboutStats')}
+            </ThemedText>
           </View>
-        </View>
 
-        {/* Web: banner at the bottom of the page. */}
-        {Platform.OS === 'web' && <AdSlot />}
+          {/* NOTE: the web AdSense banner that used to live here was removed
+              while the site is under AdSense review (a menu page counts as
+              "screen without publisher content"). Re-add after approval. */}
 
-        {/* Version footer. Kept flagged "beta" while the game is still in
-            development, even after main releases. */}
-        <ThemedText type="small" style={styles.version} allowFontScaling={false}>
-          v{APP_VERSION} · {t('menu.beta')}
-        </ThemedText>
+          {/* Footer: legal links as real anchors + version. */}
+          <View style={styles.footerLinks}>
+            <Link href={'/items' as never}>
+              <ThemedText type="small" style={styles.footerLink}>
+                {t('menu.browse')}
+              </ThemedText>
+            </Link>
+            <ThemedText type="small" style={styles.footerDot}>
+              ·
+            </ThemedText>
+            <Link href={'/privacy' as never}>
+              <ThemedText type="small" style={styles.footerLink}>
+                {t('menu.privacy')}
+              </ThemedText>
+            </Link>
+            <ThemedText type="small" style={styles.footerDot}>
+              ·
+            </ThemedText>
+            <Link href={'/credits' as never}>
+              <ThemedText type="small" style={styles.footerLink}>
+                {t('menu.credits')}
+              </ThemedText>
+            </Link>
+          </View>
+          <ThemedText
+            type="small"
+            style={styles.version}
+            allowFontScaling={false}
+          >
+            v{APP_VERSION}
+          </ThemedText>
+        </ScrollView>
       </SafeAreaView>
     </ThemedView>
   );
@@ -157,10 +199,13 @@ const styles = StyleSheet.create({
     maxWidth: MaxContentWidth,
     paddingHorizontal: Spacing.four,
   },
+  scroll: {
+    flexGrow: 1,
+  },
   content: {
-    // Fills the space between the ad slots so hero + menu stay centered
-    // whether or not an ad actually renders.
-    flex: 1,
+    // Fills the first viewport so hero + menu stay centered whether or not
+    // anything renders below the fold.
+    flexGrow: 1,
     justifyContent: 'center',
     gap: Spacing.six,
   },
@@ -175,14 +220,8 @@ const styles = StyleSheet.create({
   },
   hero: {
     alignItems: 'center',
-    // Keeps the beta tooltip painting above the menu buttons below.
-    position: 'relative',
-    zIndex: 10,
   },
   titleWrap: {
-    // Shrinks to the width of the title so the beta badge can anchor to its
-    // top-right corner instead of the full-width hero (which collides with the
-    // now-playing / mute controls).
     alignSelf: 'center',
     position: 'relative',
   },
@@ -218,6 +257,33 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 20,
     lineHeight: 28,
+  },
+  about: {
+    paddingTop: Spacing.six,
+    gap: Spacing.three,
+  },
+  aboutTitle: {
+    textAlign: 'center',
+  },
+  aboutBody: {
+    opacity: 0.85,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  footerLinks: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: Spacing.two,
+    paddingTop: Spacing.five,
+  },
+  footerLink: {
+    opacity: 0.8,
+    textDecorationLine: 'underline',
+  },
+  footerDot: {
+    opacity: 0.5,
   },
   version: {
     textAlign: 'center',

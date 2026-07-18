@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import Head from 'expo-router/head';
 import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -95,6 +96,10 @@ export default function SearchScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      <Head>
+        <title>{t('solo.search')}</title>
+        <meta name="description" content={t('seo.searchDesc')} />
+      </Head>
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <TextInput
           testID="search-input"
