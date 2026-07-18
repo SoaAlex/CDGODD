@@ -75,10 +75,16 @@ export default function MenuScreen() {
       <SafeAreaView style={styles.safeArea}>
         {/* Mobile: banner pinned to the top of the menu. */}
         {Platform.OS !== 'web' && <AdSlot />}
-        <View style={styles.topBar}>
-          <NowPlaying />
-          <MuteButton />
-        </View>
+        {/* Static row (not absolutely positioned) so the sound controls
+            always reserve their own vertical space instead of overlapping
+            the title on short/narrow viewports. Web only: both children
+            render null on native, which would leave an empty padded row. */}
+        {Platform.OS === 'web' && (
+          <View style={styles.topBar}>
+            <NowPlaying />
+            <MuteButton />
+          </View>
+        )}
         <ScrollView
           contentContainerStyle={styles.scroll}
           showsVerticalScrollIndicator={false}
@@ -210,13 +216,11 @@ const styles = StyleSheet.create({
     gap: Spacing.six,
   },
   topBar: {
-    position: 'absolute',
-    top: Spacing.three,
-    right: Spacing.four,
-    zIndex: 1,
     flexDirection: 'row',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     gap: Spacing.two,
+    paddingTop: Spacing.three,
   },
   hero: {
     alignItems: 'center',
