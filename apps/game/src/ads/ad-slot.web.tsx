@@ -31,8 +31,10 @@ export function AdSlot({ placement = 'banner' }: AdSlotProps) {
   useEffect(() => {
     if (!active || pushed.current) return;
     pushed.current = true;
-    // Dedupe by src — adsbygoogle.js warns about any custom data-* marker
-    // attribute on its own script tag.
+    // The loader normally already exists — +html.tsx puts it in the head of
+    // every page (it also serves the GDPR consent message). Dedupe by src —
+    // adsbygoogle.js warns about any custom data-* marker attribute on its
+    // own script tag.
     const src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`;
     if (!document.querySelector(`script[src="${src}"]`)) {
       const script = document.createElement('script');

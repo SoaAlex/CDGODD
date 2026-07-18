@@ -33,6 +33,9 @@ Android**. The web export is served as an assets-only Cloudflare Worker.
   banner is intentionally removed while the site is under AdSense review — a
   menu screen counts as "no publisher content"); a settings switch
   (`cdgodd.ads_enabled`) turns everything off. Never blocks gameplay.
+  Web consent is Google's CMP: the GDPR message published in AdSense
+  "Privacy & messaging" is served by the global adsbygoogle tag in
+  `src/app/+html.tsx` (which must stay on every page for it to display).
 - **SEO / crawlable pages** — the web export is fully static (one prerendered
   HTML file per route, French at build time). `/privacy` (GDPR/AdSense privacy
   policy), `/items` (browse index) and one `/item/<id>-<slug>` page per
