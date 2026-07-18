@@ -20,6 +20,17 @@ export default function Root({ children }: PropsWithChildren) {
           content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
         />
         <meta name="google-adsense-account" content="ca-pub-5889686672909524" />
+        {/* Global AdSense loader. Loaded on EVERY page (not just ones with ad
+            units) because it is also what delivers the GDPR consent message
+            (CMP) published in AdSense "Privacy & messaging", and what the
+            AdSense site review looks for. By itself it renders no ads — ad
+            units are the gated <ins> slots in src/ads/ad-slot.web.tsx, which
+            dedupes against this tag by src. */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5889686672909524"
+          crossOrigin="anonymous"
+        />
 
         {/* Canonical French metadata for link previews and search engines.
             Kept here (not in a route's <Head>) so every scraped URL gets the
