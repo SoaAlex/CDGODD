@@ -9,6 +9,11 @@ root rules in [`../../AGENTS.md`](../../AGENTS.md) apply.
 - `src/app/` — expo-router routes (file-based).
 - `src/components/`, `src/hooks/`, `src/lib/`, `src/constants/` — the usual.
 - `src/ads/` — ad integration (behind consent; ads are the only data collector).
+- `src/generated/item-manifest.json` — build-time catalog snapshot written by
+  `scripts/generate-item-manifest.mjs` (part of `build:web`); the committed
+  file is an empty placeholder — don't hand-edit, don't commit a populated one.
+  It feeds the prerendered `/item/[id]` + `/items` SEO pages and
+  `scripts/generate-sitemap.mjs`.
 - Data/types from `@cdgodd/shared`; talks to the API worker.
 
 ## Conventions
@@ -19,6 +24,13 @@ root rules in [`../../AGENTS.md`](../../AGENTS.md) apply.
 - This app *does* have real lint: `pnpm --dir apps/game lint` (expo eslint). Run
   it — it's the one app where lint is a signal.
 - Keep the anonymous/consent model intact; ads load only after consent.
+- **AdSense compliance:** no ad slots on screens without real content (menus,
+  lobbies, legal pages). The web home banner was removed for the AdSense
+  review — don't re-add it without checking the account is approved.
+- **Crawlability:** the static export is the SEO surface. Internal navigation
+  that should be crawlable uses `expo-router` `<Link>` (real `<a href>`), not
+  `router.push`. With `asChild`, pass a single flattened style object —
+  function styles get dropped and array styles break the DOM.
 
 ## Verify
 

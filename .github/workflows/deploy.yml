@@ -12,6 +12,12 @@ on:
   push:
     branches: ['**']
   workflow_dispatch:
+  # Weekly redeploy of main so the prerendered /item/* pages (vote percentages
+  # + newly approved items, fetched at build time by generate-item-manifest.mjs)
+  # stay fresh even without a code push. Scheduled runs fire on the default
+  # branch, so they hit the production environment like any main deploy.
+  schedule:
+    - cron: '0 4 * * 1'
 
 concurrency:
   group: deploy-${{ github.ref }}

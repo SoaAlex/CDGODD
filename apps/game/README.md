@@ -29,9 +29,18 @@ Android**. The web export is served as an assets-only Cloudflare Worker.
 - **Anonymous** — a resettable device `session_id`, no account. Only ads collect
   data, behind a consent flow.
 - **Ads** — AdMob on native (UMP consent, top banners + interstitial), optional
-  AdSense on web (bottom banner on home, 160x600 side rails on wide swipe
-  screens); a settings switch (`cdgodd.ads_enabled`) turns everything off.
-  Never blocks gameplay.
+  AdSense on web (160x600 side rails on wide swipe screens; the home-page
+  banner is intentionally removed while the site is under AdSense review — a
+  menu screen counts as "no publisher content"); a settings switch
+  (`cdgodd.ads_enabled`) turns everything off. Never blocks gameplay.
+- **SEO / crawlable pages** — the web export is fully static (one prerendered
+  HTML file per route, French at build time). `/privacy` (GDPR/AdSense privacy
+  policy), `/items` (browse index) and one `/item/<id>-<slug>` page per
+  approved item are generated from a build-time snapshot of the catalog
+  (`scripts/generate-item-manifest.mjs` → `src/generated/item-manifest.json`,
+  committed as an empty placeholder); `scripts/generate-sitemap.mjs` rewrites
+  `dist/sitemap.xml` with every item URL after export. Vote percentages on
+  item pages hydrate live from `/items/tallies`.
 - **Fonts & music** — ClashGrotesk / MonteiroLobato from `assets/`; the theme
   song loops on web only.
 
@@ -55,7 +64,9 @@ runtime branches:
 ```bash
 pnpm exec expo start --web       # dev on :8081 (also --ios / --android)
 pnpm typecheck
-pnpm build:web                   # expo export --platform web → dist/
+pnpm build:web                   # item manifest + expo export → dist/ + sitemap
+                                 # (manifest fetch fails soft: no API reachable
+                                 #  → empty manifest, no item pages)
 pnpm deploy                      # build:web + wrangler deploy → cestdegaucheoudedroite.com
 ```
 

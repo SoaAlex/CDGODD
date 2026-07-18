@@ -7,8 +7,14 @@
     "history": "History",
     "credits": "Credits & Disclaimers",
     "back": "Back",
-    "beta": "BETA",
-    "betaTooltip": "The game is under development; new items and features are being added gradually. Don't hesitate to send feedback to support@cestdegaucheoudedroite.com"
+    "privacy": "Privacy",
+    "browse": "All items"
+  },
+  "home": {
+    "aboutTitle": "What is this game?",
+    "aboutWhat": "\"C'est de Gauche ou de Droite ?\" (Is It Left-Wing or Right-Wing?) is a free, 100% anonymous game: everyday objects, concepts and symbols come up as cards, and it's up to you to decide. Quinoa, rib steak, cargo bikes… everything gets sorted, with humour and no political agenda whatsoever.",
+    "aboutHow": "The idea is simple: swipe each card to the left or to the right depending on the side you associate it with. After each vote, see what the community thinks. Play solo, challenge your friends in private multiplayer rooms, or search for a specific item to see how it ranks.",
+    "aboutStats": "Every game feeds the stats: thousands of votes draw a collective — and often hilarious — map of our political clichés. Browse all the items to discover the community's verdicts, and suggest your own card ideas right from the game."
   },
   "solo": {
     "random": "Random cards",
@@ -111,6 +117,42 @@
     "contactBody": "For any question or support request:",
     "legalTitle": "Legal notice",
     "legalBody": "Publisher: SOARES Cloud Engineering Services, SARL (French LLC) with share capital of €1,000, SIREN 999 871 148, 78 F rue de Lambersart, 59350 Saint-André-lez-Lille, France. Publication director: the company's legal representative. Host: Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, USA."
+  },
+  "privacy": {
+    "title": "Privacy policy",
+    "updated": "Last updated: 18 July 2026",
+    "introBody": "This page describes the data processed by the game \"C'est de Gauche ou de Droite ?\" (cestdegaucheoudedroite.com) and your rights. In short: the game works without any account or personal data; only ads may collect some, with your consent.",
+    "whoTitle": "Who we are",
+    "whoBody": "The site is published by SOARES Cloud Engineering Services, SARL (French LLC) with share capital of €1,000, SIREN 999 871 148, 78 F rue de Lambersart, 59350 Saint-André-lez-Lille, France. Host: Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, USA.",
+    "dataTitle": "Data collected by the game",
+    "dataBody": "No account is required and the game itself collects no personal data. A random session identifier, generated on your device, is only used to prevent duplicate votes: it is not linked to any identity. To fight abuse, a fingerprint (hash) of your IP address is computed: it cannot be traced back to the original address and is automatically erased after 30 days. Your votes are aggregated anonymously into the game's public statistics, and your vote history is stored on your device only.",
+    "cookiesTitle": "Cookies and advertising",
+    "cookiesBody": "The game is funded by advertising, served through Google AdSense. Google and its certified partners may use cookies or similar identifiers to serve ads, measure their audience and, if you consent, personalise them. Without consent, only non-personalised ads may be shown. Outside of advertising, the site sets no tracking cookies.",
+    "cookiesGoogleLink": "How Google uses your data",
+    "cookiesPartnersLink": "Google Ads Settings",
+    "cookiesOptOutLink": "Your Online Choices (EU)",
+    "consentTitle": "Consent and control",
+    "consentBody": "On your first visit from the European Economic Area or the United Kingdom, a consent banner (Google CMP) lets you accept or refuse advertising cookies, and change your choice at any time. You can also disable ads entirely in the game's settings.",
+    "contactTitle": "Contact",
+    "contactBody": "For any question about your data, or to request removal of content:"
+  },
+  "item": {
+    "percentLeft": "of voters think it's left-wing",
+    "percentRight": "of voters think it's right-wing",
+    "voteCta": "What about you?",
+    "playCta": "Play the full game",
+    "moreItems": "More items",
+    "notFound": "Item not found. It may have been removed, or doesn't exist yet.",
+    "browseAll": "Browse all items"
+  },
+  "seo": {
+    "homeDesc": "The game that sorts everything: swipe everyday objects and concepts between left-wing and right-wing, then compare your votes with the community. Free, anonymous, solo or with friends.",
+    "soloDesc": "Swipe random cards and vote: left or right? Filter by category and see the community's results after each vote.",
+    "searchDesc": "Search for a specific object or concept, vote, and find out whether the community ranks it left-wing or right-wing.",
+    "creditsDesc": "Credits, disclaimers, reporting and legal notice for the game C'est de Gauche ou de Droite ?",
+    "privacyDesc": "The game's privacy policy: 100% anonymous, no account. Details on advertising cookies (Google AdSense) and your consent choices.",
+    "itemsDesc": "Browse every item in the game and find out, for each one, whether the community ranks it more left-wing or right-wing.",
+    "itemDescSuffix": "Vote and compare your take with the community on C'est de Gauche ou de Droite!"
   },
   "consent": {
     "title": "Ads",

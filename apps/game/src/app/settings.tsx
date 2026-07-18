@@ -1,3 +1,4 @@
+import { Link } from 'expo-router';
 import { useEffect, useState, type ReactElement } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -181,6 +182,11 @@ export default function SettingsScreen() {
               onValueChange={setAdsEnabled}
             />
           </View>
+          <Link href={'/privacy' as never}>
+            <ThemedText type="small" style={styles.privacyLink}>
+              {t('privacy.title')}
+            </ThemedText>
+          </Link>
         </View>
 
         </SafeAreaView>
@@ -298,6 +304,10 @@ const styles = StyleSheet.create({
   rowLabel: {
     flex: 1,
     marginRight: Spacing.two,
+  },
+  privacyLink: {
+    textDecorationLine: 'underline',
+    opacity: 0.9,
   },
   languageLabel: {
     flexDirection: 'row',

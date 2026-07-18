@@ -7,8 +7,14 @@
     "history": "Verlauf",
     "credits": "Credits & Hinweise",
     "back": "Zurück",
-    "beta": "BETA",
-    "betaTooltip": "Das Spiel befindet sich in der Entwicklung; neue Inhalte und Funktionen werden schrittweise hinzugefügt. Sende dein Feedback gerne an support@cestdegaucheoudedroite.com"
+    "privacy": "Datenschutz",
+    "browse": "Alle Items"
+  },
+  "home": {
+    "aboutTitle": "Was ist das für ein Spiel?",
+    "aboutWhat": "„C'est de Gauche ou de Droite ?“ (Ist das Links oder Rechts?) ist ein kostenloses, 100 % anonymes Spiel: Alltagsgegenstände, Konzepte und Symbole erscheinen als Karten, und du entscheidest. Quinoa, Rindersteak, Lastenrad … alles wird einsortiert — mit Humor und ganz ohne politische Absicht.",
+    "aboutHow": "Das Prinzip ist einfach: Wische jede Karte nach links oder rechts, je nachdem, welchem Lager du sie zuordnest. Nach jeder Abstimmung siehst du, was die Community denkt. Spiele solo, fordere deine Freunde in privaten Mehrspieler-Räumen heraus oder suche ein bestimmtes Item, um seine Einordnung zu sehen.",
+    "aboutStats": "Jede Partie erweitert die Statistiken: Tausende Stimmen zeichnen eine kollektive — und oft urkomische — Karte unserer politischen Klischees. Stöbere durch alle Items, um die Urteile der Community zu entdecken, und schlage deine eigenen Kartenideen direkt im Spiel vor."
   },
   "solo": {
     "random": "Zufällige Karten",
@@ -111,6 +117,42 @@
     "contactBody": "Bei Fragen oder Support-Anliegen:",
     "legalTitle": "Impressum",
     "legalBody": "Herausgeber: SOARES Cloud Engineering Services, SARL mit einem Stammkapital von 1 000 €, SIREN 999 871 148, 78 F rue de Lambersart, 59350 Saint-André-lez-Lille, Frankreich. Verantwortlich für die Veröffentlichung: der gesetzliche Vertreter des Unternehmens. Hosting: Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, USA."
+  },
+  "privacy": {
+    "title": "Datenschutzerklärung",
+    "updated": "Zuletzt aktualisiert: 18. Juli 2026",
+    "introBody": "Diese Seite beschreibt, welche Daten das Spiel „C'est de Gauche ou de Droite ?“ (cestdegaucheoudedroite.com) verarbeitet und welche Rechte du hast. Kurz gesagt: Das Spiel funktioniert ohne Konto und ohne personenbezogene Daten; nur die Werbung kann welche erheben — mit deiner Einwilligung.",
+    "whoTitle": "Wer wir sind",
+    "whoBody": "Herausgeber der Website ist SOARES Cloud Engineering Services, SARL mit einem Kapital von 1 000 €, SIREN 999 871 148, 78 F rue de Lambersart, 59350 Saint-André-lez-Lille, Frankreich. Hosting: Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, USA.",
+    "dataTitle": "Vom Spiel erhobene Daten",
+    "dataBody": "Es ist kein Konto erforderlich, und das Spiel selbst erhebt keine personenbezogenen Daten. Eine zufällige Sitzungskennung, die auf deinem Gerät erzeugt wird, dient ausschließlich dazu, doppelte Stimmen zu verhindern: Sie ist mit keiner Identität verknüpft. Zur Missbrauchsbekämpfung wird ein Fingerabdruck (Hash) deiner IP-Adresse berechnet: Er lässt keinen Rückschluss auf die ursprüngliche Adresse zu und wird nach 30 Tagen automatisch gelöscht. Deine Stimmen fließen anonym in die öffentlichen Statistiken des Spiels ein, und dein Abstimmungsverlauf wird nur auf deinem Gerät gespeichert.",
+    "cookiesTitle": "Cookies und Werbung",
+    "cookiesBody": "Das Spiel finanziert sich über Werbung, die über Google AdSense ausgeliefert wird. Google und seine zertifizierten Partner können Cookies oder ähnliche Kennungen verwenden, um Anzeigen auszuliefern, deren Reichweite zu messen und sie — mit deiner Einwilligung — zu personalisieren. Ohne Einwilligung werden nur nicht personalisierte Anzeigen gezeigt. Abgesehen von der Werbung setzt die Website keine Tracking-Cookies.",
+    "cookiesGoogleLink": "Wie Google deine Daten verwendet",
+    "cookiesPartnersLink": "Google-Werbeeinstellungen",
+    "cookiesOptOutLink": "Deine Online-Werbeauswahl (EU)",
+    "consentTitle": "Einwilligung und Kontrolle",
+    "consentBody": "Beim ersten Besuch aus dem Europäischen Wirtschaftsraum oder dem Vereinigten Königreich kannst du über ein Einwilligungsbanner (Google CMP) Werbe-Cookies akzeptieren oder ablehnen und deine Wahl jederzeit ändern. Du kannst Werbung außerdem in den Spieleinstellungen komplett deaktivieren.",
+    "contactTitle": "Kontakt",
+    "contactBody": "Bei Fragen zu deinen Daten oder für Löschanfragen zu Inhalten:"
+  },
+  "item": {
+    "percentLeft": "der Abstimmenden finden, das ist links",
+    "percentRight": "der Abstimmenden finden, das ist rechts",
+    "voteCta": "Und du, was meinst du?",
+    "playCta": "Das ganze Spiel spielen",
+    "moreItems": "Weitere Items",
+    "notFound": "Item nicht gefunden. Es wurde vielleicht entfernt oder existiert noch nicht.",
+    "browseAll": "Alle Items ansehen"
+  },
+  "seo": {
+    "homeDesc": "Das Spiel, das alles einsortiert: Wische Alltagsgegenstände und Konzepte zwischen links und rechts und vergleiche deine Stimmen mit der Community. Kostenlos, anonym, solo oder mit Freunden.",
+    "soloDesc": "Wische zufällige Karten und stimme ab: links oder rechts? Filtere nach Kategorie und sieh nach jeder Abstimmung die Ergebnisse der Community.",
+    "searchDesc": "Suche ein bestimmtes Objekt oder Konzept, stimme ab und finde heraus, ob die Community es links oder rechts einordnet.",
+    "creditsDesc": "Credits, Hinweise, Meldungen und Impressum des Spiels C'est de Gauche ou de Droite ?",
+    "privacyDesc": "Datenschutzerklärung des Spiels: 100 % anonym, ohne Konto. Details zu Werbe-Cookies (Google AdSense) und deinen Einwilligungsoptionen.",
+    "itemsDesc": "Stöbere durch alle Items des Spiels und finde für jedes heraus, ob die Community es eher links oder eher rechts einordnet.",
+    "itemDescSuffix": "Stimme ab und vergleiche deine Meinung mit der Community auf C'est de Gauche ou de Droite!"
   },
   "consent": {
     "title": "Werbung",

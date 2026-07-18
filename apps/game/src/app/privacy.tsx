@@ -8,122 +8,109 @@ import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useT } from '@/lib/i18n';
 
-const REMIX_URL =
-  'https://soundcloud.com/tomaly-546558255/chirac-je-serai-le-president-de-tous-les-francais-thomaslyy-house-remix';
-const ORIGINAL_URL = 'https://www.youtube.com/watch?v=K8uo_SJ_PKA';
 const SUPPORT_EMAIL = 'support@cestdegaucheoudedroite.com';
+const GOOGLE_PARTNER_SITES_URL =
+  'https://policies.google.com/technologies/partner-sites';
+const GOOGLE_ADS_SETTINGS_URL = 'https://adssettings.google.com';
+const YOUR_ONLINE_CHOICES_URL = 'https://www.youronlinechoices.eu';
 
-export default function CreditsScreen() {
+export default function PrivacyScreen() {
   const { t } = useT();
   return (
     <ThemedView style={styles.container}>
       <Head>
-        <title>{t('menu.credits')}</title>
-        <meta name="description" content={t('seo.creditsDesc')} />
+        <title>{t('privacy.title')}</title>
+        <meta name="description" content={t('seo.privacyDesc')} />
       </Head>
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <ScrollView contentContainerStyle={styles.scroll}>
-          {/* Game & images — AI generated */}
+          {/* Intro */}
           <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
-              {t('credits.aiTitle')}
+            <ThemedText type="small" themeColor="textSecondary">
+              {t('privacy.updated')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
-              {t('credits.aiBody')}
+              {t('privacy.introBody')}
             </ThemedText>
           </View>
 
-          {/* Special thanks */}
+          {/* Who we are */}
           <View style={styles.section}>
             <ThemedText type="smallBold" themeColor="textSecondary">
-              {t('credits.thanksTitle')}
+              {t('privacy.whoTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
-              {t('credits.thanksBody')}
+              {t('privacy.whoBody')}
             </ThemedText>
           </View>
 
-          {/* Music */}
+          {/* Data collected by the game */}
           <View style={styles.section}>
             <ThemedText type="smallBold" themeColor="textSecondary">
-              {t('credits.musicTitle')}
+              {t('privacy.dataTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
-              {t('credits.musicBody')}
+              {t('privacy.dataBody')}
+            </ThemedText>
+          </View>
+
+          {/* Cookies & advertising */}
+          <View style={styles.section}>
+            <ThemedText type="smallBold" themeColor="textSecondary">
+              {t('privacy.cookiesTitle')}
+            </ThemedText>
+            <ThemedText type="small" themeColor="textSecondary">
+              {t('privacy.cookiesBody')}
             </ThemedText>
             <LinkRow
-              testID="credits-remix-link"
-              icon="musical-notes"
-              label={t('credits.musicRemixLink')}
-              url={REMIX_URL}
+              testID="privacy-google-link"
+              icon="logo-google"
+              label={t('privacy.cookiesGoogleLink')}
+              url={GOOGLE_PARTNER_SITES_URL}
             />
             <LinkRow
-              testID="credits-original-link"
-              icon="logo-youtube"
-              label={t('credits.musicOriginalLink')}
-              url={ORIGINAL_URL}
+              testID="privacy-ads-settings-link"
+              icon="options"
+              label={t('privacy.cookiesPartnersLink')}
+              url={GOOGLE_ADS_SETTINGS_URL}
+            />
+            <LinkRow
+              testID="privacy-optout-link"
+              icon="hand-left"
+              label={t('privacy.cookiesOptOutLink')}
+              url={YOUR_ONLINE_CHOICES_URL}
             />
           </View>
 
-          {/* Privacy */}
+          {/* Consent & controls */}
           <View style={styles.section}>
             <ThemedText type="smallBold" themeColor="textSecondary">
-              {t('credits.privacyTitle')}
+              {t('privacy.consentTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
-              {t('credits.privacyBody')}
+              {t('privacy.consentBody')}
             </ThemedText>
-            <Link href={'/privacy' as never}>
+            <Link href={'/settings' as never}>
               <ThemedText type="small" style={styles.inlineLink}>
-                {t('privacy.title')}
+                {t('menu.settings')}
               </ThemedText>
             </Link>
-          </View>
-
-          {/* Disclaimer */}
-          <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
-              {t('credits.disclaimerTitle')}
-            </ThemedText>
-            <ThemedText type="small" themeColor="textSecondary">
-              {t('credits.disclaimerBody')}
-            </ThemedText>
-          </View>
-
-          {/* Reporting & takedown */}
-          <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
-              {t('credits.takedownTitle')}
-            </ThemedText>
-            <ThemedText type="small" themeColor="textSecondary">
-              {t('credits.takedownBody')}
-            </ThemedText>
           </View>
 
           {/* Contact */}
           <View style={styles.section}>
             <ThemedText type="smallBold" themeColor="textSecondary">
-              {t('credits.contactTitle')}
+              {t('privacy.contactTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
-              {t('credits.contactBody')}
+              {t('privacy.contactBody')}
             </ThemedText>
             <LinkRow
-              testID="credits-contact-link"
+              testID="privacy-contact-link"
               icon="mail"
               label={SUPPORT_EMAIL}
               url={`mailto:${SUPPORT_EMAIL}`}
             />
-          </View>
-
-          {/* Legal notice (LCEN mentions légales) */}
-          <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
-              {t('credits.legalTitle')}
-            </ThemedText>
-            <ThemedText type="small" themeColor="textSecondary">
-              {t('credits.legalBody')}
-            </ThemedText>
           </View>
         </ScrollView>
       </SafeAreaView>

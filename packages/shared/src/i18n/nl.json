@@ -7,8 +7,14 @@
     "history": "Geschiedenis",
     "credits": "Credits & disclaimers",
     "back": "Terug",
-    "beta": "BÈTA",
-    "betaTooltip": "Het spel is in ontwikkeling; nieuwe items en functies worden geleidelijk toegevoegd. Stuur gerust je feedback naar support@cestdegaucheoudedroite.com"
+    "privacy": "Privacy",
+    "browse": "Alle items"
+  },
+  "home": {
+    "aboutTitle": "Wat is dit voor spel?",
+    "aboutWhat": "'C'est de Gauche ou de Droite ?' (Is het Links of Rechts?) is een gratis en 100% anoniem spel: alledaagse voorwerpen, concepten en symbolen verschijnen als kaarten, en jij beslist. Quinoa, entrecote, de bakfiets… alles wordt ingedeeld, met humor en zonder enige politieke bedoeling.",
+    "aboutHow": "Het principe is simpel: swipe elke kaart naar links of naar rechts, afhankelijk van het kamp waarmee je hem associeert. Na elke stem zie je wat de community ervan vindt. Speel solo, daag je vrienden uit in privé-multiplayerkamers, of zoek een specifiek item op om de ranking te bekijken.",
+    "aboutStats": "Elke ronde verrijkt de statistieken: duizenden stemmen tekenen een collectieve — en vaak hilarische — kaart van onze politieke clichés. Blader door alle items om de oordelen van de community te ontdekken, en stel je eigen kaartideeën voor, rechtstreeks vanuit het spel."
   },
   "solo": {
     "random": "Willekeurige kaarten",
@@ -111,6 +117,42 @@
     "contactBody": "Voor vragen of ondersteuning:",
     "legalTitle": "Juridische vermeldingen",
     "legalBody": "Uitgever: SOARES Cloud Engineering Services, SARL met een kapitaal van 1 000 €, SIREN 999 871 148, 78 F rue de Lambersart, 59350 Saint-André-lez-Lille, Frankrijk. Publicatieverantwoordelijke: de wettelijke vertegenwoordiger van het bedrijf. Hosting: Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, VS."
+  },
+  "privacy": {
+    "title": "Privacybeleid",
+    "updated": "Laatst bijgewerkt: 18 juli 2026",
+    "introBody": "Deze pagina beschrijft welke gegevens het spel 'C'est de Gauche ou de Droite ?' (cestdegaucheoudedroite.com) verwerkt en wat je rechten zijn. Kort samengevat: het spel werkt zonder account en zonder persoonsgegevens; alleen advertenties kunnen die verzamelen, met jouw toestemming.",
+    "whoTitle": "Wie zijn wij",
+    "whoBody": "De site wordt uitgegeven door SOARES Cloud Engineering Services, SARL met een kapitaal van € 1.000, SIREN 999 871 148, 78 F rue de Lambersart, 59350 Saint-André-lez-Lille, Frankrijk. Hosting: Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, Verenigde Staten.",
+    "dataTitle": "Gegevens die het spel verzamelt",
+    "dataBody": "Er is geen account nodig en het spel zelf verzamelt geen persoonsgegevens. Een willekeurige sessie-ID, aangemaakt op je apparaat, dient alleen om dubbele stemmen te voorkomen: die is aan geen enkele identiteit gekoppeld. Om misbruik tegen te gaan wordt een vingerafdruk (hash) van je IP-adres berekend: daaruit is het oorspronkelijke adres niet te herleiden en hij wordt na 30 dagen automatisch gewist. Je stemmen worden anoniem samengevoegd in de openbare statistieken van het spel, en je stemgeschiedenis wordt alleen op je apparaat bewaard.",
+    "cookiesTitle": "Cookies en advertenties",
+    "cookiesBody": "Het spel wordt gefinancierd met advertenties, geleverd via Google AdSense. Google en zijn gecertificeerde partners kunnen cookies of vergelijkbare identificatoren gebruiken om advertenties te tonen, hun bereik te meten en ze — met jouw toestemming — te personaliseren. Zonder toestemming worden alleen niet-gepersonaliseerde advertenties getoond. Buiten de advertenties plaatst de site geen trackingcookies.",
+    "cookiesGoogleLink": "Hoe Google je gegevens gebruikt",
+    "cookiesPartnersLink": "Google-advertentie-instellingen",
+    "cookiesOptOutLink": "Your Online Choices (EU)",
+    "consentTitle": "Toestemming en controle",
+    "consentBody": "Bij je eerste bezoek vanuit de Europese Economische Ruimte of het Verenigd Koninkrijk kun je via een toestemmingsbanner (Google CMP) advertentiecookies accepteren of weigeren, en je keuze op elk moment wijzigen. Je kunt advertenties ook volledig uitschakelen in de instellingen van het spel.",
+    "contactTitle": "Contact",
+    "contactBody": "Voor vragen over je gegevens, of om verwijdering van content aan te vragen:"
+  },
+  "item": {
+    "percentLeft": "van de stemmers vindt dat het links is",
+    "percentRight": "van de stemmers vindt dat het rechts is",
+    "voteCta": "En jij, wat vind jij?",
+    "playCta": "Speel het volledige spel",
+    "moreItems": "Meer items",
+    "notFound": "Item niet gevonden. Het is misschien verwijderd, of bestaat nog niet.",
+    "browseAll": "Bekijk alle items"
+  },
+  "seo": {
+    "homeDesc": "Het spel dat alles indeelt: swipe alledaagse voorwerpen en concepten tussen links en rechts, en vergelijk je stemmen met de community. Gratis, anoniem, solo of met vrienden.",
+    "soloDesc": "Swipe willekeurige kaarten en stem: links of rechts? Filter op categorie en bekijk na elke stem de resultaten van de community.",
+    "searchDesc": "Zoek een specifiek voorwerp of concept, stem en ontdek of de community het links of rechts indeelt.",
+    "creditsDesc": "Credits, waarschuwingen, meldingen en juridische vermeldingen van het spel C'est de Gauche ou de Droite ?",
+    "privacyDesc": "Privacybeleid van het spel: 100% anoniem, zonder account. Details over advertentiecookies (Google AdSense) en je toestemmingskeuzes.",
+    "itemsDesc": "Blader door alle items van het spel en ontdek per item of de community het eerder links of rechts indeelt.",
+    "itemDescSuffix": "Stem en vergelijk jouw mening met de community op C'est de Gauche ou de Droite!"
   },
   "consent": {
     "title": "Advertenties",

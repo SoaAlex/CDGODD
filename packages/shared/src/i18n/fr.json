@@ -7,8 +7,14 @@
     "history": "Historique",
     "credits": "Crédits & avertissements",
     "back": "Retour",
-    "beta": "BÊTA",
-    "betaTooltip": "Le jeu est en cours de développement, de nouveaux items à swipper et nouvelles fonctionnalités sont ajoutés progressivement. N'hésitez pas à envoyer vos retours à support@cestdegaucheoudedroite.com"
+    "privacy": "Confidentialité",
+    "browse": "Tous les items"
+  },
+  "home": {
+    "aboutTitle": "C'est quoi, ce jeu ?",
+    "aboutWhat": "« C'est de Gauche ou de Droite ? » est un jeu gratuit et 100 % anonyme : des objets, des concepts et des symboles du quotidien défilent sous forme de cartes, et c'est à vous de trancher. Le quinoa, la côte de bœuf, le vélo cargo… tout y passe, avec humour et sans aucune prétention politique.",
+    "aboutHow": "Le principe est simple : swipez chaque carte vers la gauche ou vers la droite selon le camp que vous lui associez. Après chaque vote, découvrez ce qu'en pense la communauté. Jouez en solo, défiez vos amis en multijoueur dans des salles privées, ou cherchez un item précis pour connaître son classement.",
+    "aboutStats": "Chaque partie enrichit les statistiques : des milliers de votes dessinent une carte collective — et souvent hilarante — de nos clichés politiques. Parcourez tous les items pour découvrir les verdicts de la communauté, et proposez vos propres idées de cartes directement depuis le jeu."
   },
   "solo": {
     "random": "Cartes aléatoires",
@@ -111,6 +117,42 @@
     "contactBody": "Pour toute question ou demande de support :",
     "legalTitle": "Mentions légales",
     "legalBody": "Éditeur : SOARES Cloud Engineering Services, SARL au capital de 1 000 €, SIREN 999 871 148, 78 F rue de Lambersart, 59350 Saint-André-lez-Lille, France. Directeur de la publication : le représentant légal de la société. Hébergeur : Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, États-Unis."
+  },
+  "privacy": {
+    "title": "Politique de confidentialité",
+    "updated": "Dernière mise à jour : 18 juillet 2026",
+    "introBody": "Cette page décrit les données traitées par le jeu « C'est de Gauche ou de Droite ? » (cestdegaucheoudedroite.com) et vos droits. En résumé : le jeu fonctionne sans compte et sans donnée personnelle ; seules les publicités peuvent en collecter, avec votre consentement.",
+    "whoTitle": "Qui sommes-nous ?",
+    "whoBody": "Le site est édité par SOARES Cloud Engineering Services, SARL au capital de 1 000 €, SIREN 999 871 148, 78 F rue de Lambersart, 59350 Saint-André-lez-Lille, France. Hébergeur : Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, États-Unis.",
+    "dataTitle": "Données collectées par le jeu",
+    "dataBody": "Aucun compte n'est requis et le jeu ne collecte aucune donnée personnelle. Un identifiant de session aléatoire, généré sur votre appareil, sert uniquement à éviter les votes en double : il n'est relié à aucune identité. Pour lutter contre les abus, une empreinte (hachage) de votre adresse IP est calculée : elle ne permet pas de retrouver l'adresse d'origine et est automatiquement effacée après 30 jours. Vos votes sont agrégés de façon anonyme dans les statistiques publiques du jeu, et votre historique de votes n'est stocké que sur votre appareil.",
+    "cookiesTitle": "Cookies et publicité",
+    "cookiesBody": "Le jeu est financé par la publicité, diffusée via Google AdSense. Google et ses partenaires certifiés peuvent utiliser des cookies ou des identifiants similaires pour diffuser des annonces, mesurer leur audience et, si vous y consentez, les personnaliser. Sans consentement, seules des annonces non personnalisées peuvent être affichées. En dehors de la publicité, le site ne dépose aucun cookie de suivi.",
+    "cookiesGoogleLink": "Comment Google utilise vos données",
+    "cookiesPartnersLink": "Paramètres des annonces Google",
+    "cookiesOptOutLink": "Vos choix publicitaires en ligne (UE)",
+    "consentTitle": "Consentement et contrôle",
+    "consentBody": "Lors de votre première visite depuis l'Espace économique européen ou le Royaume-Uni, une bannière de consentement (CMP Google) vous permet d'accepter ou de refuser les cookies publicitaires, et de modifier votre choix à tout moment. Vous pouvez aussi désactiver complètement l'affichage des publicités dans les paramètres du jeu.",
+    "contactTitle": "Contact",
+    "contactBody": "Pour toute question relative à vos données, ou pour demander le retrait d'un contenu :"
+  },
+  "item": {
+    "percentLeft": "des votants pensent que c'est de gauche",
+    "percentRight": "des votants pensent que c'est de droite",
+    "voteCta": "Et vous, vous en pensez quoi ?",
+    "playCta": "Jouer au jeu complet",
+    "moreItems": "Autres items",
+    "notFound": "Item introuvable. Il a peut-être été retiré, ou n'existe pas encore.",
+    "browseAll": "Voir tous les items"
+  },
+  "seo": {
+    "homeDesc": "Le jeu qui classe tout : swipez des objets et des concepts du quotidien entre la gauche et la droite, puis comparez vos votes avec la communauté. Gratuit, anonyme, en solo ou entre amis.",
+    "soloDesc": "Swipez des cartes aléatoires et votez : gauche ou droite ? Filtrez par catégorie et découvrez les résultats de la communauté après chaque vote.",
+    "searchDesc": "Cherchez un objet ou un concept précis, votez et découvrez si la communauté le classe à gauche ou à droite.",
+    "creditsDesc": "Crédits, avertissements, signalement et mentions légales du jeu C'est de Gauche ou de Droite ?",
+    "privacyDesc": "Politique de confidentialité du jeu : 100 % anonyme, sans compte. Détails sur les cookies publicitaires (Google AdSense) et vos choix de consentement.",
+    "itemsDesc": "Parcourez tous les items du jeu et découvrez, pour chacun, si la communauté le classe plutôt à gauche ou plutôt à droite.",
+    "itemDescSuffix": "Votez et comparez votre avis avec la communauté sur C'est de Gauche ou de Droite !"
   },
   "consent": {
     "title": "Publicités",
