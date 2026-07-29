@@ -8,7 +8,10 @@
     "credits": "Credits & Hinweise",
     "back": "Zurück",
     "privacy": "Datenschutz",
-    "browse": "Alle Items"
+    "browse": "Alle Items",
+    "rankings": "Ranglisten",
+    "about": "Über & FAQ",
+    "categories": "Kategorie"
   },
   "home": {
     "aboutTitle": "Was ist das für ein Spiel?",
@@ -143,7 +146,57 @@
     "playCta": "Das ganze Spiel spielen",
     "moreItems": "Weitere Items",
     "notFound": "Item nicht gefunden. Es wurde vielleicht entfernt oder existiert noch nicht.",
-    "browseAll": "Alle Items ansehen"
+    "browseAll": "Alle Items ansehen",
+    "statsTitle": "Was sagen die Stimmen?",
+    "basedOnPrefix": "Basierend auf",
+    "voteSingular": "Stimme",
+    "votePlural": "Stimmen",
+    "rankPosition": "Position",
+    "rankOf": "von",
+    "rankCategoryScale": "im Links-Rechts-Ranking der Kategorie",
+    "rankOverallScale": "im gesamten Links-Rechts-Ranking",
+    "moreLeftThan": "Weiter links als",
+    "moreRightThan": "weiter rechts als",
+    "seeRankings": "Zu den Ranglisten"
+  },
+  "rankings": {
+    "title": "Ranglisten",
+    "intro": "Die großen Ranglisten des Spiels, berechnet aus den anonymen Stimmen der Community. Eine regelmäßig aktualisierte Momentaufnahme: Jede gespielte Runde bewegt diese Listen.",
+    "mostLeftTitle": "Am weitesten links",
+    "mostLeftBlurb": "Die Items, die die Community am deutlichsten links einordnet.",
+    "mostRightTitle": "Am weitesten rechts",
+    "mostRightBlurb": "Die Items, die die Community am deutlichsten rechts einordnet.",
+    "mostDivisiveTitle": "Die umstrittensten",
+    "mostDivisiveBlurb": "Die Items, die spalten: Stimmen am nächsten an 50 / 50.",
+    "mostVotedTitle": "Die meistgewählten",
+    "mostVotedBlurb": "Die Items, auf die die meisten Spieler reagiert haben."
+  },
+  "category": {
+    "itemsWord": "Items",
+    "intro": "Sortiert vom am weitesten links bis zum am weitesten rechts eingeordneten Item, nach den anonymen Stimmen der Community. Klicke auf ein Item, um die Stimmen im Detail zu sehen — und selbst abzustimmen.",
+    "backToAll": "Alle Kategorien"
+  },
+  "about": {
+    "title": "Über & FAQ",
+    "whatTitle": "Das Konzept",
+    "whatBody": "„C'est de Gauche ou de Droite ?“ beginnt mit einer bekannten Stammtischdebatte: Alles, wirklich alles, lässt sich politisch einordnen — Quinoa, Rindersteak, Lastenrad, Flip-Flops. Das Spiel macht daraus ein kollektives Quiz: Karten ziehen vorbei, du entscheidest, und die Stimmen aller zeichnen eine liebevoll absurde Karte unserer politischen Klischees.",
+    "methodTitle": "Wie werden die Ergebnisse berechnet?",
+    "methodBody": "Jede Stimme ist anonym und zählt genau einmal: keine Gewichtung, keine redaktionelle Korrektur. Eine zufällige Sitzungskennung verhindert doppelte Stimmen (eine Stimme pro Item und Sitzung), und ein Fingerabdruck der IP-Adresse, höchstens 30 Tage gespeichert, dient ausschließlich der Abwehr offensichtlichen Missbrauchs. Die Prozentwerte werden laufend aus aggregierten Zählern neu berechnet — was du siehst, ist der echte Stand der Stimmen, während du spielst.",
+    "moderationTitle": "Moderation und Vorschläge",
+    "moderationBody": "Alle Items werden von Spielern vorgeschlagen und vor dem Erscheinen manuell geprüft. Jede Karte lässt sich mit einem Knopf melden; ab einer bestimmten Zahl an Meldungen wird sie automatisch ausgeblendet, bis sie geprüft ist. Löschanfragen (abgebildete Personen, Rechteinhaber) werden per E-Mail vorrangig behandelt.",
+    "faqTitle": "Häufige Fragen",
+    "faqQ1": "Sind die Ergebnisse ernst gemeint?",
+    "faqA1": "Nein — und genau das ist der Punkt. Die Prozentwerte spiegeln aggregierte Wahrnehmungen spielender Menschen wider, keine echten politischen Positionen. Nichts hier ist eine Studie, eine Umfrage oder ein Urteil über irgendjemanden.",
+    "faqQ2": "Wie schlage ich ein neues Item vor?",
+    "faqA2": "Nutze die freie Suche: Gibt es das Item nicht, bietet dir ein Knopf an, es einzureichen. Es erscheint im Spiel, sobald die Moderation es freigegeben hat.",
+    "faqQ3": "Wie melde ich einen Inhalt?",
+    "faqA3": "Jede Karte hat einen „Melden“-Knopf. Für Löschanfragen (Bild, Marke, abgebildete Person) schreib uns direkt — offensichtlich rechtswidrige Inhalte werden schnell entfernt.",
+    "faqQ4": "Wer steckt hinter dem Spiel?",
+    "faqA4": "Ein unabhängiger französischer Entwickler, mit Ideen aus der Community. Das vollständige Impressum steht auf der Credits-Seite.",
+    "faqQ5": "Wie finanziert sich die Seite?",
+    "faqA5": "Über Werbung (Google AdSense), die sich in den Einstellungen abschalten lässt. Das Spiel verkauft keinerlei Daten — es sammelt ohnehin kaum welche: siehe Datenschutzerklärung.",
+    "contactTitle": "Kontakt",
+    "contactBody": "Eine Frage, eine Item-Idee, ein Problem?"
   },
   "seo": {
     "homeDesc": "Das Spiel, das alles einsortiert: Wische Alltagsgegenstände und Konzepte zwischen links und rechts und vergleiche deine Stimmen mit der Community. Kostenlos, anonym, solo oder mit Freunden.",
@@ -152,7 +205,11 @@
     "creditsDesc": "Credits, Hinweise, Meldungen und Impressum des Spiels C'est de Gauche ou de Droite ?",
     "privacyDesc": "Datenschutzerklärung des Spiels: 100 % anonym, ohne Konto. Details zu Werbe-Cookies (Google AdSense) und deinen Einwilligungsoptionen.",
     "itemsDesc": "Stöbere durch alle Items des Spiels und finde für jedes heraus, ob die Community es eher links oder eher rechts einordnet.",
-    "itemDescSuffix": "Stimme ab und vergleiche deine Meinung mit der Community auf C'est de Gauche ou de Droite!"
+    "itemDescSuffix": "Stimme ab und vergleiche deine Meinung mit der Community auf C'est de Gauche ou de Droite!",
+    "rankingsDesc": "Die Items am weitesten links, am weitesten rechts, am umstrittensten und mit den meisten Stimmen — die großen Ranglisten der Community.",
+    "aboutDesc": "Das Konzept des Spiels, die Berechnung der Stimmen, die Moderation und Antworten auf häufige Fragen.",
+    "categoryDescPrefix": "Die Items der Kategorie",
+    "categoryDescSuffix": "eingeordnet zwischen links und rechts durch die anonymen Stimmen der Community."
   },
   "consent": {
     "title": "Werbung",

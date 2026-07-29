@@ -8,7 +8,10 @@
     "credits": "Credits & disclaimers",
     "back": "Terug",
     "privacy": "Privacy",
-    "browse": "Alle items"
+    "browse": "Alle items",
+    "rankings": "Ranglijsten",
+    "about": "Over & FAQ",
+    "categories": "Categorie"
   },
   "home": {
     "aboutTitle": "Wat is dit voor spel?",
@@ -143,7 +146,57 @@
     "playCta": "Speel het volledige spel",
     "moreItems": "Meer items",
     "notFound": "Item niet gevonden. Het is misschien verwijderd, of bestaat nog niet.",
-    "browseAll": "Bekijk alle items"
+    "browseAll": "Bekijk alle items",
+    "statsTitle": "Wat zeggen de stemmen?",
+    "basedOnPrefix": "Gebaseerd op",
+    "voteSingular": "stem",
+    "votePlural": "stemmen",
+    "rankPosition": "Positie",
+    "rankOf": "van",
+    "rankCategoryScale": "in de links → rechts-ranglijst van de categorie",
+    "rankOverallScale": "in de algemene links → rechts-ranglijst",
+    "moreLeftThan": "Meer links dan",
+    "moreRightThan": "meer rechts dan",
+    "seeRankings": "Bekijk de ranglijsten"
+  },
+  "rankings": {
+    "title": "Ranglijsten",
+    "intro": "De grote ranglijsten van het spel, berekend uit de anonieme stemmen van de community. Een regelmatig ververste momentopname: elke gespeelde ronde beweegt deze lijsten.",
+    "mostLeftTitle": "Het meest links",
+    "mostLeftBlurb": "De items die de community het meest massaal links indeelt.",
+    "mostRightTitle": "Het meest rechts",
+    "mostRightBlurb": "De items die de community het meest massaal rechts indeelt.",
+    "mostDivisiveTitle": "De meest verdeeldheid zaaiende",
+    "mostDivisiveBlurb": "De items die verdelen: stemmen het dichtst bij 50 / 50.",
+    "mostVotedTitle": "De meest gestemde",
+    "mostVotedBlurb": "De items waarop de meeste spelers reageerden."
+  },
+  "category": {
+    "itemsWord": "items",
+    "intro": "Gerangschikt van meest links naar meest rechts, volgens de anonieme stemmen van de community. Klik op een item om de stemmen in detail te zien — en zelf te stemmen.",
+    "backToAll": "Alle categorieën"
+  },
+  "about": {
+    "title": "Over & FAQ",
+    "whatTitle": "Het concept",
+    "whatBody": "'C'est de Gauche ou de Droite ?' begint bij een bekend cafédebat: alles, werkelijk alles, kan politiek worden ingedeeld — quinoa, entrecote, de bakfiets, teenslippers. Het spel maakt van dat debat een collectieve quiz: kaarten komen voorbij, jij beslist, en de stemmen van iedereen tekenen een liefdevol absurde kaart van onze politieke clichés.",
+    "methodTitle": "Hoe worden de resultaten berekend?",
+    "methodBody": "Elke stem is anoniem en telt één keer: geen weging, geen redactionele bijsturing. Een willekeurige sessie-ID beperkt dubbele stemmen (één stem per item per sessie), en een vingerafdruk van het IP-adres, hooguit 30 dagen bewaard, dient uitsluitend om duidelijk misbruik te blokkeren. De percentages worden doorlopend herberekend uit samengevoegde tellers — wat je ziet is de echte stand van de stemmen terwijl je speelt.",
+    "moderationTitle": "Moderatie en voorstellen",
+    "moderationBody": "Alle items worden door spelers voorgesteld en handmatig gevalideerd voordat ze in het spel verschijnen. Elke kaart kan met één knop worden gemeld; boven een drempel aan meldingen wordt hij automatisch verborgen in afwachting van controle. Verwijderverzoeken (afgebeelde personen, rechthebbenden) worden met voorrang per e-mail behandeld.",
+    "faqTitle": "Veelgestelde vragen",
+    "faqQ1": "Zijn de resultaten serieus?",
+    "faqA1": "Nee — en dat is precies het punt. De percentages weerspiegelen samengevoegde percepties van spelers die zich vermaken, geen echte politieke standpunten. Niets hier is een studie, een peiling of een oordeel over wie dan ook.",
+    "faqQ2": "Hoe stel ik een nieuw item voor?",
+    "faqA2": "Gebruik de vrije zoekfunctie: bestaat het item niet, dan biedt een knop aan om het in te sturen. Het verschijnt in het spel zodra de moderatie het heeft goedgekeurd.",
+    "faqQ3": "Hoe meld ik content?",
+    "faqA3": "Elke kaart heeft een 'Melden'-knop. Voor een verwijderverzoek (afbeelding, merk, afgebeelde persoon) schrijf je ons direct — duidelijk onrechtmatige content wordt snel verwijderd.",
+    "faqQ4": "Wie zit er achter het spel?",
+    "faqA4": "Een onafhankelijke Franse ontwikkelaar, met hulp van de community voor item-ideeën. De volledige juridische vermeldingen staan op de Credits-pagina.",
+    "faqQ5": "Hoe wordt de site gefinancierd?",
+    "faqA5": "Met advertenties (Google AdSense), uit te schakelen in de instellingen. Het spel verkoopt geen enkele data — het verzamelt er trouwens nauwelijks: zie het privacybeleid.",
+    "contactTitle": "Contact",
+    "contactBody": "Een vraag, een item-idee, een probleem?"
   },
   "seo": {
     "homeDesc": "Het spel dat alles indeelt: swipe alledaagse voorwerpen en concepten tussen links en rechts, en vergelijk je stemmen met de community. Gratis, anoniem, solo of met vrienden.",
@@ -152,7 +205,11 @@
     "creditsDesc": "Credits, waarschuwingen, meldingen en juridische vermeldingen van het spel C'est de Gauche ou de Droite ?",
     "privacyDesc": "Privacybeleid van het spel: 100% anoniem, zonder account. Details over advertentiecookies (Google AdSense) en je toestemmingskeuzes.",
     "itemsDesc": "Blader door alle items van het spel en ontdek per item of de community het eerder links of rechts indeelt.",
-    "itemDescSuffix": "Stem en vergelijk jouw mening met de community op C'est de Gauche ou de Droite!"
+    "itemDescSuffix": "Stem en vergelijk jouw mening met de community op C'est de Gauche ou de Droite!",
+    "rankingsDesc": "De meest linkse, meest rechtse, meest verdelende en meest gestemde items — de grote ranglijsten van de community.",
+    "aboutDesc": "Het concept van het spel, hoe de stemmen worden berekend, de moderatie en antwoorden op veelgestelde vragen.",
+    "categoryDescPrefix": "De items van de categorie",
+    "categoryDescSuffix": "ingedeeld tussen links en rechts door de anonieme stemmen van de community."
   },
   "consent": {
     "title": "Advertenties",

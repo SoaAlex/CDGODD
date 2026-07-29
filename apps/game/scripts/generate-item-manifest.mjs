@@ -1,6 +1,14 @@
-// Fetches the full approved-item catalog from the API and writes
-// src/generated/item-manifest.json, consumed by the /item/[id] and /items
-// routes so `expo export` prerenders one crawlable HTML page per item.
+// Fetches the approved-item catalog + categories from the API and writes
+// src/generated/item-manifest.json, consumed by the /item/[id], /items,
+// /categorie/[key] and /classements routes so `expo export` prerenders one
+// crawlable HTML page per item and per category.
+//
+// Indexing hygiene (AdSense/SEO):
+//  - the deck is fetched with `exclude=nsfw` so sensitive items never get a
+//    prerendered page, a sitemap entry or an ad-tagged URL (they stay
+//    playable in-game through the category filters);
+//  - items whose label is shorter than 3 characters are dropped (junk data)
+//    and logged so they can be cleaned up in the admin panel.
 //
 // Runs before `expo export` in `build:web`. MUST fail soft: the e2e CI job
 // builds the web bundle before any API server exists, and a network hiccup
@@ -17,6 +25,8 @@ const OUT = fileURLToPath(
 // Backstop against a runaway cursor loop; also the Workers static-asset
 // file-count ceiling is 20k, so more item pages could not deploy anyway.
 const MAX_ITEMS = 15000;
+const EXCLUDED_CATEGORIES = ['nsfw'];
+const MIN_LABEL_LENGTH = 3;
 
 function slugify(label) {
   return (
@@ -37,17 +47,22 @@ function slugify(label) {
   );
 }
 
+async function fetchJson(path) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    signal: AbortSignal.timeout(15000),
+  });
+  if (!res.ok) throw new Error(`GET ${path.split('?')[0]} -> ${res.status}`);
+  return res.json();
+}
+
 async function fetchAllCards() {
   const cards = [];
   let cursor;
   do {
     const params = new URLSearchParams({ lang: 'fr', limit: '50' });
+    params.set('exclude', EXCLUDED_CATEGORIES.join(','));
     if (cursor !== undefined) params.set('cursor', String(cursor));
-    const res = await fetch(`${API_BASE}/deck?${params}`, {
-      signal: AbortSignal.timeout(15000),
-    });
-    if (!res.ok) throw new Error(`GET /deck -> ${res.status}`);
-    const page = await res.json();
+    const page = await fetchJson(`/deck?${params}`);
     cards.push(...page.cards);
     cursor = page.nextCursor;
   } while (cursor !== undefined && cards.length < MAX_ITEMS);
@@ -63,10 +78,26 @@ function hasExistingManifest() {
 }
 
 try {
-  const cards = await fetchAllCards();
+  const [cards, categoriesResponse] = await Promise.all([
+    fetchAllCards(),
+    fetchJson('/categories?lang=fr'),
+  ]);
+
+  const junk = cards.filter((c) => c.label.trim().length < MIN_LABEL_LENGTH);
+  if (junk.length > 0) {
+    console.warn(
+      `item manifest: skipping ${junk.length} junk item(s) with too-short labels: ` +
+        junk.map((c) => `#${c.id} "${c.label}"`).join(', '),
+    );
+  }
+  const kept = cards.filter((c) => c.label.trim().length >= MIN_LABEL_LENGTH);
+
   const manifest = {
     generatedAt: new Date().toISOString(),
-    items: cards.map((c) => ({
+    categories: categoriesResponse.categories
+      .filter((c) => !EXCLUDED_CATEGORIES.includes(c.key))
+      .map((c) => ({ key: c.key, name: c.name, count: c.count })),
+    items: kept.map((c) => ({
       id: c.id,
       seg: `${c.id}-${slugify(c.label)}`,
       label: c.label,
@@ -77,15 +108,20 @@ try {
     })),
   };
   writeFileSync(OUT, `${JSON.stringify(manifest, null, 2)}\n`);
-  console.log(`item manifest: ${manifest.items.length} items from ${API_BASE}`);
+  console.log(
+    `item manifest: ${manifest.items.length} items, ${manifest.categories.length} categories from ${API_BASE}`,
+  );
 } catch (err) {
   console.warn(
-    `item manifest: could not fetch ${API_BASE}/deck (${err?.message ?? err}); ` +
+    `item manifest: could not fetch from ${API_BASE} (${err?.message ?? err}); ` +
       (hasExistingManifest()
         ? 'keeping the existing manifest.'
         : 'writing an empty manifest — no item pages will be prerendered.'),
   );
   if (!hasExistingManifest()) {
-    writeFileSync(OUT, `${JSON.stringify({ generatedAt: null, items: [] }, null, 2)}\n`);
+    writeFileSync(
+      OUT,
+      `${JSON.stringify({ generatedAt: null, categories: [], items: [] }, null, 2)}\n`,
+    );
   }
 }

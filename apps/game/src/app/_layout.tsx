@@ -274,6 +274,27 @@ export default function RootLayout() {
               headerBackButtonDisplayMode: 'minimal',
             }}
           />
+          <Stack.Screen
+            name="categorie/[key]"
+            options={{
+              title: t('menu.categories'),
+              headerBackButtonDisplayMode: 'minimal',
+            }}
+          />
+          <Stack.Screen
+            name="classements"
+            options={{
+              title: t('menu.rankings'),
+              headerBackButtonDisplayMode: 'minimal',
+            }}
+          />
+          <Stack.Screen
+            name="a-propos"
+            options={{
+              title: t('menu.about'),
+              headerBackButtonDisplayMode: 'minimal',
+            }}
+          />
           </Stack>
         </ThemeProvider>
       </GradientBackground>

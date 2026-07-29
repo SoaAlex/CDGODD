@@ -31,6 +31,11 @@ export default function CreditsScreen() {
             <ThemedText type="small" themeColor="textSecondary">
               {t('credits.aiBody')}
             </ThemedText>
+            <Link href={'/a-propos' as never}>
+              <ThemedText type="small" style={styles.inlineLink}>
+                {t('about.title')}
+              </ThemedText>
+            </Link>
           </View>
 
           {/* Special thanks */}

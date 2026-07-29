@@ -8,7 +8,10 @@
     "credits": "Créditos e avisos",
     "back": "Voltar",
     "privacy": "Privacidade",
-    "browse": "Todos os itens"
+    "browse": "Todos os itens",
+    "rankings": "Classificações",
+    "about": "Sobre & FAQ",
+    "categories": "Categoria"
   },
   "home": {
     "aboutTitle": "Que jogo é este?",
@@ -143,7 +146,57 @@
     "playCta": "Jogar o jogo completo",
     "moreItems": "Outros itens",
     "notFound": "Item não encontrado. Pode ter sido removido, ou ainda não existir.",
-    "browseAll": "Ver todos os itens"
+    "browseAll": "Ver todos os itens",
+    "statsTitle": "O que dizem os votos?",
+    "basedOnPrefix": "Com base em",
+    "voteSingular": "voto",
+    "votePlural": "votos",
+    "rankPosition": "Posição",
+    "rankOf": "de",
+    "rankCategoryScale": "na classificação esquerda → direita da categoria",
+    "rankOverallScale": "na classificação geral esquerda → direita",
+    "moreLeftThan": "Mais à esquerda do que",
+    "moreRightThan": "mais à direita do que",
+    "seeRankings": "Ver as classificações"
+  },
+  "rankings": {
+    "title": "Classificações",
+    "intro": "As grandes tabelas do jogo, calculadas a partir dos votos anónimos da comunidade. Um retrato atualizado regularmente: cada partida jogada faz mexer estas listas.",
+    "mostLeftTitle": "Os mais à esquerda",
+    "mostLeftBlurb": "Os itens que a comunidade classifica mais massivamente à esquerda.",
+    "mostRightTitle": "Os mais à direita",
+    "mostRightBlurb": "Os itens que a comunidade classifica mais massivamente à direita.",
+    "mostDivisiveTitle": "Os mais fraturantes",
+    "mostDivisiveBlurb": "Os itens que dividem: votos mais próximos do 50 / 50.",
+    "mostVotedTitle": "Os mais votados",
+    "mostVotedBlurb": "Os itens que fizeram reagir mais jogadores."
+  },
+  "category": {
+    "itemsWord": "itens",
+    "intro": "Classificados do mais à esquerda ao mais à direita, segundo os votos anónimos da comunidade. Clica num item para veres o detalhe dos votos — e dares a tua opinião.",
+    "backToAll": "Todas as categorias"
+  },
+  "about": {
+    "title": "Sobre & FAQ",
+    "whatTitle": "O conceito",
+    "whatBody": "«C'est de Gauche ou de Droite ?» parte de um conhecido debate de café: tudo, absolutamente tudo, pode ser classificado politicamente — a quinoa, a costeleta de vaca, a bicicleta de carga, as chinelas. O jogo transforma esse debate num quiz coletivo: as cartas passam, tu decides, e os votos de todos desenham um mapa ternamente absurdo dos nossos clichés políticos.",
+    "methodTitle": "Como são calculados os resultados?",
+    "methodBody": "Cada voto é anónimo e vale um: sem ponderação, sem ajuste editorial. Um identificador de sessão aleatório limita votos duplicados (um voto por item e por sessão), e uma impressão do endereço IP, guardada no máximo 30 dias, serve apenas para bloquear abusos evidentes. As percentagens são recalculadas continuamente a partir de contadores agregados — o que vês é o estado real dos votos no momento em que jogas.",
+    "moderationTitle": "Moderação e propostas",
+    "moderationBody": "Todos os itens são propostos pelos jogadores e validados manualmente antes de aparecerem no jogo. Cada carta pode ser denunciada com um botão; acima de um certo número de denúncias, é automaticamente ocultada até ser revista. Pedidos de remoção (pessoas representadas, titulares de direitos) são tratados com prioridade por e-mail.",
+    "faqTitle": "Perguntas frequentes",
+    "faqQ1": "Os resultados são a sério?",
+    "faqA1": "Não — e é esse o princípio. As percentagens refletem perceções agregadas de jogadores a divertirem-se, não posições políticas reais. Nada aqui é um estudo, uma sondagem ou um julgamento sobre alguém.",
+    "faqQ2": "Como proponho um novo item?",
+    "faqA2": "Usa a pesquisa livre: se o item não existir, um botão propõe submetê-lo. Aparecerá no jogo depois de validado pela moderação.",
+    "faqQ3": "Como denuncio um conteúdo?",
+    "faqA3": "Cada carta tem um botão «Denunciar». Para um pedido de remoção (imagem, marca, pessoa representada), escreve-nos diretamente — conteúdos manifestamente ilícitos são removidos rapidamente.",
+    "faqQ4": "Quem está por trás do jogo?",
+    "faqA4": "Um programador independente francês, com a ajuda da comunidade para as ideias de itens. As menções legais completas estão na página de Créditos.",
+    "faqQ5": "Como é financiado o site?",
+    "faqA5": "Com publicidade (Google AdSense), desativável nas definições. O jogo não vende dados nenhuns — aliás, quase não os recolhe: vê a política de privacidade.",
+    "contactTitle": "Contacto",
+    "contactBody": "Uma pergunta, uma ideia de item, um problema?"
   },
   "seo": {
     "homeDesc": "O jogo que classifica tudo: desliza objetos e conceitos do quotidiano entre a esquerda e a direita, e compara os teus votos com a comunidade. Gratuito, anónimo, a solo ou com amigos.",
@@ -152,7 +205,11 @@
     "creditsDesc": "Créditos, avisos, denúncias e menções legais do jogo C'est de Gauche ou de Droite ?",
     "privacyDesc": "Política de privacidade do jogo: 100% anónimo, sem conta. Detalhes sobre cookies publicitários (Google AdSense) e as tuas escolhas de consentimento.",
     "itemsDesc": "Percorre todos os itens do jogo e descobre, para cada um, se a comunidade o classifica mais à esquerda ou mais à direita.",
-    "itemDescSuffix": "Vota e compara a tua opinião com a comunidade em C'est de Gauche ou de Droite!"
+    "itemDescSuffix": "Vota e compara a tua opinião com a comunidade em C'est de Gauche ou de Droite!",
+    "rankingsDesc": "Os itens mais à esquerda, mais à direita, mais fraturantes e mais votados — as grandes classificações da comunidade.",
+    "aboutDesc": "O conceito do jogo, o método de cálculo dos votos, a moderação e as respostas às perguntas frequentes.",
+    "categoryDescPrefix": "Os itens da categoria",
+    "categoryDescSuffix": "classificados entre a esquerda e a direita pelos votos anónimos da comunidade."
   },
   "consent": {
     "title": "Anúncios",

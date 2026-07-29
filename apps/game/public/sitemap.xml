@@ -11,19 +11,19 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://cestdegaucheoudedroite.com/multiplayer</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://cestdegaucheoudedroite.com/search</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://cestdegaucheoudedroite.com/items</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cestdegaucheoudedroite.com/classements</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cestdegaucheoudedroite.com/a-propos</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://cestdegaucheoudedroite.com/privacy</loc>

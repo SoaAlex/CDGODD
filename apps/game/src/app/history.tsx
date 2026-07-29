@@ -1,4 +1,5 @@
 import { Image } from 'expo-image';
+import Head from 'expo-router/head';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -36,9 +37,19 @@ export default function HistoryScreen() {
     })();
   }, []);
 
+  // Device-local screen: keep it out of search results. The loading branch
+  // is what gets prerendered (effects don't run at export), so the meta has
+  // to be in both returns.
+  const noindex = (
+    <Head>
+      <meta name="robots" content="noindex" />
+    </Head>
+  );
+
   if (entries === null) {
     return (
       <ThemedView style={[styles.container, styles.centered]}>
+        {noindex}
         <ActivityIndicator size="large" color="#fff" />
       </ThemedView>
     );
@@ -46,6 +57,7 @@ export default function HistoryScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      {noindex}
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <FlatList
           data={entries}

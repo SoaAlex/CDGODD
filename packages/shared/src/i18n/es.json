@@ -8,7 +8,10 @@
     "credits": "Créditos y avisos",
     "back": "Volver",
     "privacy": "Privacidad",
-    "browse": "Todos los ítems"
+    "browse": "Todos los ítems",
+    "rankings": "Clasificaciones",
+    "about": "Acerca de & FAQ",
+    "categories": "Categoría"
   },
   "home": {
     "aboutTitle": "¿Qué es este juego?",
@@ -143,7 +146,57 @@
     "playCta": "Jugar al juego completo",
     "moreItems": "Otros ítems",
     "notFound": "Ítem no encontrado. Puede que haya sido retirado o que aún no exista.",
-    "browseAll": "Ver todos los ítems"
+    "browseAll": "Ver todos los ítems",
+    "statsTitle": "¿Qué dicen los votos?",
+    "basedOnPrefix": "Basado en",
+    "voteSingular": "voto",
+    "votePlural": "votos",
+    "rankPosition": "Posición",
+    "rankOf": "de",
+    "rankCategoryScale": "en la clasificación izquierda → derecha de la categoría",
+    "rankOverallScale": "en la clasificación general izquierda → derecha",
+    "moreLeftThan": "Más a la izquierda que",
+    "moreRightThan": "más a la derecha que",
+    "seeRankings": "Ver las clasificaciones"
+  },
+  "rankings": {
+    "title": "Clasificaciones",
+    "intro": "Las grandes clasificaciones del juego, calculadas a partir de los votos anónimos de la comunidad. Una foto actualizada con regularidad: cada partida jugada mueve estas listas.",
+    "mostLeftTitle": "Los más de izquierdas",
+    "mostLeftBlurb": "Los ítems que la comunidad clasifica más masivamente a la izquierda.",
+    "mostRightTitle": "Los más de derechas",
+    "mostRightBlurb": "Los ítems que la comunidad clasifica más masivamente a la derecha.",
+    "mostDivisiveTitle": "Los más divisivos",
+    "mostDivisiveBlurb": "Los ítems que dividen: votos más cercanos al 50 / 50.",
+    "mostVotedTitle": "Los más votados",
+    "mostVotedBlurb": "Los ítems que hicieron reaccionar a más jugadores."
+  },
+  "category": {
+    "itemsWord": "ítems",
+    "intro": "Clasificados del más de izquierdas al más de derechas, según los votos anónimos de la comunidad. Haz clic en un ítem para ver el detalle de sus votos — y dar tu opinión.",
+    "backToAll": "Todas las categorías"
+  },
+  "about": {
+    "title": "Acerca de & FAQ",
+    "whatTitle": "El concepto",
+    "whatBody": "«C'est de Gauche ou de Droite ?» parte de un conocido debate de bar: todo, absolutamente todo, puede clasificarse políticamente — la quinoa, el chuletón, la bici de carga, las chanclas. El juego convierte ese debate en un quiz colectivo: las cartas pasan, tú decides, y los votos de todos dibujan un mapa tiernamente absurdo de nuestros clichés políticos.",
+    "methodTitle": "¿Cómo se calculan los resultados?",
+    "methodBody": "Cada voto es anónimo y cuenta uno: sin ponderación, sin ajuste editorial. Un identificador de sesión aleatorio limita los votos duplicados (un voto por ítem y por sesión), y una huella de la dirección IP, conservada como máximo 30 días, sirve únicamente para bloquear abusos evidentes. Los porcentajes se recalculan continuamente a partir de contadores agregados — lo que ves es el estado real de los votos mientras juegas.",
+    "moderationTitle": "Moderación y propuestas",
+    "moderationBody": "Todos los ítems los proponen los jugadores y se validan manualmente antes de aparecer en el juego. Cada carta puede denunciarse con un botón; superado un umbral de denuncias, se oculta automáticamente a la espera de revisión. Las solicitudes de retirada (personas representadas, titulares de derechos) se tratan con prioridad por correo.",
+    "faqTitle": "Preguntas frecuentes",
+    "faqQ1": "¿Los resultados van en serio?",
+    "faqA1": "No — y ese es el principio. Los porcentajes reflejan percepciones agregadas de jugadores divirtiéndose, no posiciones políticas reales. Nada aquí es un estudio, una encuesta ni un juicio sobre nadie.",
+    "faqQ2": "¿Cómo propongo un nuevo ítem?",
+    "faqA2": "Usa la búsqueda libre: si el ítem no existe, un botón te propone enviarlo. Aparecerá en el juego una vez validado por la moderación.",
+    "faqQ3": "¿Cómo denuncio un contenido?",
+    "faqA3": "Cada carta tiene un botón «Denunciar». Para una solicitud de retirada (imagen, marca, persona representada), escríbenos directamente — el contenido manifiestamente ilícito se retira rápido.",
+    "faqQ4": "¿Quién está detrás del juego?",
+    "faqA4": "Un desarrollador independiente francés, con la ayuda de la comunidad para las ideas de ítems. El aviso legal completo está en la página de Créditos.",
+    "faqQ5": "¿Cómo se financia el sitio?",
+    "faqA5": "Con publicidad (Google AdSense), desactivable en los ajustes. El juego no vende ningún dato — de hecho casi no los recoge: mira la política de privacidad.",
+    "contactTitle": "Contacto",
+    "contactBody": "¿Una pregunta, una idea de ítem, un problema?"
   },
   "seo": {
     "homeDesc": "El juego que lo clasifica todo: desliza objetos y conceptos cotidianos entre la izquierda y la derecha, y compara tus votos con la comunidad. Gratis, anónimo, en solitario o con amigos.",
@@ -152,7 +205,11 @@
     "creditsDesc": "Créditos, avisos, denuncias y menciones legales del juego C'est de Gauche ou de Droite ?",
     "privacyDesc": "Política de privacidad del juego: 100 % anónimo, sin cuenta. Detalles sobre las cookies publicitarias (Google AdSense) y tus opciones de consentimiento.",
     "itemsDesc": "Recorre todos los ítems del juego y descubre, para cada uno, si la comunidad lo clasifica más a la izquierda o más a la derecha.",
-    "itemDescSuffix": "¡Vota y compara tu opinión con la comunidad en C'est de Gauche ou de Droite!"
+    "itemDescSuffix": "¡Vota y compara tu opinión con la comunidad en C'est de Gauche ou de Droite!",
+    "rankingsDesc": "Los ítems más de izquierdas, más de derechas, más divisivos y más votados — las grandes clasificaciones de la comunidad.",
+    "aboutDesc": "El concepto del juego, cómo se calculan los votos, la moderación y las respuestas a las preguntas frecuentes.",
+    "categoryDescPrefix": "Los ítems de la categoría",
+    "categoryDescSuffix": "clasificados entre la izquierda y la derecha por los votos anónimos de la comunidad."
   },
   "consent": {
     "title": "Publicidad",

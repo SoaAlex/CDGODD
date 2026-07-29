@@ -157,11 +157,27 @@ export default function MenuScreen() {
               while the site is under AdSense review (a menu page counts as
               "screen without publisher content"). Re-add after approval. */}
 
-          {/* Footer: legal links as real anchors + version. */}
+          {/* Footer: content + legal links as real anchors + version. */}
           <View style={styles.footerLinks}>
             <Link href={'/items' as never}>
               <ThemedText type="small" style={styles.footerLink}>
                 {t('menu.browse')}
+              </ThemedText>
+            </Link>
+            <ThemedText type="small" style={styles.footerDot}>
+              ·
+            </ThemedText>
+            <Link href={'/classements' as never}>
+              <ThemedText type="small" style={styles.footerLink}>
+                {t('menu.rankings')}
+              </ThemedText>
+            </Link>
+            <ThemedText type="small" style={styles.footerDot}>
+              ·
+            </ThemedText>
+            <Link href={'/a-propos' as never}>
+              <ThemedText type="small" style={styles.footerLink}>
+                {t('menu.about')}
               </ThemedText>
             </Link>
             <ThemedText type="small" style={styles.footerDot}>
