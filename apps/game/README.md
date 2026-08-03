@@ -45,9 +45,11 @@ Android**. The web export is served as an assets-only Cloudflare Worker.
   overall rank, neighbour links). All are generated from a build-time
   snapshot of the catalog (`scripts/generate-item-manifest.mjs` →
   `src/generated/item-manifest.json`, committed as an empty placeholder).
-  Indexing hygiene: the manifest fetches the deck with `exclude=nsfw` and
-  drops labels < 3 chars, so sensitive/junk items never get an indexed,
-  ad-tagged page; `/settings` and `/history` carry a noindex meta;
+  Indexing hygiene: the manifest fetches the deck with `exclude=nsfw`,
+  drops a small sensitive-label blocklist (backstop for items missing the
+  nsfw tag) and drops labels < 3 chars, so sensitive/junk items never get
+  an indexed, ad-tagged page; `/settings` and `/history` carry a noindex
+  meta;
   `scripts/generate-sitemap.mjs` rewrites `dist/sitemap.xml` with the
   content pages only (no lobby/utility screens). Vote percentages on item
   pages hydrate live from `/items/tallies`.

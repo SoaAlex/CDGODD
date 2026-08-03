@@ -15,8 +15,9 @@ root rules in [`../../AGENTS.md`](../../AGENTS.md) apply.
   file is an empty placeholder — don't hand-edit, don't commit a populated
   one. It feeds the prerendered `/item/[id]`, `/items`, `/categorie/[key]`
   and `/classements` SEO pages plus `scripts/generate-sitemap.mjs`. The
-  script excludes the `nsfw` category and labels < 3 chars — keep it that
-  way (ad-tagged pages on adult content are an AdSense violation).
+  script excludes the `nsfw` category, a small sensitive-label blocklist
+  (backstop for items missing the nsfw tag) and labels < 3 chars — keep it
+  that way (ad-tagged pages on adult content are an AdSense violation).
 - Data/types from `@cdgodd/shared`; talks to the API worker.
 
 ## Conventions

@@ -7,6 +7,9 @@
 //  - the deck is fetched with `exclude=nsfw` so sensitive items never get a
 //    prerendered page, a sitemap entry or an ad-tagged URL (they stay
 //    playable in-game through the category filters);
+//  - a small label blocklist backstops items that should carry the nsfw
+//    category but don't (e.g. #261 "Drogues" slipped through the first
+//    review build) — the real fix is tagging them in the admin panel;
 //  - items whose label is shorter than 3 characters are dropped (junk data)
 //    and logged so they can be cleaned up in the admin panel.
 //
@@ -26,6 +29,11 @@ const OUT = fileURLToPath(
 // file-count ceiling is 20k, so more item pages could not deploy anyway.
 const MAX_ITEMS = 15000;
 const EXCLUDED_CATEGORIES = ['nsfw'];
+// Backstop for items missing the nsfw tag: an ad-tagged page on adult/drug
+// content is an AdSense violation, so keep these out of the index even when
+// the category data is wrong. Keep the list tight — it silently unpublishes
+// pages, and legitimate topics (e.g. "sexisme") must not match.
+const EXCLUDED_LABEL_PATTERNS = [/drogue/i, /porno/i, /\bsexe\b/i, /nazi/i];
 const MIN_LABEL_LENGTH = 3;
 
 function slugify(label) {
@@ -39,6 +47,8 @@ function slugify(label) {
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '') // strip diacritics
       .toLowerCase()
+      // "C++" -> "c-plus-plus" rather than the junk-looking bare "c"
+      .replace(/\+/g, '-plus')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '')
       // keep URLs short even for long labels
@@ -83,14 +93,27 @@ try {
     fetchJson('/categories?lang=fr'),
   ]);
 
-  const junk = cards.filter((c) => c.label.trim().length < MIN_LABEL_LENGTH);
+  const junk = [];
+  const sensitive = [];
+  const kept = [];
+  for (const c of cards) {
+    if (c.label.trim().length < MIN_LABEL_LENGTH) junk.push(c);
+    else if (EXCLUDED_LABEL_PATTERNS.some((p) => p.test(c.label)))
+      sensitive.push(c);
+    else kept.push(c);
+  }
   if (junk.length > 0) {
     console.warn(
       `item manifest: skipping ${junk.length} junk item(s) with too-short labels: ` +
         junk.map((c) => `#${c.id} "${c.label}"`).join(', '),
     );
   }
-  const kept = cards.filter((c) => c.label.trim().length >= MIN_LABEL_LENGTH);
+  if (sensitive.length > 0) {
+    console.warn(
+      `item manifest: skipping ${sensitive.length} sensitive-label item(s) (tag them nsfw in the admin): ` +
+        sensitive.map((c) => `#${c.id} "${c.label}"`).join(', '),
+    );
+  }
 
   const manifest = {
     generatedAt: new Date().toISOString(),
