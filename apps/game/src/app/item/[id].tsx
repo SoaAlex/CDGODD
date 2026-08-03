@@ -17,6 +17,11 @@ import { useT } from '@/lib/i18n';
 import {
   findItem,
   getItems,
+  isAmbiguousLabel,
+  manifestCategoryName,
+  neighbours,
+  overallRank,
+  rankInCategory,
   toDeckCard,
   type ManifestItem,
 } from '@/lib/item-manifest';
@@ -100,6 +105,31 @@ export default function ItemScreen() {
         ? `${leftPct} % ${t('item.percentLeft')}`
         : `${100 - leftPct} % ${t('item.percentRight')}`;
 
+  // Manifest-derived uniqueness: ranks and neighbours are computed from the
+  // build snapshot so they land in the prerendered HTML.
+  const primaryCategoryKey = item.categoryKeys[0];
+  const catRank = primaryCategoryKey
+    ? rankInCategory(item, primaryCategoryKey)
+    : undefined;
+  const globalRank = overallRank(item);
+  const { moreLeft, moreRight } = neighbours(item);
+  // Manifest name first (French, present at prerender — the runtime hook
+  // falls back to the capitalized raw key until its fetch resolves, which
+  // never happens during static export).
+  const nameOf = (key: string) => manifestCategoryName(key) ?? categoryName(key);
+  // Duplicate labels (two "Avocat" items…) get the category appended so
+  // every page keeps a distinct title and h1.
+  const ambiguousSuffix =
+    isAmbiguousLabel(item) && primaryCategoryKey
+      ? ` (${nameOf(primaryCategoryKey)})`
+      : '';
+  const pageTitle = `${item.label}${ambiguousSuffix} — ${t('menu.title')}`;
+  const displayTally: VoteTally = tally ?? {
+    itemId: item.id,
+    votesLeft: item.votesLeft,
+    votesRight: item.votesRight,
+  };
+
   function vote(side: Side) {
     if (!item) return;
     void recordVote({
@@ -118,7 +148,7 @@ export default function ItemScreen() {
   return (
     <ThemedView style={styles.container}>
       <Head>
-        <title>{`${item.label} — ${t('menu.title')}`}</title>
+        <title>{pageTitle}</title>
         <meta
           name="description"
           content={
@@ -132,12 +162,12 @@ export default function ItemScreen() {
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <ScrollView contentContainerStyle={styles.scroll}>
           <ThemedText type="title" style={styles.title}>
-            {item.label}
+            {`${item.label}${ambiguousSuffix}`}
           </ThemedText>
           {item.categoryKeys.length > 0 && (
             <ThemedText type="small" themeColor="textSecondary" style={styles.categories}>
               {t('filter.categoriesLabel')} :{' '}
-              {item.categoryKeys.map(categoryName).join(' · ')}
+              {item.categoryKeys.map(nameOf).join(' · ')}
             </ThemedText>
           )}
 
@@ -147,9 +177,21 @@ export default function ItemScreen() {
 
           <ThemedText style={styles.verdict}>{verdict}</ThemedText>
 
-          {voted && tally ? (
-            <TallyBar tally={tally} />
-          ) : (
+          {total > 0 && (
+            <>
+              <TallyBar tally={displayTally} />
+              <ThemedText
+                type="small"
+                themeColor="textSecondary"
+                style={styles.basedOn}
+              >
+                {t('item.basedOnPrefix')} {total}{' '}
+                {total === 1 ? t('item.voteSingular') : t('item.votePlural')}
+              </ThemedText>
+            </>
+          )}
+
+          {!voted && (
             <>
               <ThemedText type="small" themeColor="textSecondary" style={styles.voteCta}>
                 {t('item.voteCta')}
@@ -185,10 +227,69 @@ export default function ItemScreen() {
             </>
           )}
 
+          {/* Unique per-item stats block, prerendered from the manifest. */}
+          {(catRank || globalRank || moreLeft || moreRight) && (
+            <View style={styles.stats}>
+              <ThemedText type="smallBold" themeColor="textSecondary">
+                {t('item.statsTitle')}
+              </ThemedText>
+              {catRank && primaryCategoryKey && (
+                <ThemedText type="small" themeColor="textSecondary">
+                  {t('item.rankPosition')} {catRank.rank} {t('item.rankOf')}{' '}
+                  {catRank.total} {t('item.rankCategoryScale')}{' '}
+                  <Link
+                    href={`/categorie/${primaryCategoryKey}` as never}
+                    style={styles.inlineLink}
+                  >
+                    {nameOf(primaryCategoryKey)}
+                  </Link>
+                </ThemedText>
+              )}
+              {globalRank && (
+                <ThemedText type="small" themeColor="textSecondary">
+                  {t('item.rankPosition')} {globalRank.rank} {t('item.rankOf')}{' '}
+                  {globalRank.total} {t('item.rankOverallScale')}
+                </ThemedText>
+              )}
+              {(moreLeft || moreRight) && (
+                <ThemedText type="small" themeColor="textSecondary">
+                  {moreLeft && (
+                    <>
+                      {t('item.moreLeftThan')}{' '}
+                      <Link
+                        href={`/item/${moreLeft.seg}` as never}
+                        style={styles.inlineLink}
+                      >
+                        {moreLeft.label}
+                      </Link>
+                    </>
+                  )}
+                  {moreLeft && moreRight && ' · '}
+                  {moreRight && (
+                    <>
+                      {t('item.moreRightThan')}{' '}
+                      <Link
+                        href={`/item/${moreRight.seg}` as never}
+                        style={styles.inlineLink}
+                      >
+                        {moreRight.label}
+                      </Link>
+                    </>
+                  )}
+                </ThemedText>
+              )}
+            </View>
+          )}
+
           <View style={styles.linksRow}>
             <Link href={'/solo' as never}>
               <ThemedText type="small" style={styles.inlineLink}>
                 {t('item.playCta')}
+              </ThemedText>
+            </Link>
+            <Link href={'/classements' as never}>
+              <ThemedText type="small" style={styles.inlineLink}>
+                {t('item.seeRankings')}
               </ThemedText>
             </Link>
             <Link href={'/items' as never}>
@@ -246,6 +347,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '600',
   },
+  basedOn: {
+    textAlign: 'center',
+  },
   voteCta: {
     textAlign: 'center',
   },
@@ -264,6 +368,10 @@ const styles = StyleSheet.create({
   },
   voteText: {
     color: '#fff',
+  },
+  stats: {
+    gap: Spacing.two,
+    paddingTop: Spacing.three,
   },
   linksRow: {
     flexDirection: 'row',

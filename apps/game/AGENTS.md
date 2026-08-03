@@ -9,11 +9,15 @@ root rules in [`../../AGENTS.md`](../../AGENTS.md) apply.
 - `src/app/` — expo-router routes (file-based).
 - `src/components/`, `src/hooks/`, `src/lib/`, `src/constants/` — the usual.
 - `src/ads/` — ad integration (behind consent; ads are the only data collector).
-- `src/generated/item-manifest.json` — build-time catalog snapshot written by
+- `src/generated/item-manifest.json` — build-time catalog snapshot
+  (`{generatedAt, categories, items}`) written by
   `scripts/generate-item-manifest.mjs` (part of `build:web`); the committed
-  file is an empty placeholder — don't hand-edit, don't commit a populated one.
-  It feeds the prerendered `/item/[id]` + `/items` SEO pages and
-  `scripts/generate-sitemap.mjs`.
+  file is an empty placeholder — don't hand-edit, don't commit a populated
+  one. It feeds the prerendered `/item/[id]`, `/items`, `/categorie/[key]`
+  and `/classements` SEO pages plus `scripts/generate-sitemap.mjs`. The
+  script excludes the `nsfw` category, a small sensitive-label blocklist
+  (backstop for items missing the nsfw tag) and labels < 3 chars — keep it
+  that way (ad-tagged pages on adult content are an AdSense violation).
 - Data/types from `@cdgodd/shared`; talks to the API worker.
 
 ## Conventions

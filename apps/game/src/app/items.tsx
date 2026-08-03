@@ -6,18 +6,69 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useT } from '@/lib/i18n';
-import { getItems } from '@/lib/item-manifest';
+import {
+  getCategories,
+  getItems,
+  isAmbiguousLabel,
+  manifestCategoryName,
+  totalVotes,
+  type ManifestItem,
+} from '@/lib/item-manifest';
 
 /**
- * Crawlable index of every approved item, linking to its /item/<seg> page.
- * Rendered with a plain .map() — NOT a FlatList — so all anchors land in the
- * prerendered HTML (virtualization would drop off-screen rows from the SSG
- * output). With an empty manifest (local dev without the generate script)
- * the page just shows the intro text.
+ * Crawlable index of every approved item, grouped by category, linking to
+ * each /item/<seg> page and each /categorie/<key> page. Rendered with plain
+ * .map() — NOT a FlatList — so all anchors land in the prerendered HTML
+ * (virtualization would drop off-screen rows from the SSG output). With an
+ * empty manifest (local dev without the generate script) the page just
+ * shows the intro text.
  */
 export default function ItemsScreen() {
   const { t } = useT();
+  const categories = getCategories();
   const items = getItems();
+
+  // Items can carry several categories; list each under its first category
+  // only so the page has no duplicate links. Items with no category (or an
+  // unknown one) land in a trailing group.
+  const grouped = new Map<string, ManifestItem[]>();
+  for (const category of categories) grouped.set(category.key, []);
+  const uncategorized: ManifestItem[] = [];
+  for (const item of items) {
+    const first = item.categoryKeys[0];
+    const bucket = first !== undefined ? grouped.get(first) : undefined;
+    if (bucket) bucket.push(item);
+    else uncategorized.push(item);
+  }
+
+  const renderRow = (item: ManifestItem) => {
+    const total = totalVotes(item);
+    const leftPct =
+      total > 0 ? Math.round((item.votesLeft / total) * 100) : null;
+    const first = item.categoryKeys[0];
+    const suffix =
+      isAmbiguousLabel(item) && first !== undefined
+        ? ` (${manifestCategoryName(first) ?? first})`
+        : '';
+    return (
+      // asChild + single static style: see MenuButton in index.tsx.
+      <Link key={item.id} href={`/item/${item.seg}` as never} asChild>
+        <Pressable style={styles.row}>
+          <ThemedText type="small" style={styles.rowLabel}>
+            {`${item.label}${suffix}`}
+          </ThemedText>
+          {leftPct !== null && (
+            <ThemedText type="small" themeColor="textSecondary">
+              {leftPct >= 50
+                ? `${leftPct} % ${t('game.left').toLowerCase()}`
+                : `${100 - leftPct} % ${t('game.right').toLowerCase()}`}
+            </ThemedText>
+          )}
+        </Pressable>
+      </Link>
+    );
+  };
+
   return (
     <ThemedView style={styles.container}>
       <Head>
@@ -29,32 +80,38 @@ export default function ItemsScreen() {
           <ThemedText type="small" themeColor="textSecondary">
             {t('seo.itemsDesc')}
           </ThemedText>
-          <View style={styles.list}>
-            {items.map((item) => {
-              const total = item.votesLeft + item.votesRight;
-              const leftPct =
-                total > 0
-                  ? Math.round((item.votesLeft / total) * 100)
-                  : null;
-              return (
-                // asChild + static style: see MenuButton in index.tsx.
-                <Link key={item.id} href={`/item/${item.seg}` as never} asChild>
-                  <Pressable style={styles.row}>
-                    <ThemedText type="small" style={styles.rowLabel}>
-                      {item.label}
-                    </ThemedText>
-                    {leftPct !== null && (
-                      <ThemedText type="small" themeColor="textSecondary">
-                        {leftPct >= 50
-                          ? `${leftPct} % ${t('game.left').toLowerCase()}`
-                          : `${100 - leftPct} % ${t('game.right').toLowerCase()}`}
-                      </ThemedText>
-                    )}
-                  </Pressable>
-                </Link>
-              );
-            })}
+          <View style={styles.linksRow}>
+            <Link href={'/classements' as never}>
+              <ThemedText type="small" style={styles.inlineLink}>
+                {t('menu.rankings')}
+              </ThemedText>
+            </Link>
+            <Link href={'/a-propos' as never}>
+              <ThemedText type="small" style={styles.inlineLink}>
+                {t('menu.about')}
+              </ThemedText>
+            </Link>
           </View>
+
+          {categories.map((category) => {
+            const bucket = grouped.get(category.key) ?? [];
+            if (bucket.length === 0) return null;
+            return (
+              <View key={category.key} style={styles.group}>
+                <Link href={`/categorie/${category.key}` as never}>
+                  <ThemedText type="subtitle" style={styles.groupTitle}>
+                    {category.name}
+                  </ThemedText>
+                </Link>
+                <View style={styles.list}>{bucket.map(renderRow)}</View>
+              </View>
+            );
+          })}
+          {uncategorized.length > 0 && (
+            <View style={styles.group}>
+              <View style={styles.list}>{uncategorized.map(renderRow)}</View>
+            </View>
+          )}
         </ScrollView>
       </SafeAreaView>
     </ThemedView>
@@ -76,6 +133,17 @@ const styles = StyleSheet.create({
     padding: Spacing.four,
     gap: Spacing.four,
   },
+  linksRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.four,
+  },
+  group: {
+    gap: Spacing.two,
+  },
+  groupTitle: {
+    textDecorationLine: 'underline',
+  },
   list: {
     gap: Spacing.two,
   },
@@ -86,5 +154,9 @@ const styles = StyleSheet.create({
   },
   rowLabel: {
     textDecorationLine: 'underline',
+  },
+  inlineLink: {
+    textDecorationLine: 'underline',
+    opacity: 0.9,
   },
 });

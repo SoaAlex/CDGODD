@@ -1,4 +1,5 @@
 import { Link } from 'expo-router';
+import Head from 'expo-router/head';
 import { useEffect, useState, type ReactElement } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -36,6 +37,11 @@ export default function SettingsScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      {/* Utility screen: keep it out of search results so the crawl budget
+          goes to the content pages. */}
+      <Head>
+        <meta name="robots" content="noindex" />
+      </Head>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}

@@ -8,7 +8,10 @@
     "credits": "Crédits & avertissements",
     "back": "Retour",
     "privacy": "Confidentialité",
-    "browse": "Tous les items"
+    "browse": "Tous les items",
+    "rankings": "Classements",
+    "about": "À propos & FAQ",
+    "categories": "Catégorie"
   },
   "home": {
     "aboutTitle": "C'est quoi, ce jeu ?",
@@ -143,7 +146,57 @@
     "playCta": "Jouer au jeu complet",
     "moreItems": "Autres items",
     "notFound": "Item introuvable. Il a peut-être été retiré, ou n'existe pas encore.",
-    "browseAll": "Voir tous les items"
+    "browseAll": "Voir tous les items",
+    "statsTitle": "Que disent les votes ?",
+    "basedOnPrefix": "Basé sur",
+    "voteSingular": "vote",
+    "votePlural": "votes",
+    "rankPosition": "Position",
+    "rankOf": "sur",
+    "rankCategoryScale": "dans le classement gauche → droite de la catégorie",
+    "rankOverallScale": "dans le classement général gauche → droite",
+    "moreLeftThan": "Plus à gauche que",
+    "moreRightThan": "plus à droite que",
+    "seeRankings": "Voir les classements"
+  },
+  "rankings": {
+    "title": "Classements",
+    "intro": "Les grands classements du jeu, calculés à partir des votes anonymes de la communauté. Un instantané régulièrement mis à jour : chaque partie jouée fait bouger ces listes.",
+    "mostLeftTitle": "Les plus à gauche",
+    "mostLeftBlurb": "Les items que la communauté classe le plus massivement à gauche.",
+    "mostRightTitle": "Les plus à droite",
+    "mostRightBlurb": "Les items que la communauté classe le plus massivement à droite.",
+    "mostDivisiveTitle": "Les plus clivants",
+    "mostDivisiveBlurb": "Les items qui divisent : les votes y sont les plus proches du 50 / 50.",
+    "mostVotedTitle": "Les plus votés",
+    "mostVotedBlurb": "Les items qui ont fait réagir le plus de joueurs."
+  },
+  "category": {
+    "itemsWord": "items",
+    "intro": "Classés du plus à gauche au plus à droite, selon les votes anonymes de la communauté. Cliquez sur un item pour voir le détail de ses votes — et donner votre avis.",
+    "backToAll": "Toutes les catégories"
+  },
+  "about": {
+    "title": "À propos & FAQ",
+    "whatTitle": "Le concept",
+    "whatBody": "« C'est de Gauche ou de Droite ? » part d'un débat de comptoir bien connu : tout, absolument tout, peut être classé politiquement — le quinoa, la côte de bœuf, le vélo cargo, les tongs. Le jeu transforme ce débat en un quiz collectif : des cartes défilent, vous tranchez, et les votes de tous les joueurs dessinent une carte tendrement absurde de nos clichés politiques.",
+    "methodTitle": "Comment sont calculés les résultats ?",
+    "methodBody": "Chaque vote est anonyme et compte pour un : pas de pondération, pas de retouche éditoriale. Un identifiant de session aléatoire limite les votes en double (un vote par item et par session), et une empreinte d'adresse IP, conservée 30 jours au maximum, sert uniquement à bloquer les abus manifestes. Les pourcentages affichés sont recalculés en continu à partir des compteurs agrégés — ce que vous voyez est l'état réel des votes au moment où vous jouez.",
+    "moderationTitle": "Modération et propositions",
+    "moderationBody": "Tous les items sont proposés par les joueurs puis validés manuellement avant d'apparaître dans le jeu. Chaque carte peut être signalée d'un bouton ; au-delà d'un seuil de signalements, elle est automatiquement masquée en attendant une revue. Les demandes de retrait (personnes représentées, ayants droit) sont traitées en priorité par e-mail.",
+    "faqTitle": "Questions fréquentes",
+    "faqQ1": "Les résultats sont-ils sérieux ?",
+    "faqA1": "Non — et c'est le principe. Les pourcentages reflètent des perceptions agrégées de joueurs qui s'amusent, pas des positions politiques réelles. Rien ici ne constitue une étude, un sondage ni un jugement sur qui que ce soit.",
+    "faqQ2": "Comment proposer un nouvel item ?",
+    "faqA2": "Passez par la recherche libre : si l'item n'existe pas, un bouton vous propose de le soumettre. Il apparaîtra dans le jeu une fois validé par la modération.",
+    "faqQ3": "Comment signaler un contenu ?",
+    "faqA3": "Chaque carte a un bouton « Signaler ». Pour une demande de retrait (image, marque, personne représentée), écrivez-nous directement — les contenus manifestement illicites sont retirés rapidement.",
+    "faqQ4": "Qui est derrière le jeu ?",
+    "faqA4": "Un développeur indépendant français, avec l'aide de la communauté pour les idées d'items. Les mentions légales complètes sont dans la page Crédits.",
+    "faqQ5": "Comment le site est-il financé ?",
+    "faqA5": "Par la publicité (Google AdSense), désactivable dans les paramètres. Le jeu ne vend aucune donnée — il n'en collecte d'ailleurs quasiment pas : voir la politique de confidentialité.",
+    "contactTitle": "Contact",
+    "contactBody": "Une question, une idée d'item, un problème ?"
   },
   "seo": {
     "homeDesc": "Le jeu qui classe tout : swipez des objets et des concepts du quotidien entre la gauche et la droite, puis comparez vos votes avec la communauté. Gratuit, anonyme, en solo ou entre amis.",
@@ -152,7 +205,11 @@
     "creditsDesc": "Crédits, avertissements, signalement et mentions légales du jeu C'est de Gauche ou de Droite ?",
     "privacyDesc": "Politique de confidentialité du jeu : 100 % anonyme, sans compte. Détails sur les cookies publicitaires (Google AdSense) et vos choix de consentement.",
     "itemsDesc": "Parcourez tous les items du jeu et découvrez, pour chacun, si la communauté le classe plutôt à gauche ou plutôt à droite.",
-    "itemDescSuffix": "Votez et comparez votre avis avec la communauté sur C'est de Gauche ou de Droite !"
+    "itemDescSuffix": "Votez et comparez votre avis avec la communauté sur C'est de Gauche ou de Droite !",
+    "rankingsDesc": "Les items les plus à gauche, les plus à droite, les plus clivants et les plus votés — les grands classements de la communauté.",
+    "aboutDesc": "Le concept du jeu, la méthode de calcul des votes, la modération et les réponses aux questions fréquentes.",
+    "categoryDescPrefix": "Les items de la catégorie",
+    "categoryDescSuffix": "classés entre la gauche et la droite par les votes anonymes de la communauté."
   },
   "consent": {
     "title": "Publicités",

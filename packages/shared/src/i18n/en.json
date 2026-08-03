@@ -8,7 +8,10 @@
     "credits": "Credits & Disclaimers",
     "back": "Back",
     "privacy": "Privacy",
-    "browse": "All items"
+    "browse": "All items",
+    "rankings": "Rankings",
+    "about": "About & FAQ",
+    "categories": "Category"
   },
   "home": {
     "aboutTitle": "What is this game?",
@@ -143,7 +146,57 @@
     "playCta": "Play the full game",
     "moreItems": "More items",
     "notFound": "Item not found. It may have been removed, or doesn't exist yet.",
-    "browseAll": "Browse all items"
+    "browseAll": "Browse all items",
+    "statsTitle": "What do the votes say?",
+    "basedOnPrefix": "Based on",
+    "voteSingular": "vote",
+    "votePlural": "votes",
+    "rankPosition": "Position",
+    "rankOf": "of",
+    "rankCategoryScale": "in the left → right ranking of the category",
+    "rankOverallScale": "in the overall left → right ranking",
+    "moreLeftThan": "More left-wing than",
+    "moreRightThan": "more right-wing than",
+    "seeRankings": "See the rankings"
+  },
+  "rankings": {
+    "title": "Rankings",
+    "intro": "The game's big leaderboards, computed from the community's anonymous votes. A regularly refreshed snapshot: every game played moves these lists.",
+    "mostLeftTitle": "Most left-wing",
+    "mostLeftBlurb": "The items the community most massively ranks on the left.",
+    "mostRightTitle": "Most right-wing",
+    "mostRightBlurb": "The items the community most massively ranks on the right.",
+    "mostDivisiveTitle": "Most divisive",
+    "mostDivisiveBlurb": "The items that split the room: votes closest to 50 / 50.",
+    "mostVotedTitle": "Most voted",
+    "mostVotedBlurb": "The items that made the most players react."
+  },
+  "category": {
+    "itemsWord": "items",
+    "intro": "Ranked from most left-wing to most right-wing, according to the community's anonymous votes. Click an item to see its detailed votes — and cast your own.",
+    "backToAll": "All categories"
+  },
+  "about": {
+    "title": "About & FAQ",
+    "whatTitle": "The concept",
+    "whatBody": "\"C'est de Gauche ou de Droite ?\" starts from a well-known bar-room debate: everything, absolutely everything, can be politically classified — quinoa, rib steak, cargo bikes, flip-flops. The game turns that debate into a collective quiz: cards go by, you decide, and everyone's votes draw a tenderly absurd map of our political clichés.",
+    "methodTitle": "How are the results computed?",
+    "methodBody": "Every vote is anonymous and counts for one: no weighting, no editorial adjustment. A random session identifier limits duplicate votes (one vote per item per session), and an IP-address fingerprint, kept for at most 30 days, is used solely to block obvious abuse. The displayed percentages are recomputed continuously from aggregated counters — what you see is the real state of the votes as you play.",
+    "moderationTitle": "Moderation and submissions",
+    "moderationBody": "All items are suggested by players and manually validated before appearing in the game. Every card can be reported with one button; past a threshold of reports it is automatically hidden pending review. Takedown requests (people depicted, rights holders) are handled with priority by e-mail.",
+    "faqTitle": "Frequently asked questions",
+    "faqQ1": "Are the results serious?",
+    "faqA1": "No — that's the whole point. The percentages reflect aggregated perceptions of players having fun, not actual political positions. Nothing here is a study, a poll, or a judgement about anyone.",
+    "faqQ2": "How do I suggest a new item?",
+    "faqA2": "Use the free search: if the item doesn't exist, a button offers to submit it. It will appear in the game once approved by moderation.",
+    "faqQ3": "How do I report content?",
+    "faqA3": "Every card has a \"Report\" button. For a takedown request (image, brand, person depicted), write to us directly — clearly unlawful content is removed quickly.",
+    "faqQ4": "Who is behind the game?",
+    "faqA4": "An independent French developer, with the community's help for item ideas. The full legal notice is on the Credits page.",
+    "faqQ5": "How is the site funded?",
+    "faqA5": "Through advertising (Google AdSense), which you can disable in the settings. The game sells no data — it barely collects any: see the privacy policy.",
+    "contactTitle": "Contact",
+    "contactBody": "A question, an item idea, a problem?"
   },
   "seo": {
     "homeDesc": "The game that sorts everything: swipe everyday objects and concepts between left-wing and right-wing, then compare your votes with the community. Free, anonymous, solo or with friends.",
@@ -152,7 +205,11 @@
     "creditsDesc": "Credits, disclaimers, reporting and legal notice for the game C'est de Gauche ou de Droite ?",
     "privacyDesc": "The game's privacy policy: 100% anonymous, no account. Details on advertising cookies (Google AdSense) and your consent choices.",
     "itemsDesc": "Browse every item in the game and find out, for each one, whether the community ranks it more left-wing or right-wing.",
-    "itemDescSuffix": "Vote and compare your take with the community on C'est de Gauche ou de Droite!"
+    "itemDescSuffix": "Vote and compare your take with the community on C'est de Gauche ou de Droite!",
+    "rankingsDesc": "The most left-wing, most right-wing, most divisive and most voted items — the community's big rankings.",
+    "aboutDesc": "The game's concept, how votes are computed, moderation, and answers to frequently asked questions.",
+    "categoryDescPrefix": "The items of the category",
+    "categoryDescSuffix": "ranked between left and right by the community's anonymous votes."
   },
   "consent": {
     "title": "Ads",
