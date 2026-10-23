@@ -73,6 +73,24 @@ describe('POST /admin/items/:id/image-from-source', () => {
     });
   });
 
+  it('accepts Commons thumbnails served from thumb.wikimedia.org', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response(new Uint8Array([1, 2, 3]), {
+            headers: { 'content-type': 'image/jpeg' },
+          }),
+      ),
+    );
+    const res = await fromSource(1, {
+      ...WIKI_PICK,
+      fullUrl:
+        'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/x.jpg/1280px-x.jpg',
+    });
+    expect(res.status).toBe(200);
+  });
+
   it('502s when the source does not serve an image', async () => {
     vi.stubGlobal(
       'fetch',

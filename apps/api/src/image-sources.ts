@@ -135,6 +135,12 @@ export function isAllowedImageHost(
   source: 'wikimedia' | 'pixabay',
   hostname: string,
 ): boolean {
-  if (source === 'wikimedia') return hostname === 'upload.wikimedia.org';
+  // Commons serves scaled thumbs from thumb.wikimedia.org and unscaled
+  // originals (image already ≤ requested width) from upload.wikimedia.org.
+  if (source === 'wikimedia') {
+    return (
+      hostname === 'upload.wikimedia.org' || hostname === 'thumb.wikimedia.org'
+    );
+  }
   return hostname === 'pixabay.com' || hostname === 'cdn.pixabay.com';
 }
