@@ -123,19 +123,18 @@
   },
   "privacy": {
     "title": "Privacy policy",
-    "updated": "Last updated: 18 July 2026",
+    "updated": "Last updated: 25 October 2026",
     "introBody": "This page describes the data processed by the game \"C'est de Gauche ou de Droite ?\" (cestdegaucheoudedroite.com) and your rights. In short: the game works without any account or personal data; only ads may collect some, with your consent.",
     "whoTitle": "Who we are",
     "whoBody": "The site is published by SOARES Cloud Engineering Services, SARL (French LLC) with share capital of €1,000, SIREN 999 871 148, 78 F rue de Lambersart, 59350 Saint-André-lez-Lille, France. Host: Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, USA.",
     "dataTitle": "Data collected by the game",
     "dataBody": "No account is required and the game itself collects no personal data. A random session identifier, generated on your device, is only used to prevent duplicate votes: it is not linked to any identity. To fight abuse, a fingerprint (hash) of your IP address is computed: it cannot be traced back to the original address and is automatically erased after 30 days. Your votes are aggregated anonymously into the game's public statistics, and your vote history is stored on your device only.",
     "cookiesTitle": "Cookies and advertising",
-    "cookiesBody": "The game is funded by advertising, served through Google AdSense. Google and its certified partners may use cookies or similar identifiers to serve ads, measure their audience and, if you consent, personalise them. Without consent, only non-personalised ads may be shown. Outside of advertising, the site sets no tracking cookies.",
-    "cookiesGoogleLink": "How Google uses your data",
-    "cookiesPartnersLink": "Google Ads Settings",
+    "cookiesBody": "The game is funded by advertising, served by the Adsterra ad network. If you accept, Adsterra and its advertisers may use cookies or similar identifiers to serve ads, measure their audience and personalise them. Without your consent, no ad script is loaded and no ads are shown. In the mobile apps, ads are served by Google AdMob with its own consent form. Outside of advertising, the site sets no tracking cookies.",
+    "cookiesAdsterraLink": "Adsterra's cookie policy",
     "cookiesOptOutLink": "Your Online Choices (EU)",
     "consentTitle": "Consent and control",
-    "consentBody": "On your first visit from the European Economic Area or the United Kingdom, a consent banner (Google CMP) lets you accept or refuse advertising cookies, and change your choice at any time. You can also disable ads entirely in the game's settings.",
+    "consentBody": "On your first visit, a banner asks you to accept or decline advertising cookies; declining is as easy as accepting, and nothing is loaded before you choose. You can change this choice at any time in the game's settings, or turn ads off entirely there.",
     "contactTitle": "Contact",
     "contactBody": "For any question about your data, or to request removal of content:"
   },
@@ -194,7 +193,7 @@
     "faqQ4": "Who is behind the game?",
     "faqA4": "An independent French developer, with the community's help for item ideas. The full legal notice is on the Credits page.",
     "faqQ5": "How is the site funded?",
-    "faqA5": "Through advertising (Google AdSense), which you can disable in the settings. The game sells no data — it barely collects any: see the privacy policy.",
+    "faqA5": "Through advertising (Adsterra banners, shown only with your consent), which you can disable in the settings. The game sells no data — it barely collects any: see the privacy policy.",
     "contactTitle": "Contact",
     "contactBody": "A question, an item idea, a problem?"
   },
@@ -203,7 +202,7 @@
     "soloDesc": "Swipe random cards and vote: left or right? Filter by category and see the community's results after each vote.",
     "searchDesc": "Search for a specific object or concept, vote, and find out whether the community ranks it left-wing or right-wing.",
     "creditsDesc": "Credits, disclaimers, reporting and legal notice for the game C'est de Gauche ou de Droite ?",
-    "privacyDesc": "The game's privacy policy: 100% anonymous, no account. Details on advertising cookies (Google AdSense) and your consent choices.",
+    "privacyDesc": "The game's privacy policy: 100% anonymous, no account. Details on advertising cookies (Adsterra) and your consent choices.",
     "itemsDesc": "Browse every item in the game and find out, for each one, whether the community ranks it more left-wing or right-wing.",
     "itemDescSuffix": "Vote and compare your take with the community on C'est de Gauche ou de Droite!",
     "rankingsDesc": "The most left-wing, most right-wing, most divisive and most voted items — the community's big rankings.",
@@ -214,7 +213,11 @@
   "consent": {
     "title": "Ads",
     "body": "The game is free and anonymous. Only ads may collect data, with your consent.",
-    "adsToggle": "Ads help me fund the game, but if they annoy you as much as they annoy me, here's how to turn them off :)"
+    "adsToggle": "Ads help me fund the game, but if they annoy you as much as they annoy me, here's how to turn them off :)",
+    "bannerBody": "The game is free and funded by advertising. Do you agree to our ad partner Adsterra setting cookies to show ads? Without your consent, no ads are shown. You can change your mind at any time in the settings.",
+    "accept": "Accept",
+    "refuse": "Decline",
+    "cookiesToggle": "Allow advertising cookies (Adsterra)"
   },
   "errors": {
     "network": "Network error, please try again",

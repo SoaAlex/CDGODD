@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactElement } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
+import { WEB_ADS_CONFIGURED } from '@/ads/adsterra';
 import { ThemedSwitch } from '@/components/themed-switch';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -12,6 +13,7 @@ import { useTheme } from '@/hooks/use-theme';
 import { setLang, useT, type Lang } from '@/lib/i18n';
 import { isMusicMuted, setMusicMuted } from '@/lib/music';
 import {
+  useAdConsent,
   useAdsEnabled,
   useAuroraPulse,
   useShowLastVote,
@@ -27,6 +29,7 @@ export default function SettingsScreen() {
   const { showResults, setShowResults } = useShowResults();
   const { showLastVote, setShowLastVote } = useShowLastVote();
   const { adsEnabled, setAdsEnabled } = useAdsEnabled();
+  const { consent, setConsent } = useAdConsent();
   const { auroraPulse, setAuroraPulse } = useAuroraPulse();
   const [musicMuted, setMusicMutedState] = useState(isMusicMuted());
   const [sfxMuted, setSfxMutedState] = useState(isSfxMuted());
@@ -188,6 +191,21 @@ export default function SettingsScreen() {
               onValueChange={setAdsEnabled}
             />
           </View>
+          {/* Web: change the consent-banner answer at any time. */}
+          {WEB_ADS_CONFIGURED && (
+            <View
+              style={[styles.row, { backgroundColor: theme.backgroundElement }]}
+            >
+              <ThemedText type="small" style={styles.rowLabel}>
+                {t('consent.cookiesToggle')}
+              </ThemedText>
+              <ThemedSwitch
+                testID="ad-consent-switch"
+                value={consent === 'granted'}
+                onValueChange={(on) => setConsent(on ? 'granted' : 'denied')}
+              />
+            </View>
+          )}
           <Link href={'/privacy' as never}>
             <ThemedText type="small" style={styles.privacyLink}>
               {t('privacy.title')}

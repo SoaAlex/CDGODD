@@ -28,9 +28,13 @@ root rules in [`../../AGENTS.md`](../../AGENTS.md) apply.
 - This app *does* have real lint: `pnpm --dir apps/game lint` (expo eslint). Run
   it — it's the one app where lint is a signal.
 - Keep the anonymous/consent model intact; ads load only after consent.
-- **AdSense compliance:** no ad slots on screens without real content (menus,
-  lobbies, legal pages). The web home banner was removed for the AdSense
-  review — don't re-add it without checking the account is approved.
+- **Web ads (Adsterra):** banner units only — never enable popunder, social
+  bar, push or direct-link formats. Nothing ad-related may load before the
+  visitor accepts the consent banner (`useAdConsent() === 'granted'`), and
+  refusing must stay exactly as easy as accepting (CNIL). Keep slots off
+  menus without content, lobbies and legal pages. AdSense was removed after
+  repeated refusals; its integration is in git history (`8b4f139`) if Google
+  is ever retried — that also needs Google's certified CMP back.
 - **Crawlability:** the static export is the SEO surface. Internal navigation
   that should be crawlable uses `expo-router` `<Link>` (real `<a href>`), not
   `router.push`. With `asChild`, pass a single flattened style object —
