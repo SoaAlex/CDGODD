@@ -29,13 +29,17 @@ Android**. The web export is served as an assets-only Cloudflare Worker.
 - **Anonymous** — a resettable device `session_id`, no account. Only ads collect
   data, behind a consent flow.
 - **Ads** — AdMob on native (UMP consent, top banners + interstitial), optional
-  AdSense on web (160x600 side rails on wide swipe screens; the home-page
-  banner is intentionally removed while the site is under AdSense review — a
-  menu screen counts as "no publisher content"); a settings switch
-  (`cdgodd.ads_enabled`) turns everything off. Never blocks gameplay.
-  Web consent is Google's CMP: the GDPR message published in AdSense
-  "Privacy & messaging" is served by the global adsbygoogle tag in
-  `src/app/+html.tsx` (which must stay on every page for it to display).
+  Adsterra banners on web (AdSense refused the site): 160x600 side rails on
+  wide swipe screens and a 320x50 banner at the bottom of the home page,
+  each rendered in its own `<iframe srcdoc>` (`src/ads/adsterra.ts`). Banner
+  units only — never Adsterra's popunder / social bar / push / direct-link
+  formats. Web consent is a first-party banner (`src/ads/consent-banner`,
+  stored as `cdgodd.ad_consent`): no ad script loads before "Accepter",
+  refusing means no ads at all, and settings has a switch to change the
+  answer. A separate settings switch (`cdgodd.ads_enabled`) turns all ads
+  off. Never blocks gameplay. Builds without the Adsterra env serve no ads
+  and show no consent banner. There's no `ads.txt`: if the Adsterra
+  dashboard asks for one, add its line as `public/ads.txt`.
 - **SEO / crawlable pages** — the web export is fully static (one prerendered
   HTML file per route, French at build time). Content pages: `/privacy`
   (GDPR/AdSense privacy policy), `/a-propos` (concept, methodology, FAQ),
@@ -61,7 +65,8 @@ Android**. The web export is served as an assets-only Cloudflare Worker.
 Web vs native behaviour is handled with Metro's `.web.ts(x)` resolution, not
 runtime branches:
 
-- `src/ads/` — AdMob/UMP on native, AdSense/no-op on web.
+- `src/ads/` — AdMob/UMP on native, Adsterra + first-party consent banner
+  on web.
 - `src/lib/music.*` — plays on web, no-op on native.
 - `src/lib/turnstile.*` — invisible widget on web, placeholder on native.
 
@@ -69,7 +74,9 @@ runtime branches:
 
 - `EXPO_PUBLIC_API_URL` — API base (default `http://localhost:8787`; CI sets the
   production URL). See [`.env.example`](.env.example) for all `EXPO_PUBLIC_*`
-  vars (AdMob unit ids, AdSense client/slot, Turnstile sitekey).
+  vars (Adsterra unit script URLs, Turnstile sitekey). CI reads the Adsterra
+  values from the GitHub repository variables `ADSTERRA_SRC_BANNER` and
+  `ADSTERRA_SRC_SIDE` (each unit's snippet `<script src>`).
 
 ## Run & deploy
 

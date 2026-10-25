@@ -123,19 +123,18 @@
   },
   "privacy": {
     "title": "Política de privacidad",
-    "updated": "Última actualización: 18 de julio de 2026",
+    "updated": "Última actualización: 25 de octubre de 2026",
     "introBody": "Esta página describe los datos tratados por el juego «C'est de Gauche ou de Droite ?» (cestdegaucheoudedroite.com) y tus derechos. En resumen: el juego funciona sin cuenta y sin datos personales; solo la publicidad puede recopilar algunos, con tu consentimiento.",
     "whoTitle": "Quiénes somos",
     "whoBody": "El sitio está editado por SOARES Cloud Engineering Services, SARL con un capital de 1 000 €, SIREN 999 871 148, 78 F rue de Lambersart, 59350 Saint-André-lez-Lille, Francia. Alojamiento: Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, Estados Unidos.",
     "dataTitle": "Datos recopilados por el juego",
     "dataBody": "No se requiere ninguna cuenta y el propio juego no recopila datos personales. Un identificador de sesión aleatorio, generado en tu dispositivo, sirve únicamente para evitar votos duplicados: no está vinculado a ninguna identidad. Para luchar contra los abusos se calcula una huella (hash) de tu dirección IP: no permite recuperar la dirección original y se borra automáticamente a los 30 días. Tus votos se agregan de forma anónima a las estadísticas públicas del juego, y tu historial de votos se guarda solo en tu dispositivo.",
     "cookiesTitle": "Cookies y publicidad",
-    "cookiesBody": "El juego se financia con publicidad, servida a través de Google AdSense. Google y sus socios certificados pueden utilizar cookies o identificadores similares para mostrar anuncios, medir su audiencia y, si lo consientes, personalizarlos. Sin consentimiento, solo pueden mostrarse anuncios no personalizados. Fuera de la publicidad, el sitio no instala cookies de seguimiento.",
-    "cookiesGoogleLink": "Cómo usa Google tus datos",
-    "cookiesPartnersLink": "Configuración de anuncios de Google",
+    "cookiesBody": "El juego se financia con publicidad, servida por la red Adsterra. Si lo aceptas, Adsterra y sus anunciantes pueden utilizar cookies o identificadores similares para mostrar anuncios, medir su audiencia y personalizarlos. Sin tu consentimiento, no se carga ningún script publicitario ni se muestra ningún anuncio. En las aplicaciones móviles, los anuncios los sirve Google AdMob, con su propio formulario de consentimiento. Fuera de la publicidad, el sitio no instala cookies de seguimiento.",
+    "cookiesAdsterraLink": "Política de cookies de Adsterra",
     "cookiesOptOutLink": "Tus opciones publicitarias en línea (UE)",
     "consentTitle": "Consentimiento y control",
-    "consentBody": "En tu primera visita desde el Espacio Económico Europeo o el Reino Unido, un aviso de consentimiento (CMP de Google) te permite aceptar o rechazar las cookies publicitarias y cambiar tu elección en cualquier momento. También puedes desactivar por completo la publicidad en los ajustes del juego.",
+    "consentBody": "En tu primera visita, un aviso te pide que aceptes o rechaces las cookies publicitarias; rechazar es tan sencillo como aceptar, y no se carga nada antes de tu elección. Puedes cambiar esta elección en cualquier momento en los ajustes del juego, o desactivar allí la publicidad por completo.",
     "contactTitle": "Contacto",
     "contactBody": "Para cualquier pregunta sobre tus datos, o para solicitar la retirada de un contenido:"
   },
@@ -194,7 +193,7 @@
     "faqQ4": "¿Quién está detrás del juego?",
     "faqA4": "Un desarrollador independiente francés, con la ayuda de la comunidad para las ideas de ítems. El aviso legal completo está en la página de Créditos.",
     "faqQ5": "¿Cómo se financia el sitio?",
-    "faqA5": "Con publicidad (Google AdSense), desactivable en los ajustes. El juego no vende ningún dato — de hecho casi no los recoge: mira la política de privacidad.",
+    "faqA5": "Con publicidad (banners de Adsterra, mostrados solo con tu consentimiento), desactivable en los ajustes. El juego no vende ningún dato — de hecho casi no los recoge: mira la política de privacidad.",
     "contactTitle": "Contacto",
     "contactBody": "¿Una pregunta, una idea de ítem, un problema?"
   },
@@ -203,7 +202,7 @@
     "soloDesc": "Desliza cartas aleatorias y vota: ¿izquierda o derecha? Filtra por categoría y descubre los resultados de la comunidad tras cada voto.",
     "searchDesc": "Busca un objeto o concepto concreto, vota y descubre si la comunidad lo clasifica a la izquierda o a la derecha.",
     "creditsDesc": "Créditos, avisos, denuncias y menciones legales del juego C'est de Gauche ou de Droite ?",
-    "privacyDesc": "Política de privacidad del juego: 100 % anónimo, sin cuenta. Detalles sobre las cookies publicitarias (Google AdSense) y tus opciones de consentimiento.",
+    "privacyDesc": "Política de privacidad del juego: 100 % anónimo, sin cuenta. Detalles sobre las cookies publicitarias (Adsterra) y tus opciones de consentimiento.",
     "itemsDesc": "Recorre todos los ítems del juego y descubre, para cada uno, si la comunidad lo clasifica más a la izquierda o más a la derecha.",
     "itemDescSuffix": "¡Vota y compara tu opinión con la comunidad en C'est de Gauche ou de Droite!",
     "rankingsDesc": "Los ítems más de izquierdas, más de derechas, más divisivos y más votados — las grandes clasificaciones de la comunidad.",
@@ -214,7 +213,11 @@
   "consent": {
     "title": "Publicidad",
     "body": "El juego es gratuito y anónimo. Solo los anuncios pueden recopilar datos, con tu permiso.",
-    "adsToggle": "Los anuncios me ayudan a financiar el juego, pero si te molestan tanto como a mí, aquí puedes desactivarlos :)"
+    "adsToggle": "Los anuncios me ayudan a financiar el juego, pero si te molestan tanto como a mí, aquí puedes desactivarlos :)",
+    "bannerBody": "El juego es gratuito y se financia con publicidad. ¿Aceptas que nuestro socio publicitario Adsterra utilice cookies para mostrar anuncios? Sin tu consentimiento, no se muestra ningún anuncio. Puedes cambiar de opinión en cualquier momento en los ajustes.",
+    "accept": "Aceptar",
+    "refuse": "Rechazar",
+    "cookiesToggle": "Permitir cookies publicitarias (Adsterra)"
   },
   "errors": {
     "network": "Error de red, inténtalo de nuevo",

@@ -9,9 +9,7 @@ import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useT } from '@/lib/i18n';
 
 const SUPPORT_EMAIL = 'support@cestdegaucheoudedroite.com';
-const GOOGLE_PARTNER_SITES_URL =
-  'https://policies.google.com/technologies/partner-sites';
-const GOOGLE_ADS_SETTINGS_URL = 'https://adssettings.google.com';
+const ADSTERRA_COOKIES_URL = 'https://adsterra.com/cookies/';
 const YOUR_ONLINE_CHOICES_URL = 'https://www.youronlinechoices.eu';
 
 export default function PrivacyScreen() {
@@ -63,16 +61,10 @@ export default function PrivacyScreen() {
               {t('privacy.cookiesBody')}
             </ThemedText>
             <LinkRow
-              testID="privacy-google-link"
-              icon="logo-google"
-              label={t('privacy.cookiesGoogleLink')}
-              url={GOOGLE_PARTNER_SITES_URL}
-            />
-            <LinkRow
-              testID="privacy-ads-settings-link"
-              icon="options"
-              label={t('privacy.cookiesPartnersLink')}
-              url={GOOGLE_ADS_SETTINGS_URL}
+              testID="privacy-adsterra-link"
+              icon="document-text"
+              label={t('privacy.cookiesAdsterraLink')}
+              url={ADSTERRA_COOKIES_URL}
             />
             <LinkRow
               testID="privacy-optout-link"

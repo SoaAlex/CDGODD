@@ -153,9 +153,8 @@ export default function MenuScreen() {
             </ThemedText>
           </View>
 
-          {/* NOTE: the web AdSense banner that used to live here was removed
-              while the site is under AdSense review (a menu page counts as
-              "screen without publisher content"). Re-add after approval. */}
+          {/* Web: banner at the bottom of the page, below the about text. */}
+          {Platform.OS === 'web' && <AdSlot />}
 
           {/* Footer: content + legal links as real anchors + version. */}
           <View style={styles.footerLinks}>

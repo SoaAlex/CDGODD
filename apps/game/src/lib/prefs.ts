@@ -92,6 +92,43 @@ export function useAdsEnabled(): {
   return { adsEnabled: value, loaded, setAdsEnabled: setValue };
 }
 
+export type AdConsent = 'granted' | 'denied';
+
+const AD_CONSENT_KEY = 'cdgodd.ad_consent';
+const adConsentListeners = new Set<(v: AdConsent | null) => void>();
+
+/**
+ * Web ad-cookie consent from the first-party banner (src/ads/consent-banner):
+ * null until the visitor has chosen. Web ads load only on 'granted'. Native
+ * consent is Google's UMP flow instead (src/ads/consent.ts).
+ */
+export function useAdConsent(): {
+  consent: AdConsent | null;
+  loaded: boolean;
+  setConsent: (v: AdConsent) => void;
+} {
+  const [consent, set] = useState<AdConsent | null>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    void AsyncStorage.getItem(AD_CONSENT_KEY).then((v) => {
+      set(v === 'granted' || v === 'denied' ? v : null);
+      setLoaded(true);
+    });
+    adConsentListeners.add(set);
+    return () => {
+      adConsentListeners.delete(set);
+    };
+  }, []);
+
+  const setConsent = useCallback((v: AdConsent) => {
+    adConsentListeners.forEach((l) => l(v));
+    void AsyncStorage.setItem(AD_CONSENT_KEY, v);
+  }, []);
+
+  return { consent, loaded, setConsent };
+}
+
 /**
  * "Aurora pulse" preference: the background blobs blink to the music (web)
  * or at random intervals. On by default; disable for a steady background.

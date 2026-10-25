@@ -12,6 +12,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { ConsentBanner } from '@/ads/consent-banner';
 import { GameTitle } from '@/components/game-title';
 import { GradientBackground } from '@/components/gradient-background';
 import { MuteButton } from '@/components/mute-button';
@@ -296,6 +297,8 @@ export default function RootLayout() {
             }}
           />
           </Stack>
+          {/* Web ad-cookie consent, over every screen until answered. */}
+          <ConsentBanner />
         </ThemeProvider>
       </GradientBackground>
     </GestureHandlerRootView>

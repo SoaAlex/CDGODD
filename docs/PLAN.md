@@ -5,7 +5,7 @@ A Tinder-style swipe game: classify random objects/concepts as **gauche** (left)
 ## 0. Core principles
 
 - **No login, ever.** Play is 100% anonymous. No accounts, no email, no auth for players.
-- **GDPR-friendly by default.** No personal data collected to play. The only data collection is **ads** (AdMob/AdSense cookies + identifiers), which is gated behind a consent prompt — decline = non-personalized ads or none. Nothing else needs consent.
+- **GDPR-friendly by default.** No personal data collected to play. The only data collection is **ads** (AdMob on mobile, Adsterra on web: cookies + identifiers), which is gated behind a consent prompt — decline = non-personalized ads (mobile) or no ads (web). Nothing else needs consent.
 - **Statistics must be attack-resistant.** Because anyone can vote anonymously, the vote pipeline must resist stuffing/bots without identifying users. See §5 "Anonymity & vote integrity".
 - **Pseudonymous, not identifying.** A random device-generated `session_id` (local storage, resettable, never tied to a person) is used only for soft dedupe and abuse rollback. It is not PII and is never required to play.
 
@@ -23,7 +23,7 @@ A Tinder-style swipe game: classify random objects/concepts as **gauche** (left)
 | Database | Cloudflare **D1** (SQLite) |
 | Images | Cloudflare R2 (storage, zero egress) + Cloudflare Images (resize/WebP) |
 | Realtime | Durable Objects + WebSockets |
-| Ads | AdMob on mobile, AdSense/none on web (`Platform.OS` conditional) |
+| Ads | AdMob on mobile, Adsterra banners/none on web (`.web.tsx` split) |
 | Validation | zod schemas shared across client/server |
 
 **Target cost: $0–5/month** until meaningful traffic.
@@ -82,7 +82,7 @@ CDGODD-V2/
 │  │  │  ├─ components/         # SwipeDeck, Card, VoteBar, AdSlot
 │  │  │  ├─ hooks/              # useDeck, useImagePreload, useRoom
 │  │  │  ├─ api/                # typed client (from packages/shared)
-│  │  │  └─ ads/                # AdMob (native) + AdSense (web) shims
+│  │  │  └─ ads/                # AdMob (native) + Adsterra (web) shims
 │  │  ├─ app.json
 │  │  └─ package.json
 │  └─ admin/                    # React + Vite
@@ -222,7 +222,7 @@ Admin auth: simplest viable = Cloudflare Access in front of the admin routes/Pag
 
 **i18n**: UI strings in `packages/shared/i18n/*.json` (i18next). Item labels and category names come from the DB (`item_translations` / `category_translations`), localized server-side with a French fallback (fr is the reference translation every row must have; the admin panel edits these). Locale detected on device, overridable in Settings.
 
-**Ads & consent (`src/ads/`)**: `AdSlot` component. `Platform.OS !== 'web'` → AdMob banner/interstitial (e.g. interstitial every N swipes); `web` → AdSense unit or nothing. Mobile is the real revenue surface. **Ads are the only data-collecting feature**, so they sit behind a consent flow: **Google UMP SDK** (mobile) / **IAB TCF CMP** (web) shows a consent prompt on first ad; decline → non-personalized ads (or none). The game itself never blocks on consent — you can play immediately, consent is asked only when an ad would show.
+**Ads & consent (`src/ads/`)**: `AdSlot` component. `Platform.OS !== 'web'` → AdMob banner/interstitial (e.g. interstitial every N swipes); `web` → Adsterra banner (in an `<iframe srcdoc>`) or nothing. Mobile is the real revenue surface. **Ads are the only data-collecting feature**, so they sit behind a consent flow: **Google UMP SDK** (mobile) / a **first-party consent banner** (web, `src/ads/consent-banner`) asks before any ad loads; decline → non-personalized ads (mobile) or no ads (web). The game itself never blocks on consent — the banner overlays the screen until answered, and the choice can be changed in settings.
 
 ---
 
