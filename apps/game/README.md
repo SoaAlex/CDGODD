@@ -74,9 +74,9 @@ runtime branches:
 
 - `EXPO_PUBLIC_API_URL` — API base (default `http://localhost:8787`; CI sets the
   production URL). See [`.env.example`](.env.example) for all `EXPO_PUBLIC_*`
-  vars (Adsterra host/unit keys, Turnstile sitekey). CI reads the Adsterra
-  values from the GitHub repository variables `ADSTERRA_HOST`,
-  `ADSTERRA_KEY_BANNER` and `ADSTERRA_KEY_SIDE`.
+  vars (Adsterra unit script URLs, Turnstile sitekey). CI reads the Adsterra
+  values from the GitHub repository variables `ADSTERRA_SRC_BANNER` and
+  `ADSTERRA_SRC_SIDE` (each unit's snippet `<script src>`).
 
 ## Run & deploy
 

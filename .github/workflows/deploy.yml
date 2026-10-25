@@ -99,11 +99,11 @@ jobs:
           EXPO_PUBLIC_APP_VERSION: ${{ steps.version.outputs.new_version }}
           EXPO_PUBLIC_API_URL: https://api.cestdegaucheoudedroite.com
           EXPO_PUBLIC_TURNSTILE_SITEKEY: 0x4AAAAAADxcifQdjBeiuVUB
-          # Adsterra banner units (public by design: visible in page source).
+          # Adsterra banner units: each unit's snippet script URL (public by
+          # design: visible in page source), from repository variables.
           # Unset = ad-free build, and no consent banner.
-          EXPO_PUBLIC_ADSTERRA_HOST: ${{ vars.ADSTERRA_HOST }}
-          EXPO_PUBLIC_ADSTERRA_KEY_BANNER: ${{ vars.ADSTERRA_KEY_BANNER }}
-          EXPO_PUBLIC_ADSTERRA_KEY_SIDE: ${{ vars.ADSTERRA_KEY_SIDE }}
+          EXPO_PUBLIC_ADSTERRA_SRC_BANNER: ${{ vars.ADSTERRA_SRC_BANNER }}
+          EXPO_PUBLIC_ADSTERRA_SRC_SIDE: ${{ vars.ADSTERRA_SRC_SIDE }}
 
       - name: Deploy game
         working-directory: apps/game
