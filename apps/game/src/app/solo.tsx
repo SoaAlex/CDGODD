@@ -15,11 +15,16 @@ import { ThemedView } from '@/components/themed-view';
 import { SwipeDeck, type SwipeDeckHandle } from '@/components/swipe-deck';
 import { LastVoteBar } from '@/components/last-vote-bar';
 import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/theme';
+import { isAdBreakActive, useAdBreak } from '@/ads/ad-break';
 import { AdRails } from '@/ads/ad-rails';
 import { AdSlot } from '@/ads/ad-slot';
 import { useInterstitial } from '@/ads/use-interstitial';
 import { useCategories } from '@/hooks/use-categories';
-import { toApiFilter, useCategoryFilter } from '@/hooks/use-category-filter';
+import {
+  mayShowNsfw,
+  toApiFilter,
+  useCategoryFilter,
+} from '@/hooks/use-category-filter';
 import { useDeck } from '@/hooks/use-deck';
 import { useTheme } from '@/hooks/use-theme';
 import { fetchTallies, reportItem } from '@/lib/api';
@@ -60,13 +65,29 @@ export default function SoloScreen() {
   } = useDeck(apiFilter.include, matchAll, apiFilter.exclude);
   const deck = useRef<SwipeDeckHandle>(null);
   const theme = useTheme();
+  const adBreak = useAdBreak();
   const countSwipeForAds = useInterstitial();
   const { showResults, setShowResults } = useShowResults();
   const { showLastVote } = useShowLastVote();
+  const adsAllowed = !mayShowNsfw(apiFilter, allCategories, cards);
 
   function onSwipe(side: Side) {
     swipe(side);
-    countSwipeForAds();
+    if (adsAllowed) countSwipeForAds();
+  }
+
+  // Ad break once on entering the game, before the first swipe: the deck has
+  // to be up, so the filter is seeded and the NSFW check means something.
+  const startBreakDone = useRef(false);
+  useEffect(() => {
+    if (startBreakDone.current || !adBreak || loading || !adsAllowed) return;
+    startBreakDone.current = true;
+    adBreak('start', 'solo-start');
+  }, [adBreak, loading, adsAllowed]);
+
+  function replay() {
+    if (adsAllowed) adBreak?.('start', 'solo-replay');
+    restart();
   }
   // Item id whose report was just sent (shows the "merci" state briefly).
   const [reportedId, setReportedId] = useState<number | null>(null);
@@ -109,6 +130,7 @@ export default function SoloScreen() {
   useEffect(() => {
     if (Platform.OS !== 'web') return;
     const onKey = (e: KeyboardEvent) => {
+      if (isAdBreakActive()) return;
       if (e.key === 'ArrowLeft') deck.current?.swipeOut('left');
       if (e.key === 'ArrowRight') deck.current?.swipeOut('right');
     };
@@ -160,7 +182,7 @@ export default function SoloScreen() {
                       : t('errors.network')}
                 </ThemedText>
                 {allSeen && (
-                  <Pressable testID="replay" onPress={restart} style={styles.retry}>
+                  <Pressable testID="replay" onPress={replay} style={styles.retry}>
                     <ThemedText type="linkPrimary">
                       ↻ {t('solo.replay')}
                     </ThemedText>

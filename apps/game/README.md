@@ -28,18 +28,29 @@ Android**. The web export is served as an assets-only Cloudflare Worker.
 - **History** — device-local record of your votes with fresh global tallies.
 - **Anonymous** — a resettable device `session_id`, no account. Only ads collect
   data, behind a consent flow.
-- **Ads** — AdMob on native (UMP consent, top banners + interstitial), optional
-  Adsterra banners on web (AdSense refused the site): 160x600 side rails on
-  wide swipe screens and a 320x50 banner at the bottom of the home page,
-  each rendered in its own `<iframe srcdoc>` (`src/ads/adsterra.ts`). Banner
-  units only — never Adsterra's popunder / social bar / push / direct-link
-  formats. Web consent is a first-party banner (`src/ads/consent-banner`,
-  stored as `cdgodd.ad_consent`): no ad script loads before "Accepter",
-  refusing means no ads at all, and settings has a switch to change the
-  answer. A separate settings switch (`cdgodd.ads_enabled`) turns all ads
-  off. Never blocks gameplay. Builds without the Adsterra env serve no ads
-  and show no consent banner. There's no `ads.txt`: if the Adsterra
-  dashboard asks for one, add its line as `public/ads.txt`.
+- **Ads** — AdMob on native (UMP consent, top banners + interstitial). On web,
+  one network per build, picked by `EXPO_PUBLIC_WEB_AD_NETWORK`
+  (`src/ads/network.ts`). A settings switch (`cdgodd.ads_enabled`) turns all
+  ads off, ads never block gameplay, and a build without its network's settings
+  serves none.
+  - **Google H5 Games Ads** (default, `src/ads/ad-break.web.ts`): no slots, only
+    full-screen `adBreak()` calls at natural pauses. `start` on entering solo
+    and on replay, `next` every 20 swipes, `next` on the multiplayer results
+    summary; Google decides whether an ad actually shows (frequency hint in
+    `src/app/+html.tsx`). Music and effects are suspended and the keyboard
+    ignored while one is up. No break while NSFW cards can be on screen or over
+    custom words (`mayShowNsfw`, AdSense policy). The tag is in the head of
+    every page because the site is one client-side session, and it also delivers
+    consent: Google's certified CMP, from the message published in AdSense
+    "Privacy & messaging"; settings reopen it (`useCookieChoices`). Needs
+    `public/ads.txt`, the domain approved in AdSense and Auto ads off.
+  - **Adsterra banners** (fallback, `src/ads/adsterra.ts`): 160x600 side rails on
+    wide swipe screens and a 320x50 banner at the bottom of the home page, each
+    rendered in its own `<iframe srcdoc>`. Banner units only — never Adsterra's
+    popunder / social bar / push / direct-link formats. Consent is a first-party
+    banner (`src/ads/consent-banner`, stored as `cdgodd.ad_consent`): no ad script
+    loads before "Accepter", refusing means no ads at all, and settings has a
+    switch to change the answer.
 - **SEO / crawlable pages** — the web export is fully static (one prerendered
   HTML file per route, French at build time). Content pages: `/privacy`
   (GDPR/AdSense privacy policy), `/a-propos` (concept, methodology, FAQ),
@@ -65,8 +76,8 @@ Android**. The web export is served as an assets-only Cloudflare Worker.
 Web vs native behaviour is handled with Metro's `.web.ts(x)` resolution, not
 runtime branches:
 
-- `src/ads/` — AdMob/UMP on native, Adsterra + first-party consent banner
-  on web.
+- `src/ads/` — AdMob/UMP on native; on web, H5 Games Ads + Google's CMP, or
+  Adsterra + first-party consent banner.
 - `src/lib/music.*` — plays on web, no-op on native.
 - `src/lib/turnstile.*` — invisible widget on web, placeholder on native.
 
@@ -74,9 +85,26 @@ runtime branches:
 
 - `EXPO_PUBLIC_API_URL` — API base (default `http://localhost:8787`; CI sets the
   production URL). See [`.env.example`](.env.example) for all `EXPO_PUBLIC_*`
-  vars (Adsterra unit script URLs, Turnstile sitekey). CI reads the Adsterra
-  values from the GitHub repository variables `ADSTERRA_SRC_BANNER` and
-  `ADSTERRA_SRC_SIDE` (each unit's snippet `<script src>`).
+  vars (ad network, AdSense publisher id, Adsterra unit script URLs, Turnstile
+  sitekey). CI reads the Adsterra values from the GitHub repository variables
+  `ADSTERRA_SRC_BANNER` and `ADSTERRA_SRC_SIDE` (each unit's snippet
+  `<script src>`).
+- **Switching the web ad network** — the GitHub repository variable
+  `WEB_AD_NETWORK` (`h5` when unset, or `adsterra`), then a redeploy of `main`.
+  It sticks across later deploys, weekly rebuild included:
+
+  ```bash
+  gh variable set WEB_AD_NETWORK --body adsterra   # or: gh variable delete WEB_AD_NETWORK
+  gh workflow run deploy.yml --ref main
+  ```
+
+  Faster, but undone by the next deploy: `wrangler rollback` from `apps/game`.
+- **Testing H5 Games Ads** — branch previews build with
+  `EXPO_PUBLIC_H5_ADS_TEST=on`, Google's fake ads: real ads only serve on the
+  approved domain, and clicking them while testing is policy abuse. Any ad
+  blocker (browser or DNS) hides them, like it hides real ones. `adBreak()`'s
+  outcome is logged in the console as `[ads] <placement>: <status>`, at the
+  Verbose level (`frequencyCapped`, `noAdPreloaded`, `viewed`…).
 
 ## Run & deploy
 

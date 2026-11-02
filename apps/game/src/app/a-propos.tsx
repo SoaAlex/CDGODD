@@ -2,6 +2,7 @@ import { Link } from 'expo-router';
 import Head from 'expo-router/head';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { WEB_AD_NETWORK } from '@/ads/network';
 import { LinkRow } from '@/components/link-row';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -16,7 +17,10 @@ const FAQ: Array<{ q: MessageKey; a: MessageKey }> = [
   { q: 'about.faqQ2', a: 'about.faqA2' },
   { q: 'about.faqQ3', a: 'about.faqA3' },
   { q: 'about.faqQ4', a: 'about.faqA4' },
-  { q: 'about.faqQ5', a: 'about.faqA5' },
+  {
+    q: 'about.faqQ5',
+    a: WEB_AD_NETWORK === 'h5' ? 'about.faqA5Google' : 'about.faqA5',
+  },
 ];
 
 /** Editorial about page: concept, methodology, moderation, FAQ. The main

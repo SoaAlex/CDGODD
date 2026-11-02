@@ -12,6 +12,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useAdsPreload } from '@/ads/ad-break';
 import { ConsentBanner } from '@/ads/consent-banner';
 import { GameTitle } from '@/components/game-title';
 import { GradientBackground } from '@/components/gradient-background';
@@ -145,6 +146,8 @@ export default function RootLayout() {
   useEffect(() => {
     startBackgroundMusic(); // no-op on native
   }, []);
+
+  useAdsPreload(); // no-op on native
 
   // Web: react-navigation puts aria-hidden on the outgoing screen while the
   // link/button that triggered the navigation still holds focus, which the

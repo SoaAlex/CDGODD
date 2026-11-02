@@ -14,6 +14,10 @@ const CI = !!process.env.CI;
  * Turnstile is fully bypassed: no TURNSTILE_SECRET on the API, no
  * EXPO_PUBLIC_TURNSTILE_SITEKEY in the game → the game sends a 'dev' token
  * and the API accepts it.
+ *
+ * The game is built with H5 Games Ads on (the production setup), but Google's
+ * host is unresolvable here: nothing in e2e ever reaches Google, and specs
+ * that care stub the script with page.route (see tests/game/ads-h5.spec.ts).
  */
 export default defineConfig({
   testDir: './tests',
@@ -25,6 +29,9 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:8082',
     trace: 'retain-on-failure',
+    launchOptions: {
+      args: ['--host-resolver-rules=MAP pagead2.googlesyndication.com ~NOTFOUND'],
+    },
   },
   projects: [
     {
@@ -55,7 +62,10 @@ export default defineConfig({
       command: CI
         ? 'pnpm exec serve --no-clipboard --single -l 8082 ../apps/game/dist'
         : 'pnpm --dir ../apps/game exec expo start --web --port 8082',
-      env: { EXPO_PUBLIC_API_URL: 'http://localhost:8789' },
+      env: {
+        EXPO_PUBLIC_API_URL: 'http://localhost:8789',
+        EXPO_PUBLIC_ADSENSE_CLIENT: 'ca-pub-0000000000000000',
+      },
       url: 'http://localhost:8082',
       reuseExistingServer: !CI,
       timeout: 300_000, // expo's first web bundle is slow

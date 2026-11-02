@@ -7,6 +7,8 @@ export function isMusicMuted(): boolean {
 
 export function setMusicMuted(_next: boolean): void {}
 
+export function setMusicSuspended(_next: boolean): void {}
+
 /** Native: no music, so no beat to read. */
 export function readMusicLevel(): number | null {
   return null;

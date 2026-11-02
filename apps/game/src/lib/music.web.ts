@@ -4,6 +4,7 @@ const MUTE_KEY = 'cdgodd.music_muted';
 
 let audio: HTMLAudioElement | null = null;
 let muted = readMuted();
+let suspended = false;
 let audioCtx: AudioContext | null = null;
 let analyser: AnalyserNode | null = null;
 let freqData: Uint8Array<ArrayBuffer> | null = null;
@@ -75,7 +76,9 @@ export function startBackgroundMusic(): void {
     audio?.play().then(ensureAnalyser).catch(() => {
       // Autoplay blocked — wait for the first user gesture.
       const onGesture = () => {
-        if (!muted) void audio?.play().then(ensureAnalyser).catch(() => {});
+        if (!muted && !suspended) {
+          void audio?.play().then(ensureAnalyser).catch(() => {});
+        }
         window.removeEventListener('pointerdown', onGesture);
         window.removeEventListener('keydown', onGesture);
       };
@@ -98,6 +101,20 @@ export function setMusicMuted(next: boolean): void {
     /* ignore */
   }
   if (!audio) return;
+  if (next) {
+    audio.pause();
+  } else {
+    void audio.play().then(ensureAnalyser).catch(() => {});
+  }
+}
+
+/**
+ * Silence the music for a full-screen ad, then bring it back. Separate from
+ * setMusicMuted so an ad never rewrites the player's saved preference.
+ */
+export function setMusicSuspended(next: boolean): void {
+  suspended = next;
+  if (!audio || muted) return;
   if (next) {
     audio.pause();
   } else {

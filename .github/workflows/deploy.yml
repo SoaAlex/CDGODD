@@ -99,9 +99,18 @@ jobs:
           EXPO_PUBLIC_APP_VERSION: ${{ steps.version.outputs.new_version }}
           EXPO_PUBLIC_API_URL: https://api.cestdegaucheoudedroite.com
           EXPO_PUBLIC_TURNSTILE_SITEKEY: 0x4AAAAAADxcifQdjBeiuVUB
-          # Adsterra banner units: each unit's snippet script URL (public by
-          # design: visible in page source), from repository variables.
-          # Unset = ad-free build, and no consent banner.
+          # Web ad network: Google H5 Games Ads unless the repository variable
+          # WEB_AD_NETWORK says `adsterra`. To switch: set the variable and
+          # re-run this workflow on main, no code change.
+          EXPO_PUBLIC_WEB_AD_NETWORK: ${{ vars.WEB_AD_NETWORK }}
+          # AdSense publisher id, public by design (visible in page source).
+          EXPO_PUBLIC_ADSENSE_CLIENT: ca-pub-5889686672909524
+          # Fake ads on branch previews: real-ad clicks while testing are
+          # AdSense policy abuse, and the preview domain isn't approved anyway.
+          EXPO_PUBLIC_H5_ADS_TEST: ${{ github.ref != 'refs/heads/main' && 'on' || '' }}
+          # Adsterra banner units, only served when WEB_AD_NETWORK=adsterra:
+          # each unit's snippet script URL (public by design), from repository
+          # variables. Unset = no banners and no first-party consent banner.
           EXPO_PUBLIC_ADSTERRA_SRC_BANNER: ${{ vars.ADSTERRA_SRC_BANNER }}
           EXPO_PUBLIC_ADSTERRA_SRC_SIDE: ${{ vars.ADSTERRA_SRC_SIDE }}
 
@@ -133,6 +142,8 @@ jobs:
         run: pnpm build:web
         env:
           EXPO_PUBLIC_API_URL: http://localhost:8789
+          # H5 Games Ads on, as in production: specs stub Google's script.
+          EXPO_PUBLIC_ADSENSE_CLIENT: ca-pub-0000000000000000
 
       - name: Install Playwright browsers
         run: pnpm --filter @cdgodd/e2e exec playwright install --with-deps chromium

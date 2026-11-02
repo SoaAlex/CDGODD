@@ -1,10 +1,18 @@
 import { ScrollViewStyleReset } from 'expo-router/html';
 import type { PropsWithChildren } from 'react';
+import { ADSENSE_CLIENT, H5_ADS_ENABLED, H5_ADS_TEST } from '@/ads/network';
 
 /**
- * Web-only HTML shell for the static export. No ad script here on purpose:
- * Adsterra units load per slot (src/ads/ad-slot.web.tsx), and only after
- * the visitor accepted ad cookies.
+ * Minimum average time between two H5 Games Ads (Google's default is 120s).
+ * Read once at page load; Google may still override it.
+ */
+const AD_FREQUENCY_HINT = '60s';
+
+/**
+ * Web-only HTML shell for the static export. On H5 Games Ads builds it holds
+ * Google's tags (below). Adsterra builds have no ad script here on purpose:
+ * their units load per slot (src/ads/ad-slot.web.tsx), and only after the
+ * visitor accepted ad cookies.
  */
 export default function Root({ children }: PropsWithChildren) {
   return (
@@ -19,6 +27,34 @@ export default function Root({ children }: PropsWithChildren) {
           name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
         />
+
+        {/* Google H5 Games Ads: the AdSense tag plus the init snippet Google
+            requires ("otherwise your ads won't work"). On EVERY page, not just
+            the game: the site is one client-side session, so the page a player
+            lands on is the one that needs the tag, and the tag is also what
+            delivers the GDPR consent message (CMP) published in AdSense
+            "Privacy & messaging". By itself it renders no ads: those are the
+            adBreak() calls in src/ads/ad-break.web.ts. Auto ads must stay off
+            in AdSense, or Google would add its own units on these pages. */}
+        {H5_ADS_ENABLED && (
+          <>
+            <meta name="google-adsense-account" content={ADSENSE_CLIENT} />
+            <script
+              async
+              src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+              crossOrigin="anonymous"
+              data-ad-client={ADSENSE_CLIENT}
+              data-ad-frequency-hint={AD_FREQUENCY_HINT}
+              data-adbreak-test={H5_ADS_TEST ? 'on' : undefined}
+            />
+            <script
+              dangerouslySetInnerHTML={{
+                __html:
+                  'window.adsbygoogle=window.adsbygoogle||[];var adBreak=adConfig=function(o){adsbygoogle.push(o);};',
+              }}
+            />
+          </>
+        )}
 
         {/* Canonical French metadata for link previews and search engines.
             Kept here (not in a route's <Head>) so every scraped URL gets the

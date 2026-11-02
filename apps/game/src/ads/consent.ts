@@ -24,3 +24,8 @@ export function ensureAdsReady(): Promise<boolean> {
   })();
   return ready;
 }
+
+/** Native: UMP owns consent changes; the settings row is web-only. */
+export function useCookieChoices(): (() => void) | null {
+  return null;
+}

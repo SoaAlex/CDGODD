@@ -4,7 +4,8 @@ import type { AdSlotProps } from './types';
 
 /**
  * Web: an Adsterra banner when the placement's unit is configured (see
- * ./adsterra), nothing otherwise. Loads only once the visitor accepted ad
+ * ./adsterra), nothing otherwise — so nothing on H5 Games Ads builds, whose
+ * ads are full-screen breaks rather than slots (./ad-break). Loads only once the visitor accepted ad
  * cookies in the consent banner and hasn't switched ads off in settings.
  * Mobile (AdMob) is the primary ad surface — web ads are optional reach,
  * never required for the game to work. `banner` is a centered 320x50 unit;

@@ -11,6 +11,7 @@ let right: HTMLAudioElement | null = null;
 
 const MUTE_KEY = 'cdgodd.sfx_muted';
 let muted = readMuted();
+let suspended = false;
 
 function readMuted(): boolean {
   try {
@@ -33,6 +34,19 @@ export function setSfxMuted(next: boolean): void {
   }
 }
 
+/**
+ * Silence effects for a full-screen ad, cutting any clip still playing (the
+ * swipe that triggers an ad break also fires its sound). Separate from
+ * setSfxMuted so an ad never rewrites the player's saved preference.
+ */
+export function setSfxSuspended(next: boolean): void {
+  suspended = next;
+  if (next) {
+    left?.pause();
+    right?.pause();
+  }
+}
+
 function make(uri: string): HTMLAudioElement {
   const audio = new window.Audio(uri);
   audio.volume = 0.6;
@@ -40,7 +54,7 @@ function make(uri: string): HTMLAudioElement {
 }
 
 export function playSwipeSound(side: Side): void {
-  if (muted) return;
+  if (muted || suspended) return;
   if (!left) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     left = make(Asset.fromModule(require('../../assets/audio/m-republique.mp3')).uri);
