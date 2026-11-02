@@ -30,7 +30,9 @@ Android**. The web export is served as an assets-only Cloudflare Worker.
   data, behind a consent flow.
 - **Ads** — AdMob on native (UMP consent, top banners + interstitial). On web,
   one network per build, picked by `EXPO_PUBLIC_WEB_AD_NETWORK`
-  (`src/ads/network.ts`). A settings switch (`cdgodd.ads_enabled`) turns all
+  (`src/ads/network.ts`), or `none` for no web ads at all. Any build with the
+  AdSense publisher id carries the `google-adsense-account` verification meta
+  tag, which loads nothing. A settings switch (`cdgodd.ads_enabled`) turns all
   ads off, ads never block gameplay, and a build without its network's settings
   serves none.
   - **Google H5 Games Ads** (default, `src/ads/ad-break.web.ts`): no slots, only
@@ -90,11 +92,12 @@ runtime branches:
   `ADSTERRA_SRC_BANNER` and `ADSTERRA_SRC_SIDE` (each unit's snippet
   `<script src>`).
 - **Switching the web ad network** — the GitHub repository variable
-  `WEB_AD_NETWORK` (`h5` when unset, or `adsterra`), then a redeploy of `main`.
+  `WEB_AD_NETWORK` (`h5` when unset, `adsterra` or `none`), then a redeploy of
+  `main`.
   It sticks across later deploys, weekly rebuild included:
 
   ```bash
-  gh variable set WEB_AD_NETWORK --body adsterra   # or: gh variable delete WEB_AD_NETWORK
+  gh variable set WEB_AD_NETWORK --body adsterra   # or none, or: gh variable delete WEB_AD_NETWORK
   gh workflow run deploy.yml --ref main
   ```
 

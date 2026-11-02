@@ -133,12 +133,14 @@
     "cookiesBody": "Het spel wordt gefinancierd met advertenties, geleverd door het advertentienetwerk Adsterra. Als je toestemming geeft, kunnen Adsterra en zijn adverteerders cookies of vergelijkbare identificatoren gebruiken om advertenties te tonen, hun bereik te meten en ze te personaliseren. Zonder toestemming wordt geen advertentiescript geladen en worden er geen advertenties getoond. In de mobiele apps worden advertenties geleverd door Google AdMob, met een eigen toestemmingsformulier. Buiten de advertenties plaatst de site geen trackingcookies.",
     "cookiesAdsterraLink": "Cookiebeleid van Adsterra",
     "cookiesBodyGoogle": "Het spel wordt gefinancierd met advertenties, geleverd via Google AdSense als schermvullende advertenties tijdens pauzes in het spel. Google en zijn gecertificeerde partners kunnen cookies of vergelijkbare identificatoren gebruiken om advertenties te tonen, hun bereik te meten en ze — met jouw toestemming — te personaliseren. Zonder toestemming worden alleen niet-gepersonaliseerde advertenties getoond. In de mobiele apps worden advertenties geleverd door Google AdMob, met een eigen toestemmingsformulier. Buiten de advertenties plaatst de site geen trackingcookies.",
+    "cookiesBodyNoAds": "De site toont momenteel geen advertenties en plaatst geen advertentie- of trackingcookies. In de toekomst kan het spel worden gefinancierd met Google AdSense-advertenties: deze pagina wordt dan bijgewerkt en via een toestemmingsbanner kun je advertentiecookies accepteren of weigeren. In de mobiele apps worden advertenties geleverd door Google AdMob, met een eigen toestemmingsformulier.",
     "cookiesGoogleLink": "Hoe Google je gegevens gebruikt",
     "cookiesPartnersLink": "Google-advertentie-instellingen",
     "cookiesOptOutLink": "Your Online Choices (EU)",
     "consentTitle": "Toestemming en controle",
     "consentBody": "Bij je eerste bezoek vraagt een banner je om advertentiecookies te accepteren of te weigeren; weigeren is net zo eenvoudig als accepteren, en er wordt niets geladen voordat je kiest. Je kunt deze keuze altijd wijzigen in de instellingen van het spel, of daar advertenties volledig uitschakelen.",
     "consentBodyGoogle": "Bij je eerste bezoek vanuit de Europese Economische Ruimte, het Verenigd Koninkrijk of Zwitserland kun je via een toestemmingsbanner (Google CMP) advertentiecookies accepteren of weigeren. Je kunt deze keuze altijd wijzigen in de instellingen van het spel, of daar advertenties volledig uitschakelen.",
+    "consentBodyNoAds": "Omdat de site momenteel geen advertenties toont, wordt er geen toestemming gevraagd. In de mobiele apps verschijnt een toestemmingsformulier vóór de advertenties, en je kunt ze uitschakelen in de instellingen van het spel.",
     "contactTitle": "Contact",
     "contactBody": "Voor vragen over je gegevens, of om verwijdering van content aan te vragen:"
   },
@@ -199,6 +201,7 @@
     "faqQ5": "Hoe wordt de site gefinancierd?",
     "faqA5": "Met advertenties (Adsterra-banners, alleen getoond met jouw toestemming), uit te schakelen in de instellingen. Het spel verkoopt geen enkele data — het verzamelt er trouwens nauwelijks: zie het privacybeleid.",
     "faqA5Google": "Met advertenties (Google AdSense), uit te schakelen in de instellingen. Het spel verkoopt geen enkele data — het verzamelt er trouwens nauwelijks: zie het privacybeleid.",
+    "faqA5NoAds": "De site toont momenteel geen advertenties. Later kunnen er Google AdSense-advertenties bijkomen, uit te schakelen in de instellingen. Het spel verkoopt geen enkele data — het verzamelt er trouwens nauwelijks: zie het privacybeleid.",
     "contactTitle": "Contact",
     "contactBody": "Een vraag, een item-idee, een probleem?"
   },

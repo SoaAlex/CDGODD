@@ -133,12 +133,14 @@
     "cookiesBody": "Das Spiel finanziert sich über Werbung, die über das Werbenetzwerk Adsterra ausgeliefert wird. Wenn du einwilligst, können Adsterra und seine Werbekunden Cookies oder ähnliche Kennungen verwenden, um Anzeigen auszuliefern, deren Reichweite zu messen und sie zu personalisieren. Ohne deine Einwilligung wird kein Werbeskript geladen und keine Werbung angezeigt. In den mobilen Apps liefert Google AdMob die Anzeigen aus, mit einem eigenen Einwilligungsformular. Abgesehen von der Werbung setzt die Website keine Tracking-Cookies.",
     "cookiesAdsterraLink": "Cookie-Richtlinie von Adsterra",
     "cookiesBodyGoogle": "Das Spiel finanziert sich über Werbung, die über Google AdSense als Vollbildanzeigen in den Spielpausen ausgeliefert wird. Google und seine zertifizierten Partner können Cookies oder ähnliche Kennungen verwenden, um Anzeigen auszuliefern, deren Reichweite zu messen und sie — mit deiner Einwilligung — zu personalisieren. Ohne Einwilligung werden nur nicht personalisierte Anzeigen gezeigt. In den mobilen Apps liefert Google AdMob die Anzeigen aus, mit einem eigenen Einwilligungsformular. Abgesehen von der Werbung setzt die Website keine Tracking-Cookies.",
+    "cookiesBodyNoAds": "Die Website zeigt derzeit keine Werbung und setzt keine Werbe- oder Tracking-Cookies. Künftig kann sich das Spiel über Google-AdSense-Anzeigen finanzieren: Diese Seite wird dann aktualisiert, und über ein Einwilligungsbanner kannst du Werbe-Cookies akzeptieren oder ablehnen. In den mobilen Apps liefert Google AdMob die Anzeigen aus, mit einem eigenen Einwilligungsformular.",
     "cookiesGoogleLink": "Wie Google deine Daten verwendet",
     "cookiesPartnersLink": "Google-Werbeeinstellungen",
     "cookiesOptOutLink": "Deine Online-Werbeauswahl (EU)",
     "consentTitle": "Einwilligung und Kontrolle",
     "consentBody": "Bei deinem ersten Besuch fragt dich ein Banner, ob du Werbe-Cookies akzeptierst oder ablehnst; Ablehnen ist genauso einfach wie Akzeptieren, und vor deiner Wahl wird nichts geladen. Du kannst diese Wahl jederzeit in den Einstellungen des Spiels ändern oder dort die Werbung ganz abschalten.",
     "consentBodyGoogle": "Beim ersten Besuch aus dem Europäischen Wirtschaftsraum, dem Vereinigten Königreich oder der Schweiz kannst du über ein Einwilligungsbanner (Google CMP) Werbe-Cookies akzeptieren oder ablehnen. Du kannst diese Wahl jederzeit in den Einstellungen des Spiels ändern oder dort die Werbung ganz abschalten.",
+    "consentBodyNoAds": "Da die Website derzeit keine Werbung zeigt, wird keine Einwilligung abgefragt. In den mobilen Apps erscheint vor der Werbung ein Einwilligungsformular, und du kannst sie in den Einstellungen des Spiels abschalten.",
     "contactTitle": "Kontakt",
     "contactBody": "Bei Fragen zu deinen Daten oder für Löschanfragen zu Inhalten:"
   },
@@ -199,6 +201,7 @@
     "faqQ5": "Wie finanziert sich die Seite?",
     "faqA5": "Über Werbung (Adsterra-Banner, nur mit deiner Einwilligung angezeigt), die sich in den Einstellungen abschalten lässt. Das Spiel verkauft keinerlei Daten — es sammelt ohnehin kaum welche: siehe Datenschutzerklärung.",
     "faqA5Google": "Über Werbung (Google AdSense), die sich in den Einstellungen abschalten lässt. Das Spiel verkauft keinerlei Daten — es sammelt ohnehin kaum welche: siehe Datenschutzerklärung.",
+    "faqA5NoAds": "Die Website zeigt derzeit keine Werbung. Künftig können Google-AdSense-Anzeigen hinzukommen, die sich in den Einstellungen abschalten lassen. Das Spiel verkauft keinerlei Daten — es sammelt ohnehin kaum welche: siehe Datenschutzerklärung.",
     "contactTitle": "Kontakt",
     "contactBody": "Eine Frage, eine Item-Idee, ein Problem?"
   },

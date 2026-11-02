@@ -7,6 +7,7 @@ import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import { syncAdSound } from '@/ads/ad-break';
 import { ADSTERRA_CONFIGURED } from '@/ads/adsterra';
 import { useCookieChoices } from '@/ads/consent';
+import { WEB_AD_NETWORK } from '@/ads/network';
 import { ThemedSwitch } from '@/components/themed-switch';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -186,16 +187,21 @@ export default function SettingsScreen() {
           <ThemedText type="small" themeColor="textSecondary">
             {t('consent.body')}
           </ThemedText>
-          <View style={[styles.row, { backgroundColor: theme.backgroundElement }]}>
-            <ThemedText type="small" style={styles.rowLabel}>
-              {t('consent.adsToggle')}
-            </ThemedText>
-            <ThemedSwitch
-              testID="ads-enabled-switch"
-              value={adsEnabled}
-              onValueChange={setAdsEnabled}
-            />
-          </View>
+          {/* No web ads on this build: nothing for the switch to turn off. */}
+          {(Platform.OS !== 'web' || WEB_AD_NETWORK !== 'none') && (
+            <View
+              style={[styles.row, { backgroundColor: theme.backgroundElement }]}
+            >
+              <ThemedText type="small" style={styles.rowLabel}>
+                {t('consent.adsToggle')}
+              </ThemedText>
+              <ThemedSwitch
+                testID="ads-enabled-switch"
+                value={adsEnabled}
+                onValueChange={setAdsEnabled}
+              />
+            </View>
+          )}
           {/* Web (Adsterra): change the consent-banner answer at any time. */}
           {ADSTERRA_CONFIGURED && (
             <View

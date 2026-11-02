@@ -10,9 +10,9 @@ const AD_FREQUENCY_HINT = '60s';
 
 /**
  * Web-only HTML shell for the static export. On H5 Games Ads builds it holds
- * Google's tags (below). Adsterra builds have no ad script here on purpose:
- * their units load per slot (src/ads/ad-slot.web.tsx), and only after the
- * visitor accepted ad cookies.
+ * Google's tags (below). Other builds have no ad script here on purpose: Adsterra
+ * units load per slot (src/ads/ad-slot.web.tsx), and only after the visitor
+ * accepted ad cookies.
  */
 export default function Root({ children }: PropsWithChildren) {
   return (
@@ -28,6 +28,11 @@ export default function Root({ children }: PropsWithChildren) {
           content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
         />
 
+        {/* AdSense site verification, whatever the ad network: loads nothing. */}
+        {ADSENSE_CLIENT && (
+          <meta name="google-adsense-account" content={ADSENSE_CLIENT} />
+        )}
+
         {/* Google H5 Games Ads: the AdSense tag plus the init snippet Google
             requires ("otherwise your ads won't work"). On EVERY page, not just
             the game: the site is one client-side session, so the page a player
@@ -38,7 +43,6 @@ export default function Root({ children }: PropsWithChildren) {
             in AdSense, or Google would add its own units on these pages. */}
         {H5_ADS_ENABLED && (
           <>
-            <meta name="google-adsense-account" content={ADSENSE_CLIENT} />
             <script
               async
               src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}

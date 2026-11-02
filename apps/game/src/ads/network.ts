@@ -1,13 +1,16 @@
 import { Platform } from 'react-native';
 
+const NETWORK = process.env.EXPO_PUBLIC_WEB_AD_NETWORK;
+
 /**
  * Web ad network, picked at build time so switching is one CI variable rather
  * than a code change (WEB_AD_NETWORK, see deploy.yml): Google H5 Games Ads by
- * default, Adsterra banners as the fallback. Never both on one page. Native
- * is always AdMob, whatever this says.
+ * default, Adsterra banners as the fallback, or `none` for no web ads at all
+ * (e.g. during an AdSense review). Never two on one page. Native is always
+ * AdMob, whatever this says.
  */
-export const WEB_AD_NETWORK: 'h5' | 'adsterra' =
-  process.env.EXPO_PUBLIC_WEB_AD_NETWORK === 'adsterra' ? 'adsterra' : 'h5';
+export const WEB_AD_NETWORK: 'h5' | 'adsterra' | 'none' =
+  NETWORK === 'adsterra' || NETWORK === 'none' ? NETWORK : 'h5';
 
 /** AdSense publisher id, public by design (visible in page source). */
 export const ADSENSE_CLIENT = process.env.EXPO_PUBLIC_ADSENSE_CLIENT;

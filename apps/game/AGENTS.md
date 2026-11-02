@@ -30,8 +30,10 @@ root rules in [`../../AGENTS.md`](../../AGENTS.md) apply.
 - Keep the anonymous/consent model intact: nothing but Google's own tag (which
   carries its CMP) runs ad code before consent, and refusing must stay exactly
   as easy as accepting (CNIL).
-- **Web ads are one network per build** (`src/ads/network.ts`), never both on a
-  page. Don't delete the fallback: it is the rollback.
+- **Web ads are one network per build** (`src/ads/network.ts`), never two on a
+  page, or `none` while an AdSense review is under way. Don't delete the
+  fallback: it is the rollback. The privacy policy and FAQ describe the network
+  in use, so a new network or mode needs its own copy.
 - **H5 Games Ads (default):** ads are `adBreak()` calls at natural pauses only,
   and only on game screens (solo, room): never mid-round or on menus, lobbies or
   legal pages. Anything that shows Google ads must stay off NSFW cards and custom

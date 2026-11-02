@@ -16,8 +16,18 @@ const GOOGLE_PARTNER_SITES_URL =
 const GOOGLE_ADS_SETTINGS_URL = 'https://adssettings.google.com';
 const YOUR_ONLINE_CHOICES_URL = 'https://www.youronlinechoices.eu';
 
-/** The policy names whichever network this build actually uses. */
-const GOOGLE_ADS = WEB_AD_NETWORK === 'h5';
+/** The policy describes whatever this build actually serves on web. */
+const COOKIES_BODY = {
+  h5: 'privacy.cookiesBodyGoogle',
+  adsterra: 'privacy.cookiesBody',
+  none: 'privacy.cookiesBodyNoAds',
+} as const;
+const CONSENT_BODY = {
+  h5: 'privacy.consentBodyGoogle',
+  adsterra: 'privacy.consentBody',
+  none: 'privacy.consentBodyNoAds',
+} as const;
+const ADSTERRA = WEB_AD_NETWORK === 'adsterra';
 
 export default function PrivacyScreen() {
   const { t } = useT();
@@ -27,7 +37,7 @@ export default function PrivacyScreen() {
         <title>{t('privacy.title')}</title>
         <meta
           name="description"
-          content={t(GOOGLE_ADS ? 'seo.privacyDescGoogle' : 'seo.privacyDesc')}
+          content={t(ADSTERRA ? 'seo.privacyDesc' : 'seo.privacyDescGoogle')}
         />
       </Head>
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
@@ -68,9 +78,16 @@ export default function PrivacyScreen() {
               {t('privacy.cookiesTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
-              {t(GOOGLE_ADS ? 'privacy.cookiesBodyGoogle' : 'privacy.cookiesBody')}
+              {t(COOKIES_BODY[WEB_AD_NETWORK])}
             </ThemedText>
-            {GOOGLE_ADS ? (
+            {ADSTERRA ? (
+              <LinkRow
+                testID="privacy-adsterra-link"
+                icon="document-text"
+                label={t('privacy.cookiesAdsterraLink')}
+                url={ADSTERRA_COOKIES_URL}
+              />
+            ) : (
               <>
                 <LinkRow
                   testID="privacy-google-link"
@@ -85,13 +102,6 @@ export default function PrivacyScreen() {
                   url={GOOGLE_ADS_SETTINGS_URL}
                 />
               </>
-            ) : (
-              <LinkRow
-                testID="privacy-adsterra-link"
-                icon="document-text"
-                label={t('privacy.cookiesAdsterraLink')}
-                url={ADSTERRA_COOKIES_URL}
-              />
             )}
             <LinkRow
               testID="privacy-optout-link"
@@ -107,7 +117,7 @@ export default function PrivacyScreen() {
               {t('privacy.consentTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
-              {t(GOOGLE_ADS ? 'privacy.consentBodyGoogle' : 'privacy.consentBody')}
+              {t(CONSENT_BODY[WEB_AD_NETWORK])}
             </ThemedText>
             <Link href={'/settings' as never}>
               <ThemedText type="small" style={styles.inlineLink}>
