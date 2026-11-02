@@ -1,8 +1,9 @@
 import { Platform } from 'react-native';
+import { WEB_AD_NETWORK } from './network';
 import type { AdPlacement } from './types';
 
 /**
- * Web ad network: Adsterra banners (AdSense refused the site). Each unit is
+ * Fallback web ad network (see ./network): Adsterra banners. Each unit is
  * configured with the script URL from its code snippet in the Adsterra
  * dashboard (`<script src="https://bauval.org/22/<key>">` — the domain
  * rotates per account, so it's config, not code); the unit key is read back
@@ -33,6 +34,7 @@ const SRC_PATTERN = /^https?:\/\/[a-z0-9.-]+(?::\d+)?(?:\/[a-z0-9._-]+)+$/i;
 const KEY_PATTERN = /^[a-z0-9]{16,}$/i;
 
 export function adUnit(placement: AdPlacement): AdUnit | undefined {
+  if (WEB_AD_NETWORK !== 'adsterra') return undefined;
   const src = SRCS[placement];
   if (!src || !SRC_PATTERN.test(src)) return undefined;
   const key = src
@@ -43,8 +45,8 @@ export function adUnit(placement: AdPlacement): AdUnit | undefined {
   return { key, src, ...SIZES[placement] };
 }
 
-/** Whether this web build serves ads at all (and so must ask consent). */
-export const WEB_ADS_CONFIGURED =
+/** Whether this web build serves Adsterra (and so shows our consent banner). */
+export const ADSTERRA_CONFIGURED =
   Platform.OS === 'web' &&
   (adUnit('banner') !== undefined || adUnit('side') !== undefined);
 

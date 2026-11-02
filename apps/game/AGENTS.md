@@ -27,14 +27,22 @@ root rules in [`../../AGENTS.md`](../../AGENTS.md) apply.
   native-only code with `Platform.select` / `.web.tsx` / `.native.tsx`.
 - This app *does* have real lint: `pnpm --dir apps/game lint` (expo eslint). Run
   it — it's the one app where lint is a signal.
-- Keep the anonymous/consent model intact; ads load only after consent.
-- **Web ads (Adsterra):** banner units only — never enable popunder, social
-  bar, push or direct-link formats. Nothing ad-related may load before the
-  visitor accepts the consent banner (`useAdConsent() === 'granted'`), and
-  refusing must stay exactly as easy as accepting (CNIL). Keep slots off
-  menus without content, lobbies and legal pages. AdSense was removed after
-  repeated refusals; its integration is in git history (`8b4f139`) if Google
-  is ever retried — that also needs Google's certified CMP back.
+- Keep the anonymous/consent model intact: nothing but Google's own tag (which
+  carries its CMP) runs ad code before consent, and refusing must stay exactly
+  as easy as accepting (CNIL).
+- **Web ads are one network per build** (`src/ads/network.ts`), never both on a
+  page. Don't delete the fallback: it is the rollback.
+- **H5 Games Ads (default):** ads are `adBreak()` calls at natural pauses only,
+  and only on game screens (solo, room): never mid-round or on menus, lobbies or
+  legal pages. Anything that shows Google ads must stay off NSFW cards and custom
+  words (`mayShowNsfw`, `isNsfwCard`): an AdSense violation risks the account.
+  Don't wait on an ad break: with an ad blocker or no fill the callbacks may
+  never fire. Don't add `<ins>` units: this approval covers H5 only. Consent is
+  Google's CMP, not `useAdConsent`.
+- **Adsterra (fallback):** banner units only — never enable popunder, social bar,
+  push or direct-link formats. Nothing ad-related may load before the visitor
+  accepts the consent banner (`useAdConsent() === 'granted'`). Keep slots off
+  menus without content, lobbies and legal pages.
 - **Crawlability:** the static export is the SEO surface. Internal navigation
   that should be crawlable uses `expo-router` `<Link>` (real `<a href>`), not
   `router.push`. With `asChild`, pass a single flattened style object —

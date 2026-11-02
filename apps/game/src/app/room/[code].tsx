@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { parseCustomWords, type RoomMode, type Side } from '@cdgodd/shared';
+import { isAdBreakActive, useAdBreak } from '@/ads/ad-break';
 import { AdRails } from '@/ads/ad-rails';
 import { AdSlot } from '@/ads/ad-slot';
 import type { FilterMode } from '@/components/category-filter';
@@ -26,6 +27,7 @@ import { ThemedView } from '@/components/themed-view';
 import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useCategories, useCategoryName } from '@/hooks/use-categories';
+import { isNsfwCard } from '@/hooks/use-category-filter';
 import { toApiFilter } from '@/hooks/use-category-filter';
 import { useRoom } from '@/hooks/use-room';
 import { useT } from '@/lib/i18n';
@@ -85,6 +87,26 @@ export default function RoomScreen() {
     if (phase !== 'results') setConfiguring(false);
   }, [phase]);
 
+  // Ad break once per round, when the results summary appears: the round is
+  // over and nothing is waiting on this player. Never over NSFW cards or custom
+  // words (unmoderated text): ads next to those risk an AdSense violation.
+  const adBreak = useAdBreak();
+  const roundBreakDone = useRef(false);
+  const atSummary =
+    phase === 'results' &&
+    results !== null &&
+    room !== null &&
+    room.revealIndex >= results.length;
+  const adsAllowed =
+    room?.customWords.length === 0 &&
+    !results?.some((result) => isNsfwCard(result.card));
+  useEffect(() => {
+    if (phase !== 'results') roundBreakDone.current = false;
+    if (roundBreakDone.current || !adBreak || !atSummary || !adsAllowed) return;
+    roundBreakDone.current = true;
+    adBreak('next', 'room-results');
+  }, [phase, adBreak, atSummary, adsAllowed]);
+
   // "Lien copié !" feedback reverts to the copy button after a moment.
   useEffect(() => {
     if (!linkCopied) return;
@@ -107,6 +129,7 @@ export default function RoomScreen() {
   useEffect(() => {
     if (Platform.OS !== 'web') return;
     const onKey = (e: KeyboardEvent) => {
+      if (isAdBreakActive()) return;
       if (e.key === 'ArrowLeft') deckRef.current?.swipeOut('left');
       if (e.key === 'ArrowRight') deckRef.current?.swipeOut('right');
     };

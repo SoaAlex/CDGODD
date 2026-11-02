@@ -8,3 +8,5 @@ export function isSfxMuted(): boolean {
 }
 
 export function setSfxMuted(_next: boolean): void {}
+
+export function setSfxSuspended(_next: boolean): void {}

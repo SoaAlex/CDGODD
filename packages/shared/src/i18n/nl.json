@@ -123,7 +123,7 @@
   },
   "privacy": {
     "title": "Privacybeleid",
-    "updated": "Laatst bijgewerkt: 25 oktober 2026",
+    "updated": "Laatst bijgewerkt: 2 november 2026",
     "introBody": "Deze pagina beschrijft welke gegevens het spel 'C'est de Gauche ou de Droite ?' (cestdegaucheoudedroite.com) verwerkt en wat je rechten zijn. Kort samengevat: het spel werkt zonder account en zonder persoonsgegevens; alleen advertenties kunnen die verzamelen, met jouw toestemming.",
     "whoTitle": "Wie zijn wij",
     "whoBody": "De site wordt uitgegeven door SOARES Cloud Engineering Services, SARL met een kapitaal van € 1.000, SIREN 999 871 148, 78 F rue de Lambersart, 59350 Saint-André-lez-Lille, Frankrijk. Hosting: Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, Verenigde Staten.",
@@ -132,9 +132,13 @@
     "cookiesTitle": "Cookies en advertenties",
     "cookiesBody": "Het spel wordt gefinancierd met advertenties, geleverd door het advertentienetwerk Adsterra. Als je toestemming geeft, kunnen Adsterra en zijn adverteerders cookies of vergelijkbare identificatoren gebruiken om advertenties te tonen, hun bereik te meten en ze te personaliseren. Zonder toestemming wordt geen advertentiescript geladen en worden er geen advertenties getoond. In de mobiele apps worden advertenties geleverd door Google AdMob, met een eigen toestemmingsformulier. Buiten de advertenties plaatst de site geen trackingcookies.",
     "cookiesAdsterraLink": "Cookiebeleid van Adsterra",
+    "cookiesBodyGoogle": "Het spel wordt gefinancierd met advertenties, geleverd via Google AdSense als schermvullende advertenties tijdens pauzes in het spel. Google en zijn gecertificeerde partners kunnen cookies of vergelijkbare identificatoren gebruiken om advertenties te tonen, hun bereik te meten en ze — met jouw toestemming — te personaliseren. Zonder toestemming worden alleen niet-gepersonaliseerde advertenties getoond. In de mobiele apps worden advertenties geleverd door Google AdMob, met een eigen toestemmingsformulier. Buiten de advertenties plaatst de site geen trackingcookies.",
+    "cookiesGoogleLink": "Hoe Google je gegevens gebruikt",
+    "cookiesPartnersLink": "Google-advertentie-instellingen",
     "cookiesOptOutLink": "Your Online Choices (EU)",
     "consentTitle": "Toestemming en controle",
     "consentBody": "Bij je eerste bezoek vraagt een banner je om advertentiecookies te accepteren of te weigeren; weigeren is net zo eenvoudig als accepteren, en er wordt niets geladen voordat je kiest. Je kunt deze keuze altijd wijzigen in de instellingen van het spel, of daar advertenties volledig uitschakelen.",
+    "consentBodyGoogle": "Bij je eerste bezoek vanuit de Europese Economische Ruimte, het Verenigd Koninkrijk of Zwitserland kun je via een toestemmingsbanner (Google CMP) advertentiecookies accepteren of weigeren. Je kunt deze keuze altijd wijzigen in de instellingen van het spel, of daar advertenties volledig uitschakelen.",
     "contactTitle": "Contact",
     "contactBody": "Voor vragen over je gegevens, of om verwijdering van content aan te vragen:"
   },
@@ -194,6 +198,7 @@
     "faqA4": "Een onafhankelijke Franse ontwikkelaar, met hulp van de community voor item-ideeën. De volledige juridische vermeldingen staan op de Credits-pagina.",
     "faqQ5": "Hoe wordt de site gefinancierd?",
     "faqA5": "Met advertenties (Adsterra-banners, alleen getoond met jouw toestemming), uit te schakelen in de instellingen. Het spel verkoopt geen enkele data — het verzamelt er trouwens nauwelijks: zie het privacybeleid.",
+    "faqA5Google": "Met advertenties (Google AdSense), uit te schakelen in de instellingen. Het spel verkoopt geen enkele data — het verzamelt er trouwens nauwelijks: zie het privacybeleid.",
     "contactTitle": "Contact",
     "contactBody": "Een vraag, een item-idee, een probleem?"
   },
@@ -203,6 +208,7 @@
     "searchDesc": "Zoek een specifiek voorwerp of concept, stem en ontdek of de community het links of rechts indeelt.",
     "creditsDesc": "Credits, waarschuwingen, meldingen en juridische vermeldingen van het spel C'est de Gauche ou de Droite ?",
     "privacyDesc": "Privacybeleid van het spel: 100% anoniem, zonder account. Details over advertentiecookies (Adsterra) en je toestemmingskeuzes.",
+    "privacyDescGoogle": "Privacybeleid van het spel: 100% anoniem, zonder account. Details over advertentiecookies (Google AdSense) en je toestemmingskeuzes.",
     "itemsDesc": "Blader door alle items van het spel en ontdek per item of de community het eerder links of rechts indeelt.",
     "itemDescSuffix": "Stem en vergelijk jouw mening met de community op C'est de Gauche ou de Droite!",
     "rankingsDesc": "De meest linkse, meest rechtse, meest verdelende en meest gestemde items — de grote ranglijsten van de community.",
@@ -217,7 +223,8 @@
     "bannerBody": "Het spel is gratis en wordt gefinancierd met advertenties. Ga je ermee akkoord dat onze advertentiepartner Adsterra cookies plaatst om advertenties te tonen? Zonder jouw toestemming worden er geen advertenties getoond. Je kunt je keuze altijd wijzigen in de instellingen.",
     "accept": "Accepteren",
     "refuse": "Weigeren",
-    "cookiesToggle": "Advertentiecookies toestaan (Adsterra)"
+    "cookiesToggle": "Advertentiecookies toestaan (Adsterra)",
+    "cookiesManage": "Mijn cookiekeuzes beheren"
   },
   "errors": {
     "network": "Netwerkfout, probeer het opnieuw",

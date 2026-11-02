@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
+import { syncAdSound } from '@/ads/ad-break';
 import { ThemedSwitch } from '@/components/themed-switch';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
@@ -28,11 +29,13 @@ export function MuteButton() {
   function toggleMusic(on: boolean) {
     setMusicMuted(!on);
     setMusicMutedState(!on);
+    syncAdSound();
   }
 
   function toggleSfx(on: boolean) {
     setSfxMuted(!on);
     setSfxMutedState(!on);
+    syncAdSound();
   }
 
   return (

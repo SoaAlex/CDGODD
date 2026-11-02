@@ -3,6 +3,7 @@ import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useHydrated } from '@/hooks/use-hydrated';
 import { AdSlot } from './ad-slot';
+import { ADSTERRA_CONFIGURED } from './adsterra';
 
 const RAIL_WIDTH = 160;
 /** Rails only when the content column plus both rails fit comfortably. */
@@ -18,7 +19,7 @@ export function AdRails({ children }: { children: ReactNode }) {
   const { width } = useWindowDimensions();
   // Hydration gate: the server renders a 0-width window (no rails); rendering
   // them during hydration on wide viewports trips React error #418.
-  const show = useHydrated() && width >= MIN_WIDTH;
+  const show = useHydrated() && ADSTERRA_CONFIGURED && width >= MIN_WIDTH;
   return (
     <>
       {show && (

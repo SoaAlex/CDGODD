@@ -21,6 +21,39 @@ export function defaultExcludedKeys(categories: CategoryOption[]): string[] {
     .map((c) => c.key);
 }
 
+function isNsfwKey(key: string): boolean {
+  return key.toLowerCase() === 'nsfw';
+}
+
+/** Whether a card carries the NSFW category. */
+export function isNsfwCard(card: { categoryKeys: string[] }): boolean {
+  return card.categoryKeys.some(isNsfwKey);
+}
+
+/**
+ * Whether NSFW cards can be on screen with this API filter. Ad breaks stay off
+ * then: ads next to adult content are an AdSense violation. A narrow include
+ * list doesn't rule NSFW out (a card tagged Food and NSFW still matches Food),
+ * hence the check on the loaded cards too. Categories not loaded yet means the
+ * filter isn't seeded yet, so assume the worst.
+ */
+export function mayShowNsfw(
+  filter: { include: string[]; exclude: string[] },
+  categories: CategoryOption[],
+  cards: { categoryKeys: string[] }[],
+): boolean {
+  if (categories.length === 0) return true;
+  const nsfwKeys = categories
+    .filter((c) => isNsfwKey(c.key) || isNsfwKey(c.name.trim()))
+    .map((c) => c.key);
+  const allowedByFilter = nsfwKeys.some(
+    (k) =>
+      !filter.exclude.includes(k) &&
+      (filter.include.length === 0 || filter.include.includes(k)),
+  );
+  return allowedByFilter || cards.some(isNsfwCard);
+}
+
 /**
  * Maps the filter UI state to the include/exclude pair sent to the API.
  * Broad include selections (most categories left checked) are sent as an

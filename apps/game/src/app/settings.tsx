@@ -4,7 +4,9 @@ import { useEffect, useState, type ReactElement } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
-import { WEB_ADS_CONFIGURED } from '@/ads/adsterra';
+import { syncAdSound } from '@/ads/ad-break';
+import { ADSTERRA_CONFIGURED } from '@/ads/adsterra';
+import { useCookieChoices } from '@/ads/consent';
 import { ThemedSwitch } from '@/components/themed-switch';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -30,6 +32,7 @@ export default function SettingsScreen() {
   const { showLastVote, setShowLastVote } = useShowLastVote();
   const { adsEnabled, setAdsEnabled } = useAdsEnabled();
   const { consent, setConsent } = useAdConsent();
+  const openCookieChoices = useCookieChoices();
   const { auroraPulse, setAuroraPulse } = useAuroraPulse();
   const [musicMuted, setMusicMutedState] = useState(isMusicMuted());
   const [sfxMuted, setSfxMutedState] = useState(isSfxMuted());
@@ -108,6 +111,7 @@ export default function SettingsScreen() {
                 onValueChange={(on) => {
                   setMusicMuted(!on);
                   setMusicMutedState(!on);
+                  syncAdSound();
                 }}
               />
             </View>
@@ -121,6 +125,7 @@ export default function SettingsScreen() {
                 onValueChange={(on) => {
                   setSfxMuted(!on);
                   setSfxMutedState(!on);
+                  syncAdSound();
                 }}
               />
             </View>
@@ -191,8 +196,8 @@ export default function SettingsScreen() {
               onValueChange={setAdsEnabled}
             />
           </View>
-          {/* Web: change the consent-banner answer at any time. */}
-          {WEB_ADS_CONFIGURED && (
+          {/* Web (Adsterra): change the consent-banner answer at any time. */}
+          {ADSTERRA_CONFIGURED && (
             <View
               style={[styles.row, { backgroundColor: theme.backgroundElement }]}
             >
@@ -205,6 +210,25 @@ export default function SettingsScreen() {
                 onValueChange={(on) => setConsent(on ? 'granted' : 'denied')}
               />
             </View>
+          )}
+          {/* Web (H5): same thing, through Google's consent message. */}
+          {openCookieChoices && (
+            <Pressable
+              testID="cookie-choices"
+              onPress={openCookieChoices}
+              accessibilityRole="button"
+              style={({ pressed }) => [
+                styles.row,
+                {
+                  backgroundColor: theme.backgroundElement,
+                  opacity: pressed ? 0.7 : 1,
+                },
+              ]}
+            >
+              <ThemedText type="small" style={styles.rowLabel}>
+                {t('consent.cookiesManage')}
+              </ThemedText>
+            </Pressable>
           )}
           <Link href={'/privacy' as never}>
             <ThemedText type="small" style={styles.privacyLink}>

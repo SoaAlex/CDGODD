@@ -6,14 +6,15 @@ import { Gradient, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useT } from '@/lib/i18n';
 import { useAdConsent, useAdsEnabled, type AdConsent } from '@/lib/prefs';
-import { WEB_ADS_CONFIGURED } from './adsterra';
+import { ADSTERRA_CONFIGURED } from './adsterra';
 
 /**
  * Web: first-party ad-cookie consent banner (CNIL rules: no ad script loads
  * before a choice, refusing is exactly as easy and as prominent as
  * accepting, and the choice can be changed any time in settings). Shown
- * only when the build serves ads, the visitor hasn't turned ads off, and no
- * choice is stored yet — so ad-free builds (local dev, e2e) never show it.
+ * only when the build serves Adsterra, the visitor hasn't turned ads off, and
+ * no choice is stored yet — so ad-free builds never show it, and neither do H5
+ * builds, where consent is Google's CMP (./consent.web).
  */
 export function ConsentBanner() {
   const theme = useTheme();
@@ -22,7 +23,7 @@ export function ConsentBanner() {
   const { adsEnabled, loaded } = useAdsEnabled();
   const { consent, loaded: consentLoaded, setConsent } = useAdConsent();
 
-  if (!WEB_ADS_CONFIGURED || !loaded || !adsEnabled || !consentLoaded) {
+  if (!ADSTERRA_CONFIGURED || !loaded || !adsEnabled || !consentLoaded) {
     return null;
   }
   if (consent !== null) return null;
