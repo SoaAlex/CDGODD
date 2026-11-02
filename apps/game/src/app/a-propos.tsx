@@ -12,6 +12,13 @@ import { useT, type MessageKey } from '@/lib/i18n';
 const SITE = 'https://cestdegaucheoudedroite.com';
 const SUPPORT_EMAIL = 'support@cestdegaucheoudedroite.com';
 
+/** The funding answer describes whatever this build actually serves on web. */
+const FAQ_FUNDING = {
+  h5: 'about.faqA5Google',
+  adsterra: 'about.faqA5',
+  none: 'about.faqA5NoAds',
+} as const;
+
 const FAQ: Array<{ q: MessageKey; a: MessageKey }> = [
   { q: 'about.faqQ1', a: 'about.faqA1' },
   { q: 'about.faqQ2', a: 'about.faqA2' },
@@ -19,7 +26,7 @@ const FAQ: Array<{ q: MessageKey; a: MessageKey }> = [
   { q: 'about.faqQ4', a: 'about.faqA4' },
   {
     q: 'about.faqQ5',
-    a: WEB_AD_NETWORK === 'h5' ? 'about.faqA5Google' : 'about.faqA5',
+    a: FAQ_FUNDING[WEB_AD_NETWORK],
   },
 ];
 

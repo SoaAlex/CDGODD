@@ -133,12 +133,14 @@
     "cookiesBody": "O jogo é financiado pela publicidade, veiculada pela rede Adsterra. Se aceitares, a Adsterra e os seus anunciantes podem utilizar cookies ou identificadores semelhantes para apresentar anúncios, medir a sua audiência e personalizá-los. Sem o teu consentimento, nenhum script publicitário é carregado e não é mostrado nenhum anúncio. Nas aplicações móveis, os anúncios são veiculados pelo Google AdMob, com o seu próprio formulário de consentimento. Fora da publicidade, o site não instala cookies de rastreio.",
     "cookiesAdsterraLink": "Política de cookies da Adsterra",
     "cookiesBodyGoogle": "O jogo é financiado pela publicidade, veiculada através do Google AdSense sob a forma de anúncios de ecrã inteiro durante as pausas do jogo. A Google e os seus parceiros certificados podem utilizar cookies ou identificadores semelhantes para apresentar anúncios, medir a sua audiência e, se o consentires, personalizá-los. Sem consentimento, apenas podem ser mostrados anúncios não personalizados. Nas aplicações móveis, os anúncios são veiculados pelo Google AdMob, com o seu próprio formulário de consentimento. Fora da publicidade, o site não instala cookies de rastreio.",
+    "cookiesBodyNoAds": "O site não apresenta publicidade de momento e não instala cookies publicitários nem de rastreio. No futuro, o jogo poderá ser financiado por anúncios do Google AdSense: esta página será então atualizada e um aviso de consentimento permitir-te-á aceitar ou recusar os cookies publicitários. Nas aplicações móveis, os anúncios são veiculados pelo Google AdMob, com o seu próprio formulário de consentimento.",
     "cookiesGoogleLink": "Como a Google utiliza os teus dados",
     "cookiesPartnersLink": "Definições de anúncios da Google",
     "cookiesOptOutLink": "As tuas escolhas publicitárias online (UE)",
     "consentTitle": "Consentimento e controlo",
     "consentBody": "Na tua primeira visita, um aviso pede-te que aceites ou recuses os cookies publicitários; recusar é tão simples como aceitar, e nada é carregado antes da tua escolha. Podes alterar esta escolha a qualquer momento nas definições do jogo, ou desativar aí completamente a publicidade.",
     "consentBodyGoogle": "Na tua primeira visita a partir do Espaço Económico Europeu, do Reino Unido ou da Suíça, um aviso de consentimento (CMP da Google) permite-te aceitar ou recusar os cookies publicitários. Podes alterar a tua escolha a qualquer momento nas definições do jogo, ou desativar aí completamente a publicidade.",
+    "consentBodyNoAds": "Como o site não apresenta publicidade de momento, não te é pedido nenhum consentimento. Nas aplicações móveis, aparece um formulário de consentimento antes dos anúncios, e podes desativá-los nas definições do jogo.",
     "contactTitle": "Contacto",
     "contactBody": "Para qualquer questão sobre os teus dados, ou para pedir a remoção de um conteúdo:"
   },
@@ -199,6 +201,7 @@
     "faqQ5": "Como é financiado o site?",
     "faqA5": "Com publicidade (banners Adsterra, mostrados apenas com o teu consentimento), desativável nas definições. O jogo não vende dados nenhuns — aliás, quase não os recolhe: vê a política de privacidade.",
     "faqA5Google": "Com publicidade (Google AdSense), desativável nas definições. O jogo não vende dados nenhuns — aliás, quase não os recolhe: vê a política de privacidade.",
+    "faqA5NoAds": "O site não apresenta publicidade de momento. Mais tarde poderão ser adicionados anúncios do Google AdSense, desativáveis nas definições. O jogo não vende dados nenhuns — aliás, quase não os recolhe: vê a política de privacidade.",
     "contactTitle": "Contacto",
     "contactBody": "Uma pergunta, uma ideia de item, um problema?"
   },
