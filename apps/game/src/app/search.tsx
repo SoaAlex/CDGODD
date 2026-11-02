@@ -16,6 +16,7 @@ import { TallyBar } from '@/components/tally-bar';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/theme';
+import { SITE } from '@/constants/site';
 import { useTheme } from '@/hooks/use-theme';
 import { useCategoryName } from '@/hooks/use-categories';
 import { castVote, searchItems, submitItem } from '@/lib/api';
@@ -97,10 +98,14 @@ export default function SearchScreen() {
   return (
     <ThemedView style={styles.container}>
       <Head>
-        <title>{t('solo.search')}</title>
+        <title>{`${t('solo.search')} — ${t('menu.title')}`}</title>
         <meta name="description" content={t('seo.searchDesc')} />
+        <link rel="canonical" href={`${SITE}/search`} />
       </Head>
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+        <ThemedText type="pageTitle" style={styles.pageTitle} heading={1}>
+          {t('solo.search')}
+        </ThemedText>
         <TextInput
           testID="search-input"
           value={query}
@@ -226,6 +231,9 @@ export default function SearchScreen() {
 }
 
 const styles = StyleSheet.create({
+  pageTitle: {
+    paddingTop: Spacing.three,
+  },
   container: {
     flex: 1,
     flexDirection: 'row',

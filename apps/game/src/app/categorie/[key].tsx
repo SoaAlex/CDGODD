@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { SITE } from '@/constants/site';
 import { useCategoryName } from '@/hooks/use-categories';
 import { useT } from '@/lib/i18n';
 import {
@@ -14,7 +15,6 @@ import {
   totalVotes,
 } from '@/lib/item-manifest';
 
-const SITE = 'https://cestdegaucheoudedroite.com';
 
 /** One prerendered page per category: its items ranked most-left ->
  * most-right. Categories come from the build-time manifest (nsfw already
@@ -66,11 +66,13 @@ export default function CategoryScreen() {
       </Head>
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <ScrollView contentContainerStyle={styles.scroll}>
-          <ThemedText type="title" style={styles.title}>
+          <ThemedText type="title" style={styles.title} heading={1}>
             {name}
           </ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            {ranked.length} {t('category.itemsWord')} — {t('category.intro')}
+            {ranked.length}{' '}
+            {t(ranked.length === 1 ? 'category.itemWord' : 'category.itemsWord')} —{' '}
+            {t('category.intro')}
           </ThemedText>
 
           <View style={styles.list}>

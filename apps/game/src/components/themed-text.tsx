@@ -4,12 +4,15 @@ import { Fonts, ThemeColor } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export type ThemedTextProps = TextProps & {
-  type?: 'default' | 'title' | 'small' | 'smallBold' | 'subtitle' | 'link' | 'linkPrimary' | 'code';
+  type?: 'default' | 'title' | 'pageTitle' | 'small' | 'smallBold' | 'subtitle' | 'link' | 'linkPrimary' | 'code';
   themeColor?: ThemeColor;
+  /** Outline level: renders <h1>-<h3> on web, a screen reader header on native. */
+  heading?: 1 | 2 | 3;
 };
 
-export function ThemedText({ style, type = 'default', themeColor, ...rest }: ThemedTextProps) {
+export function ThemedText({ style, type = 'default', themeColor, heading, ...rest }: ThemedTextProps) {
   const theme = useTheme();
+  const headingProps = heading ? { role: 'heading' as const, 'aria-level': heading } : undefined;
 
   return (
     <Text
@@ -17,6 +20,7 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
         { color: theme[themeColor ?? 'text'] },
         type === 'default' && styles.default,
         type === 'title' && styles.title,
+        type === 'pageTitle' && styles.pageTitle,
         type === 'small' && styles.small,
         type === 'smallBold' && styles.smallBold,
         type === 'subtitle' && styles.subtitle,
@@ -25,6 +29,7 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
         type === 'code' && styles.code,
         style,
       ]}
+      {...headingProps}
       {...rest}
     />
   );
@@ -52,6 +57,14 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 52,
     lineHeight: 60,
+  },
+  // Screen name on text pages: long French names must fit a phone width.
+  pageTitle: {
+    fontFamily: Fonts.display,
+    fontWeight: '700',
+    fontSize: 36,
+    lineHeight: 44,
+    textAlign: 'center',
   },
   subtitle: {
     fontFamily: Fonts.sansMedium,

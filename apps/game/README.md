@@ -65,11 +65,18 @@ Android**. The web export is served as an assets-only Cloudflare Worker.
   Indexing hygiene: the manifest fetches the deck with `exclude=nsfw`,
   drops a small sensitive-label blocklist (backstop for items missing the
   nsfw tag) and drops labels < 3 chars, so sensitive/junk items never get
-  an indexed, ad-tagged page; `/settings` and `/history` carry a noindex
-  meta;
+  an indexed, ad-tagged page; `/settings`, `/history` and `/room/*` carry a
+  noindex meta;
   `scripts/generate-sitemap.mjs` rewrites `dist/sitemap.xml` with the
   content pages only (no lobby/utility screens). Vote percentages on item
   pages hydrate live from `/items/tallies`.
+- **Worker routing** — unknown URLs answer a real 404 with `dist/404.html`
+  (`src/app/+not-found.tsx`), which still boots the app, so an item approved
+  after the last build routes client-side. Room codes aren't known at build
+  time: `public/_redirects` rewrites `/room/*` to their shell.
+  `scripts/finish-web-export.mjs` puts both files in place, because Workers
+  Static Assets can't serve a file with brackets in its name. `/categorie/*`
+  and `/item/*` have no such rewrite on purpose.
 - **Fonts & music** — ClashGrotesk / MonteiroLobato from `assets/`; the theme
   song loops on web only.
 
@@ -114,7 +121,7 @@ runtime branches:
 ```bash
 pnpm exec expo start --web       # dev on :8081 (also --ios / --android)
 pnpm typecheck
-pnpm build:web                   # item manifest + expo export → dist/ + sitemap
+pnpm build:web                   # item manifest + expo export → dist/ + sitemap + 404
                                  # (manifest fetch fails soft: no API reachable
                                  #  → empty manifest, no item pages)
 pnpm deploy                      # build:web + wrangler deploy → cestdegaucheoudedroite.com

@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { SITE } from '@/constants/site';
 import { useT, type MessageKey } from '@/lib/i18n';
 import {
   mostDivisive,
@@ -15,7 +16,6 @@ import {
   type ManifestItem,
 } from '@/lib/item-manifest';
 
-const SITE = 'https://cestdegaucheoudedroite.com';
 const TOP_N = 20;
 
 interface Section {
@@ -64,13 +64,18 @@ export default function RankingsScreen() {
       </Head>
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <ScrollView contentContainerStyle={styles.scroll}>
+          <ThemedText type="pageTitle" heading={1}>
+            {t('rankings.title')}
+          </ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
             {t('rankings.intro')}
           </ThemedText>
 
           {sections.map((section) => (
             <View key={section.titleKey} style={styles.section}>
-              <ThemedText type="subtitle">{t(section.titleKey)}</ThemedText>
+              <ThemedText type="subtitle" heading={2}>
+                {t(section.titleKey)}
+              </ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
                 {t(section.blurbKey)}
               </ThemedText>

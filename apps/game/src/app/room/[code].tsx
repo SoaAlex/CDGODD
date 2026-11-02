@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams } from 'expo-router';
+import Head from 'expo-router/head';
 import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -32,7 +33,21 @@ import { toApiFilter } from '@/hooks/use-category-filter';
 import { useRoom } from '@/hooks/use-room';
 import { useT } from '@/lib/i18n';
 
-export default function RoomScreen() {
+/** Rooms are private and short-lived: nothing here belongs in search results. */
+export default function RoomRoute() {
+  const { t } = useT();
+  return (
+    <>
+      <Head>
+        <title>{`${t('menu.multiplayer')} — ${t('menu.title')}`}</title>
+        <meta name="robots" content="noindex" />
+      </Head>
+      <RoomScreen />
+    </>
+  );
+}
+
+function RoomScreen() {
   const { t } = useT();
   const categoryName = useCategoryName();
   const { categories: allCategories } = useCategories();

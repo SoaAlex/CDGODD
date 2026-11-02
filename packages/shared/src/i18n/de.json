@@ -17,7 +17,8 @@
     "aboutTitle": "Was ist das für ein Spiel?",
     "aboutWhat": "„C'est de Gauche ou de Droite ?“ (Ist das Links oder Rechts?) ist ein kostenloses, 100 % anonymes Spiel: Alltagsgegenstände, Konzepte und Symbole erscheinen als Karten, und du entscheidest. Quinoa, Rindersteak, Lastenrad … alles wird einsortiert — mit Humor und ganz ohne politische Absicht.",
     "aboutHow": "Das Prinzip ist einfach: Wische jede Karte nach links oder rechts, je nachdem, welchem Lager du sie zuordnest. Nach jeder Abstimmung siehst du, was die Community denkt. Spiele solo, fordere deine Freunde in privaten Mehrspieler-Räumen heraus oder suche ein bestimmtes Item, um seine Einordnung zu sehen.",
-    "aboutStats": "Jede Partie erweitert die Statistiken: Tausende Stimmen zeichnen eine kollektive — und oft urkomische — Karte unserer politischen Klischees. Stöbere durch alle Items, um die Urteile der Community zu entdecken, und schlage deine eigenen Kartenideen direkt im Spiel vor."
+    "aboutStats": "Jede Partie erweitert die Statistiken: Tausende Stimmen zeichnen eine kollektive — und oft urkomische — Karte unserer politischen Klischees. Stöbere durch alle Items, um die Urteile der Community zu entdecken, und schlage deine eigenen Kartenideen direkt im Spiel vor.",
+    "aboutVotes": "Hier entscheidet keine KI: Jeder Prozentwert ist die reine Auszählung der Stimmen der Spieler, ohne Gewichtung oder Nachbearbeitung, und die Ranglisten ändern sich mit den Stimmen."
   },
   "solo": {
     "random": "Zufällige Karten",
@@ -178,6 +179,7 @@
   },
   "category": {
     "itemsWord": "Items",
+    "itemWord": "Item",
     "intro": "Sortiert vom am weitesten links bis zum am weitesten rechts eingeordneten Item, nach den anonymen Stimmen der Community. Klicke auf ein Item, um die Stimmen im Detail zu sehen — und selbst abzustimmen.",
     "backToAll": "Alle Kategorien"
   },
@@ -208,6 +210,7 @@
   "seo": {
     "homeDesc": "Das Spiel, das alles einsortiert: Wische Alltagsgegenstände und Konzepte zwischen links und rechts und vergleiche deine Stimmen mit der Community. Kostenlos, anonym, solo oder mit Freunden.",
     "soloDesc": "Wische zufällige Karten und stimme ab: links oder rechts? Filtere nach Kategorie und sieh nach jeder Abstimmung die Ergebnisse der Community.",
+    "multiplayerDesc": "Erstelle einen Raum und spiele mit Freunden: Jeder stimmt für sich ab, am Ende der Runde vergleicht ihr eure Antworten. Kostenlos, ohne Konto und auf Wunsch mit euren eigenen Wörtern.",
     "searchDesc": "Suche ein bestimmtes Objekt oder Konzept, stimme ab und finde heraus, ob die Community es links oder rechts einordnet.",
     "creditsDesc": "Credits, Hinweise, Meldungen und Impressum des Spiels C'est de Gauche ou de Droite ?",
     "privacyDesc": "Datenschutzerklärung des Spiels: 100 % anonym, ohne Konto. Details zu Werbe-Cookies (Adsterra) und deinen Einwilligungsoptionen.",
@@ -232,5 +235,9 @@
   "errors": {
     "network": "Netzwerkfehler, versuch es nochmal",
     "roomNotFound": "Raum nicht gefunden"
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "body": "Diese Seite existiert nicht oder wurde entfernt."
   }
 }

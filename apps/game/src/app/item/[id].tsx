@@ -10,6 +10,7 @@ import { TallyBar } from '@/components/tally-bar';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { LEFT_COLOR, MaxContentWidth, RIGHT_COLOR, Spacing } from '@/constants/theme';
+import { SITE } from '@/constants/site';
 import { useCategoryName } from '@/hooks/use-categories';
 import { castVote, fetchTallies } from '@/lib/api';
 import { recordVote } from '@/lib/history';
@@ -26,12 +27,11 @@ import {
   type ManifestItem,
 } from '@/lib/item-manifest';
 
-const SITE = 'https://cestdegaucheoudedroite.com';
 const RELATED_COUNT = 8;
 
 /** One prerendered HTML page per approved item (see scripts/
  * generate-item-manifest.mjs). Ids missing from the manifest still resolve
- * at runtime through the SPA fallback and render the not-found state. */
+ * at runtime through dist/404.html and render the not-found state. */
 export function generateStaticParams(): Array<{ id: string }> {
   return getItems().map((i) => ({ id: i.seg }));
 }
@@ -161,7 +161,7 @@ export default function ItemScreen() {
       </Head>
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <ScrollView contentContainerStyle={styles.scroll}>
-          <ThemedText type="title" style={styles.title}>
+          <ThemedText type="title" style={styles.title} heading={1}>
             {`${item.label}${ambiguousSuffix}`}
           </ThemedText>
           {item.categoryKeys.length > 0 && (
@@ -230,7 +230,7 @@ export default function ItemScreen() {
           {/* Unique per-item stats block, prerendered from the manifest. */}
           {(catRank || globalRank || moreLeft || moreRight) && (
             <View style={styles.stats}>
-              <ThemedText type="smallBold" themeColor="textSecondary">
+              <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
                 {t('item.statsTitle')}
               </ThemedText>
               {catRank && primaryCategoryKey && (
@@ -301,7 +301,7 @@ export default function ItemScreen() {
 
           {relatedItems(item).length > 0 && (
             <View style={styles.related}>
-              <ThemedText type="smallBold" themeColor="textSecondary">
+              <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
                 {t('item.moreItems')}
               </ThemedText>
               {relatedItems(item).map((rel) => (

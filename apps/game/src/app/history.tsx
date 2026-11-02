@@ -42,6 +42,7 @@ export default function HistoryScreen() {
   // to be in both returns.
   const noindex = (
     <Head>
+      <title>{`${t('menu.history')} — ${t('menu.title')}`}</title>
       <meta name="robots" content="noindex" />
     </Head>
   );

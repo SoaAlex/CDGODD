@@ -17,7 +17,8 @@
     "aboutTitle": "C'est quoi, ce jeu ?",
     "aboutWhat": "« C'est de Gauche ou de Droite ? » est un jeu gratuit et 100 % anonyme : des objets, des concepts et des symboles du quotidien défilent sous forme de cartes, et c'est à vous de trancher. Le quinoa, la côte de bœuf, le vélo cargo… tout y passe, avec humour et sans aucune prétention politique.",
     "aboutHow": "Le principe est simple : swipez chaque carte vers la gauche ou vers la droite selon le camp que vous lui associez. Après chaque vote, découvrez ce qu'en pense la communauté. Jouez en solo, défiez vos amis en multijoueur dans des salles privées, ou cherchez un item précis pour connaître son classement.",
-    "aboutStats": "Chaque partie enrichit les statistiques : des milliers de votes dessinent une carte collective — et souvent hilarante — de nos clichés politiques. Parcourez tous les items pour découvrir les verdicts de la communauté, et proposez vos propres idées de cartes directement depuis le jeu."
+    "aboutStats": "Chaque partie enrichit les statistiques : des milliers de votes dessinent une carte collective — et souvent hilarante — de nos clichés politiques. Parcourez tous les items pour découvrir les verdicts de la communauté, et proposez vos propres idées de cartes directement depuis le jeu.",
+    "aboutVotes": "Ici, ce n'est pas une IA qui tranche : chaque pourcentage est le simple décompte des votes des joueurs, sans pondération ni retouche, et les classements évoluent avec les votes."
   },
   "solo": {
     "random": "Cartes aléatoires",
@@ -178,6 +179,7 @@
   },
   "category": {
     "itemsWord": "items",
+    "itemWord": "item",
     "intro": "Classés du plus à gauche au plus à droite, selon les votes anonymes de la communauté. Cliquez sur un item pour voir le détail de ses votes — et donner votre avis.",
     "backToAll": "Toutes les catégories"
   },
@@ -208,6 +210,7 @@
   "seo": {
     "homeDesc": "Le jeu qui classe tout : swipez des objets et des concepts du quotidien entre la gauche et la droite, puis comparez vos votes avec la communauté. Gratuit, anonyme, en solo ou entre amis.",
     "soloDesc": "Swipez des cartes aléatoires et votez : gauche ou droite ? Filtrez par catégorie et découvrez les résultats de la communauté après chaque vote.",
+    "multiplayerDesc": "Créez une salle et jouez entre amis : chacun vote de son côté, puis vous comparez vos réponses à la fin de la manche. Gratuit, sans compte et, si vous voulez, avec vos propres mots.",
     "searchDesc": "Cherchez un objet ou un concept précis, votez et découvrez si la communauté le classe à gauche ou à droite.",
     "creditsDesc": "Crédits, avertissements, signalement et mentions légales du jeu C'est de Gauche ou de Droite ?",
     "privacyDesc": "Politique de confidentialité du jeu : 100 % anonyme, sans compte. Détails sur les cookies publicitaires (Adsterra) et vos choix de consentement.",
@@ -232,5 +235,9 @@
   "errors": {
     "network": "Erreur réseau, réessayez",
     "roomNotFound": "Salle introuvable"
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "body": "Cette page n'existe pas, ou elle a été retirée."
   }
 }

@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { SITE } from '@/constants/site';
 import { useT } from '@/lib/i18n';
 import {
   getCategories,
@@ -72,11 +73,15 @@ export default function ItemsScreen() {
   return (
     <ThemedView style={styles.container}>
       <Head>
-        <title>{t('menu.browse')}</title>
+        <title>{`${t('menu.browse')} — ${t('menu.title')}`}</title>
         <meta name="description" content={t('seo.itemsDesc')} />
+        <link rel="canonical" href={`${SITE}/items`} />
       </Head>
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <ScrollView contentContainerStyle={styles.scroll}>
+          <ThemedText type="pageTitle" heading={1}>
+            {t('menu.browse')}
+          </ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
             {t('seo.itemsDesc')}
           </ThemedText>
@@ -99,7 +104,7 @@ export default function ItemsScreen() {
             return (
               <View key={category.key} style={styles.group}>
                 <Link href={`/categorie/${category.key}` as never}>
-                  <ThemedText type="subtitle" style={styles.groupTitle}>
+                  <ThemedText type="subtitle" style={styles.groupTitle} heading={2}>
                     {category.name}
                   </ThemedText>
                 </Link>

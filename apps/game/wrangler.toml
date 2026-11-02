@@ -8,7 +8,10 @@ routes = [
 # Preview URLs for non-prod branches (CI: `wrangler versions upload`).
 preview_urls = true
 
-# Assets-only Worker: serves the Expo web export (expo export -p web).
+# Assets-only Worker: serves the Expo web export (expo export -p web). Unknown
+# URLs answer a real 404 with dist/404.html, which still boots the app. Room codes
+# aren't known at build time, so public/_redirects rewrites them to their shell
+# (both files come out of scripts/finish-web-export.mjs).
 [assets]
 directory = "./dist"
-not_found_handling = "single-page-application"
+not_found_handling = "404-page"

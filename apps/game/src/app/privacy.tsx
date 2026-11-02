@@ -7,6 +7,7 @@ import { LinkRow } from '@/components/link-row';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { SITE } from '@/constants/site';
 import { useT } from '@/lib/i18n';
 
 const SUPPORT_EMAIL = 'support@cestdegaucheoudedroite.com';
@@ -34,14 +35,19 @@ export default function PrivacyScreen() {
   return (
     <ThemedView style={styles.container}>
       <Head>
-        <title>{t('privacy.title')}</title>
+        <title>{`${t('privacy.title')} — ${t('menu.title')}`}</title>
         <meta
           name="description"
           content={t(ADSTERRA ? 'seo.privacyDesc' : 'seo.privacyDescGoogle')}
         />
+        <link rel="canonical" href={`${SITE}/privacy`} />
       </Head>
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <ScrollView contentContainerStyle={styles.scroll}>
+          <ThemedText type="pageTitle" heading={1}>
+            {t('privacy.title')}
+          </ThemedText>
+
           {/* Intro */}
           <View style={styles.section}>
             <ThemedText type="small" themeColor="textSecondary">
@@ -54,7 +60,7 @@ export default function PrivacyScreen() {
 
           {/* Who we are */}
           <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
+            <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
               {t('privacy.whoTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
@@ -64,7 +70,7 @@ export default function PrivacyScreen() {
 
           {/* Data collected by the game */}
           <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
+            <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
               {t('privacy.dataTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
@@ -74,7 +80,7 @@ export default function PrivacyScreen() {
 
           {/* Cookies & advertising */}
           <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
+            <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
               {t('privacy.cookiesTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
@@ -113,7 +119,7 @@ export default function PrivacyScreen() {
 
           {/* Consent & controls */}
           <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
+            <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
               {t('privacy.consentTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
@@ -128,7 +134,7 @@ export default function PrivacyScreen() {
 
           {/* Contact */}
           <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
+            <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
               {t('privacy.contactTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">

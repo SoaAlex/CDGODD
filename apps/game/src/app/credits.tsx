@@ -6,6 +6,7 @@ import { LinkRow } from '@/components/link-row';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { SITE } from '@/constants/site';
 import { useT } from '@/lib/i18n';
 
 const REMIX_URL =
@@ -18,14 +19,19 @@ export default function CreditsScreen() {
   return (
     <ThemedView style={styles.container}>
       <Head>
-        <title>{t('menu.credits')}</title>
+        <title>{`${t('menu.credits')} — ${t('menu.title')}`}</title>
         <meta name="description" content={t('seo.creditsDesc')} />
+        <link rel="canonical" href={`${SITE}/credits`} />
       </Head>
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <ScrollView contentContainerStyle={styles.scroll}>
+          <ThemedText type="pageTitle" heading={1}>
+            {t('menu.credits')}
+          </ThemedText>
+
           {/* Game & images — AI generated */}
           <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
+            <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
               {t('credits.aiTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
@@ -40,7 +46,7 @@ export default function CreditsScreen() {
 
           {/* Special thanks */}
           <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
+            <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
               {t('credits.thanksTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
@@ -50,7 +56,7 @@ export default function CreditsScreen() {
 
           {/* Music */}
           <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
+            <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
               {t('credits.musicTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
@@ -72,7 +78,7 @@ export default function CreditsScreen() {
 
           {/* Privacy */}
           <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
+            <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
               {t('credits.privacyTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
@@ -87,7 +93,7 @@ export default function CreditsScreen() {
 
           {/* Disclaimer */}
           <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
+            <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
               {t('credits.disclaimerTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
@@ -97,7 +103,7 @@ export default function CreditsScreen() {
 
           {/* Reporting & takedown */}
           <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
+            <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
               {t('credits.takedownTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
@@ -107,7 +113,7 @@ export default function CreditsScreen() {
 
           {/* Contact */}
           <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
+            <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
               {t('credits.contactTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
@@ -123,7 +129,7 @@ export default function CreditsScreen() {
 
           {/* Legal notice (LCEN mentions légales) */}
           <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
+            <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
               {t('credits.legalTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">

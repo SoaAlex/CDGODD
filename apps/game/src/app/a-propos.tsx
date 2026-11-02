@@ -7,9 +7,9 @@ import { LinkRow } from '@/components/link-row';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { SITE } from '@/constants/site';
 import { useT, type MessageKey } from '@/lib/i18n';
 
-const SITE = 'https://cestdegaucheoudedroite.com';
 const SUPPORT_EMAIL = 'support@cestdegaucheoudedroite.com';
 
 /** The funding answer describes whatever this build actually serves on web. */
@@ -44,9 +44,13 @@ export default function AboutScreen() {
       </Head>
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <ScrollView contentContainerStyle={styles.scroll}>
+          <ThemedText type="pageTitle" heading={1}>
+            {t('about.title')}
+          </ThemedText>
+
           {/* Concept */}
           <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
+            <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
               {t('about.whatTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
@@ -56,7 +60,7 @@ export default function AboutScreen() {
 
           {/* Methodology */}
           <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
+            <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
               {t('about.methodTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
@@ -66,7 +70,7 @@ export default function AboutScreen() {
 
           {/* Moderation & submissions */}
           <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
+            <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
               {t('about.moderationTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
@@ -76,12 +80,12 @@ export default function AboutScreen() {
 
           {/* FAQ */}
           <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
+            <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
               {t('about.faqTitle')}
             </ThemedText>
             {FAQ.map(({ q, a }) => (
               <View key={q} style={styles.faqEntry}>
-                <ThemedText type="small" style={styles.faqQuestion}>
+                <ThemedText type="small" style={styles.faqQuestion} heading={3}>
                   {t(q)}
                 </ThemedText>
                 <ThemedText type="small" themeColor="textSecondary">
@@ -112,7 +116,7 @@ export default function AboutScreen() {
 
           {/* Contact */}
           <View style={styles.section}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
+            <ThemedText type="smallBold" themeColor="textSecondary" heading={2}>
               {t('about.contactTitle')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
