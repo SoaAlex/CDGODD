@@ -30,7 +30,10 @@ function load(lang: Lang): void {
   fetchCategories(lang)
     .then(({ categories, total }) => {
       cache.set(lang, {
-        categories,
+        // An empty category filters nothing, so it isn't offered. That also
+        // keeps NSFW out of the filter while its items are rejected for the
+        // AdSense review; approving them brings it back.
+        categories: categories.filter((c) => c.count > 0),
         total,
         names: Object.fromEntries(categories.map((c) => [c.key, c.name])),
       });
