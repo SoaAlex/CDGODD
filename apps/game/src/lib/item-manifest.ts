@@ -142,6 +142,12 @@ export function neighbours(item: ManifestItem): {
 
 /** Items of one category, ranked most-left -> most-right (voted first,
  * then unvoted by id) — the category page's list. */
+/**
+ * Below this, a category page is too thin to index (noindex, not in the sitemap;
+ * scripts/generate-sitemap.mjs has its own copy). Its page still exists.
+ */
+export const MIN_INDEXED_CATEGORY_ITEMS = 10;
+
 export function categoryItemsRanked(categoryKey: string): ManifestItem[] {
   const voted = getVotedByLeftness().filter((i) =>
     i.categoryKeys.includes(categoryKey),

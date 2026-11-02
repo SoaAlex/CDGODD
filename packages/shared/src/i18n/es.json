@@ -17,7 +17,8 @@
     "aboutTitle": "¿Qué es este juego?",
     "aboutWhat": "«C'est de Gauche ou de Droite ?» (¿Es de Izquierda o de Derecha?) es un juego gratuito y 100 % anónimo: objetos, conceptos y símbolos cotidianos aparecen en forma de cartas, y te toca a ti decidir. La quinoa, el chuletón, la bici de carga… todo se clasifica, con humor y sin ninguna pretensión política.",
     "aboutHow": "El principio es sencillo: desliza cada carta hacia la izquierda o hacia la derecha según el bando que le asocies. Tras cada voto, descubre lo que opina la comunidad. Juega en solitario, reta a tus amigos en salas privadas multijugador o busca un ítem concreto para ver su clasificación.",
-    "aboutStats": "Cada partida enriquece las estadísticas: miles de votos dibujan un mapa colectivo —y a menudo hilarante— de nuestros clichés políticos. Recorre todos los ítems para descubrir los veredictos de la comunidad y propón tus propias ideas de cartas directamente desde el juego."
+    "aboutStats": "Cada partida enriquece las estadísticas: miles de votos dibujan un mapa colectivo —y a menudo hilarante— de nuestros clichés políticos. Recorre todos los ítems para descubrir los veredictos de la comunidad y propón tus propias ideas de cartas directamente desde el juego.",
+    "aboutVotes": "Aquí no decide ninguna IA: cada porcentaje es el simple recuento de los votos de los jugadores, sin ponderación ni retoques, y las clasificaciones cambian con los votos."
   },
   "solo": {
     "random": "Cartas aleatorias",
@@ -178,6 +179,7 @@
   },
   "category": {
     "itemsWord": "ítems",
+    "itemWord": "ítem",
     "intro": "Clasificados del más de izquierdas al más de derechas, según los votos anónimos de la comunidad. Haz clic en un ítem para ver el detalle de sus votos — y dar tu opinión.",
     "backToAll": "Todas las categorías"
   },
@@ -208,6 +210,7 @@
   "seo": {
     "homeDesc": "El juego que lo clasifica todo: desliza objetos y conceptos cotidianos entre la izquierda y la derecha, y compara tus votos con la comunidad. Gratis, anónimo, en solitario o con amigos.",
     "soloDesc": "Desliza cartas aleatorias y vota: ¿izquierda o derecha? Filtra por categoría y descubre los resultados de la comunidad tras cada voto.",
+    "multiplayerDesc": "Crea una sala y juega con tus amigos: cada uno vota por su cuenta y al final de la ronda comparáis las respuestas. Gratis, sin cuenta y, si quieres, con vuestras propias palabras.",
     "searchDesc": "Busca un objeto o concepto concreto, vota y descubre si la comunidad lo clasifica a la izquierda o a la derecha.",
     "creditsDesc": "Créditos, avisos, denuncias y menciones legales del juego C'est de Gauche ou de Droite ?",
     "privacyDesc": "Política de privacidad del juego: 100 % anónimo, sin cuenta. Detalles sobre las cookies publicitarias (Adsterra) y tus opciones de consentimiento.",
@@ -232,5 +235,9 @@
   "errors": {
     "network": "Error de red, inténtalo de nuevo",
     "roomNotFound": "Sala no encontrada"
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "body": "Esta página no existe o ha sido retirada."
   }
 }

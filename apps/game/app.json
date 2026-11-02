@@ -28,7 +28,12 @@
       "name": "C'est de Gauche ou de Droite ?"
     },
     "plugins": [
-      "expo-router",
+      [
+        "expo-router",
+        {
+          "sitemap": false
+        }
+      ],
       [
         "expo-splash-screen",
         {

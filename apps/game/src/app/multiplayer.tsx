@@ -1,12 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import Head from 'expo-router/head';
 import { useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RoomSettings } from '@/components/room-settings';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/theme';
+import { SITE } from '@/constants/site';
 import { useTheme } from '@/hooks/use-theme';
 import { parseCustomWords } from '@cdgodd/shared';
 import { useCategories } from '@/hooks/use-categories';
@@ -80,115 +82,133 @@ export default function MultiplayerScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      <Head>
+        <title>{`${t('menu.multiplayer')} — ${t('menu.title')}`}</title>
+        <meta name="description" content={t('seo.multiplayerDesc')} />
+        <link rel="canonical" href={`${SITE}/multiplayer`} />
+      </Head>
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
-        {/* Nickname (shared by create & join, passed along to the room) */}
-        <View style={styles.section}>
-          <ThemedText type="subtitle">{t('multiplayer.nickname')}</ThemedText>
-          <TextInput
-            testID="nickname-input"
-            value={nickname}
-            onChangeText={setNickname}
-            placeholder={t('multiplayer.nicknamePlaceholder')}
-            placeholderTextColor={theme.textSecondaryOnSurface}
-            autoCorrect={false}
-            maxLength={24}
-            style={[
-              styles.input,
-              { backgroundColor: theme.surface, color: theme.textOnSurface },
-            ]}
-          />
-        </View>
-
-        {/* Create */}
-        <View style={styles.section}>
-          <ThemedText type="subtitle">{t('multiplayer.create')}</ThemedText>
-
-          <RoomSettings
-            mode={mode}
-            roundSize={roundSize}
-            categoryKeys={categoryKeys}
-            categoryMatchAll={categoryMatchAll}
-            categoryFilterMode={filterMode}
-            customWordsText={customWordsText}
-            includeDbItems={includeDbItems}
-            onModeChange={setMode}
-            onRoundSizeChange={setRoundSize}
-            onCategoryKeysChange={setCategoryKeys}
-            onCategoryMatchAllChange={setCategoryMatchAll}
-            onCategoryFilterModeChange={setFilterMode}
-            onCustomWordsTextChange={setCustomWordsText}
-            onIncludeDbItemsChange={setIncludeDbItems}
-          />
-
-          <Pressable
-            testID="create-room"
-            onPress={onCreate}
-            disabled={busy || !cleanNickname}
-            style={({ pressed }) => [
-              styles.primaryButton,
-              {
-                backgroundColor: RIGHT_COLOR,
-                opacity: !cleanNickname ? 0.4 : busy || pressed ? 0.7 : 1,
-              },
-            ]}
-          >
-            <View style={styles.buttonContent}>
-              <Ionicons name="add-circle-outline" size={22} color="#fff" />
-              <ThemedText type="subtitle" style={styles.primaryText}>
-                {t('multiplayer.create')}
-              </ThemedText>
-            </View>
-          </Pressable>
-        </View>
-
-        {/* Join */}
-        <View style={styles.section}>
-          <ThemedText type="subtitle">{t('multiplayer.join')}</ThemedText>
-          <TextInput
-            testID="join-code"
-            value={code}
-            onChangeText={setCode}
-            placeholder={t('multiplayer.codePlaceholder')}
-            placeholderTextColor={theme.textSecondaryOnSurface}
-            autoCapitalize="characters"
-            autoCorrect={false}
-            maxLength={6}
-            style={[
-              styles.input,
-              { backgroundColor: theme.surface, color: theme.textOnSurface },
-            ]}
-          />
-          <Pressable
-            testID="join-room"
-            onPress={onJoin}
-            disabled={code.trim().length !== 6 || !cleanNickname}
-            style={({ pressed }) => [
-              styles.primaryButton,
-              {
-                backgroundColor: LEFT_COLOR,
-                opacity:
-                  code.trim().length !== 6 || !cleanNickname
-                    ? 0.4
-                    : pressed
-                      ? 0.7
-                      : 1,
-              },
-            ]}
-          >
-            <View style={styles.buttonContent}>
-              <Ionicons name="enter-outline" size={22} color="#fff" />
-              <ThemedText type="subtitle" style={styles.primaryText}>
-                {t('multiplayer.join')}
-              </ThemedText>
-            </View>
-          </Pressable>
-        </View>
-
-        {error && (
-          <ThemedText style={{ color: '#e63946', textAlign: 'center' }}>
-            {error}
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+        >
+          <ThemedText type="pageTitle" heading={1}>
+            {t('menu.multiplayer')}
           </ThemedText>
-        )}
+
+          {/* Nickname (shared by create & join, passed along to the room) */}
+          <View style={styles.section}>
+            <ThemedText type="subtitle">{t('multiplayer.nickname')}</ThemedText>
+            <TextInput
+              testID="nickname-input"
+              value={nickname}
+              onChangeText={setNickname}
+              placeholder={t('multiplayer.nicknamePlaceholder')}
+              placeholderTextColor={theme.textSecondaryOnSurface}
+              autoCorrect={false}
+              maxLength={24}
+              style={[
+                styles.input,
+                { backgroundColor: theme.surface, color: theme.textOnSurface },
+              ]}
+            />
+          </View>
+
+          {/* Create */}
+          <View style={styles.section}>
+            <ThemedText type="subtitle" heading={2}>
+              {t('multiplayer.create')}
+            </ThemedText>
+
+            <RoomSettings
+              mode={mode}
+              roundSize={roundSize}
+              categoryKeys={categoryKeys}
+              categoryMatchAll={categoryMatchAll}
+              categoryFilterMode={filterMode}
+              customWordsText={customWordsText}
+              includeDbItems={includeDbItems}
+              onModeChange={setMode}
+              onRoundSizeChange={setRoundSize}
+              onCategoryKeysChange={setCategoryKeys}
+              onCategoryMatchAllChange={setCategoryMatchAll}
+              onCategoryFilterModeChange={setFilterMode}
+              onCustomWordsTextChange={setCustomWordsText}
+              onIncludeDbItemsChange={setIncludeDbItems}
+            />
+
+            <Pressable
+              testID="create-room"
+              onPress={onCreate}
+              disabled={busy || !cleanNickname}
+              style={({ pressed }) => [
+                styles.primaryButton,
+                {
+                  backgroundColor: RIGHT_COLOR,
+                  opacity: !cleanNickname ? 0.4 : busy || pressed ? 0.7 : 1,
+                },
+              ]}
+            >
+              <View style={styles.buttonContent}>
+                <Ionicons name="add-circle-outline" size={22} color="#fff" />
+                <ThemedText type="subtitle" style={styles.primaryText}>
+                  {t('multiplayer.create')}
+                </ThemedText>
+              </View>
+            </Pressable>
+          </View>
+
+          {/* Join */}
+          <View style={styles.section}>
+            <ThemedText type="subtitle" heading={2}>
+              {t('multiplayer.join')}
+            </ThemedText>
+            <TextInput
+              testID="join-code"
+              value={code}
+              onChangeText={setCode}
+              placeholder={t('multiplayer.codePlaceholder')}
+              placeholderTextColor={theme.textSecondaryOnSurface}
+              autoCapitalize="characters"
+              autoCorrect={false}
+              maxLength={6}
+              style={[
+                styles.input,
+                { backgroundColor: theme.surface, color: theme.textOnSurface },
+              ]}
+            />
+            <Pressable
+              testID="join-room"
+              onPress={onJoin}
+              disabled={code.trim().length !== 6 || !cleanNickname}
+              style={({ pressed }) => [
+                styles.primaryButton,
+                {
+                  backgroundColor: LEFT_COLOR,
+                  opacity:
+                    code.trim().length !== 6 || !cleanNickname
+                      ? 0.4
+                      : pressed
+                        ? 0.7
+                        : 1,
+                },
+              ]}
+            >
+              <View style={styles.buttonContent}>
+                <Ionicons name="enter-outline" size={22} color="#fff" />
+                <ThemedText type="subtitle" style={styles.primaryText}>
+                  {t('multiplayer.join')}
+                </ThemedText>
+              </View>
+            </Pressable>
+          </View>
+
+          {error && (
+            <ThemedText style={{ color: '#e63946', textAlign: 'center' }}>
+              {error}
+            </ThemedText>
+          )}
+        </ScrollView>
       </SafeAreaView>
     </ThemedView>
   );
@@ -204,6 +224,10 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     maxWidth: MaxContentWidth,
+  },
+  // Taller than most screens: the join form has to stay reachable by scrolling.
+  scroll: {
+    flexGrow: 1,
     padding: Spacing.four,
     gap: Spacing.six,
     justifyContent: 'center',

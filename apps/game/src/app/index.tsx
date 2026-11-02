@@ -18,6 +18,7 @@ import {
   Spacing,
   TEXT_SHADOW,
 } from '@/constants/theme';
+import { SITE } from '@/constants/site';
 import { useT } from '@/lib/i18n';
 
 function MenuButton({
@@ -71,6 +72,7 @@ export default function MenuScreen() {
       <Head>
         <title>{t('menu.title')}</title>
         <meta name="description" content={t('seo.homeDesc')} />
+        <link rel="canonical" href={`${SITE}/`} />
       </Head>
       <SafeAreaView style={styles.safeArea}>
         {/* Mobile: banner pinned to the top of the menu. */}
@@ -95,6 +97,7 @@ export default function MenuScreen() {
             <View style={styles.hero}>
               <View style={styles.titleWrap}>
                 <Text
+                  role="heading"
                   style={styles.logo}
                   accessibilityLabel={t('menu.title')}
                   allowFontScaling={false}
@@ -139,7 +142,7 @@ export default function MenuScreen() {
           {/* Editorial description of the game: real publisher content for
               visitors, crawlers and ad reviewers alike. */}
           <View style={styles.about}>
-            <ThemedText type="subtitle" style={styles.aboutTitle}>
+            <ThemedText type="subtitle" style={styles.aboutTitle} heading={2}>
               {t('home.aboutTitle')}
             </ThemedText>
             <ThemedText type="small" style={styles.aboutBody}>
@@ -150,6 +153,9 @@ export default function MenuScreen() {
             </ThemedText>
             <ThemedText type="small" style={styles.aboutBody}>
               {t('home.aboutStats')}
+            </ThemedText>
+            <ThemedText type="small" style={styles.aboutBody}>
+              {t('home.aboutVotes')}
             </ThemedText>
           </View>
 

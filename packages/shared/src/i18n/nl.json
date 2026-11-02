@@ -17,7 +17,8 @@
     "aboutTitle": "Wat is dit voor spel?",
     "aboutWhat": "'C'est de Gauche ou de Droite ?' (Is het Links of Rechts?) is een gratis en 100% anoniem spel: alledaagse voorwerpen, concepten en symbolen verschijnen als kaarten, en jij beslist. Quinoa, entrecote, de bakfiets… alles wordt ingedeeld, met humor en zonder enige politieke bedoeling.",
     "aboutHow": "Het principe is simpel: swipe elke kaart naar links of naar rechts, afhankelijk van het kamp waarmee je hem associeert. Na elke stem zie je wat de community ervan vindt. Speel solo, daag je vrienden uit in privé-multiplayerkamers, of zoek een specifiek item op om de ranking te bekijken.",
-    "aboutStats": "Elke ronde verrijkt de statistieken: duizenden stemmen tekenen een collectieve — en vaak hilarische — kaart van onze politieke clichés. Blader door alle items om de oordelen van de community te ontdekken, en stel je eigen kaartideeën voor, rechtstreeks vanuit het spel."
+    "aboutStats": "Elke ronde verrijkt de statistieken: duizenden stemmen tekenen een collectieve — en vaak hilarische — kaart van onze politieke clichés. Blader door alle items om de oordelen van de community te ontdekken, en stel je eigen kaartideeën voor, rechtstreeks vanuit het spel.",
+    "aboutVotes": "Hier beslist geen AI: elk percentage is een simpele telling van de stemmen van spelers, zonder weging of bewerking, en de ranglijsten veranderen mee met de stemmen."
   },
   "solo": {
     "random": "Willekeurige kaarten",
@@ -178,6 +179,7 @@
   },
   "category": {
     "itemsWord": "items",
+    "itemWord": "item",
     "intro": "Gerangschikt van meest links naar meest rechts, volgens de anonieme stemmen van de community. Klik op een item om de stemmen in detail te zien — en zelf te stemmen.",
     "backToAll": "Alle categorieën"
   },
@@ -208,6 +210,7 @@
   "seo": {
     "homeDesc": "Het spel dat alles indeelt: swipe alledaagse voorwerpen en concepten tussen links en rechts, en vergelijk je stemmen met de community. Gratis, anoniem, solo of met vrienden.",
     "soloDesc": "Swipe willekeurige kaarten en stem: links of rechts? Filter op categorie en bekijk na elke stem de resultaten van de community.",
+    "multiplayerDesc": "Maak een kamer en speel met vrienden: iedereen stemt voor zichzelf en aan het einde van de ronde vergelijken jullie de antwoorden. Gratis, zonder account en desgewenst met jullie eigen woorden.",
     "searchDesc": "Zoek een specifiek voorwerp of concept, stem en ontdek of de community het links of rechts indeelt.",
     "creditsDesc": "Credits, waarschuwingen, meldingen en juridische vermeldingen van het spel C'est de Gauche ou de Droite ?",
     "privacyDesc": "Privacybeleid van het spel: 100% anoniem, zonder account. Details over advertentiecookies (Adsterra) en je toestemmingskeuzes.",
@@ -232,5 +235,9 @@
   "errors": {
     "network": "Netwerkfout, probeer het opnieuw",
     "roomNotFound": "Kamer niet gevonden"
+  },
+  "notFound": {
+    "title": "Pagina niet gevonden",
+    "body": "Deze pagina bestaat niet of is verwijderd."
   }
 }

@@ -15,6 +15,7 @@ import { ThemedView } from '@/components/themed-view';
 import { SwipeDeck, type SwipeDeckHandle } from '@/components/swipe-deck';
 import { LastVoteBar } from '@/components/last-vote-bar';
 import { LEFT_COLOR, RIGHT_COLOR, MaxContentWidth, Spacing } from '@/constants/theme';
+import { SITE } from '@/constants/site';
 import { isAdBreakActive, useAdBreak } from '@/ads/ad-break';
 import { AdRails } from '@/ads/ad-rails';
 import { AdSlot } from '@/ads/ad-slot';
@@ -141,11 +142,17 @@ export default function SoloScreen() {
   return (
     <ThemedView style={styles.container}>
       <Head>
-        <title>{t('menu.play')}</title>
+        <title>{`${t('menu.play')} — ${t('menu.title')}`}</title>
         <meta name="description" content={t('seo.soloDesc')} />
+        <link rel="canonical" href={`${SITE}/solo`} />
       </Head>
       <AdRails>
         <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+          {/* The deck takes the whole screen: this h1 is for the outline only,
+              the header's wordmark already names the game. */}
+          <ThemedText heading={1} style={styles.visuallyHidden}>
+            {t('menu.play')}
+          </ThemedText>
           {/* Mobile: banner at the top; web gets side rails instead. */}
           {Platform.OS !== 'web' && <AdSlot />}
           <CategoryFilter
@@ -283,6 +290,13 @@ export default function SoloScreen() {
 }
 
 const styles = StyleSheet.create({
+  visuallyHidden: {
+    position: 'absolute',
+    width: 1,
+    height: 1,
+    overflow: 'hidden',
+    opacity: 0,
+  },
   container: {
     flex: 1,
     flexDirection: 'row',

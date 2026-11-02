@@ -1,8 +1,8 @@
 // Writes dist/sitemap.xml after `expo export`, combining the static content
-// routes with one /item/<seg> URL per item and one /categorie/<key> URL per
-// category from the generated manifest. Utility/app screens (multiplayer
-// lobby, search, settings, history) are deliberately NOT listed — the
-// sitemap advertises content pages only. public/sitemap.xml stays committed
+// routes with one /categorie/<key> URL per category big enough to index, from
+// the generated manifest. Item pages are noindex, and utility/app screens
+// (multiplayer lobby, search, settings, history) are deliberately NOT listed —
+// the sitemap advertises content pages only. public/sitemap.xml stays committed
 // as a static-routes-only fallback (it is copied into dist/ first, then
 // overwritten here). Fail-soft: a sitemap problem must never break a build.
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -13,6 +13,8 @@ const MANIFEST = fileURLToPath(
   new URL('../src/generated/item-manifest.json', import.meta.url),
 );
 const OUT = fileURLToPath(new URL('../dist/sitemap.xml', import.meta.url));
+// Same value as in src/lib/item-manifest.ts.
+const MIN_INDEXED_CATEGORY_ITEMS = 10;
 
 const STATIC_ROUTES = [
   { path: '/', changefreq: 'weekly', priority: '1.0' },
@@ -30,6 +32,12 @@ try {
     ? `\n    <lastmod>${manifest.generatedAt.slice(0, 10)}</lastmod>`
     : '';
 
+  const categories = (manifest.categories ?? []).filter(
+    (c) =>
+      manifest.items.filter((i) => i.categoryKeys.includes(c.key)).length >=
+      MIN_INDEXED_CATEGORY_ITEMS,
+  );
+
   const urls = [
     ...STATIC_ROUTES.map(
       (r) => `  <url>
@@ -38,18 +46,11 @@ try {
     <priority>${r.priority}</priority>
   </url>`,
     ),
-    ...(manifest.categories ?? []).map(
+    ...categories.map(
       (c) => `  <url>
     <loc>${SITE}/categorie/${c.key}</loc>${lastmod}
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
-  </url>`,
-    ),
-    ...manifest.items.map(
-      (i) => `  <url>
-    <loc>${SITE}/item/${i.seg}</loc>${lastmod}
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
   </url>`,
     ),
   ];
@@ -63,7 +64,7 @@ ${urls.join('\n')}
 `,
   );
   console.log(
-    `sitemap: ${STATIC_ROUTES.length} static + ${(manifest.categories ?? []).length} category + ${manifest.items.length} item URLs`,
+    `sitemap: ${STATIC_ROUTES.length} static + ${categories.length} category URLs`,
   );
 } catch (err) {
   console.warn(`sitemap: generation failed (${err?.message ?? err}); keeping the static fallback.`);

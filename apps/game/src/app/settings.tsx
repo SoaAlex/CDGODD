@@ -47,6 +47,7 @@ export default function SettingsScreen() {
       {/* Utility screen: keep it out of search results so the crawl budget
           goes to the content pages. */}
       <Head>
+        <title>{`${t('menu.settings')} — ${t('menu.title')}`}</title>
         <meta name="robots" content="noindex" />
       </Head>
       <ScrollView

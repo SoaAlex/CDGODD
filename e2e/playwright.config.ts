@@ -9,7 +9,8 @@ const CI = !!process.env.CI;
  *                   isolated persist dir — never any prod data.
  *   - Admin  :5178  vite, pointed at the local API.
  *   - Game   :8082  expo web dev server locally; in CI the static export
- *                   (apps/game/dist, built by the workflow) served instead.
+ *                   (apps/game/dist, built by the workflow) behind wrangler,
+ *                   so it routes like production.
  *
  * Turnstile is fully bypassed: no TURNSTILE_SECRET on the API, no
  * EXPO_PUBLIC_TURNSTILE_SITEKEY in the game → the game sends a 'dev' token
@@ -60,7 +61,7 @@ export default defineConfig({
     },
     {
       command: CI
-        ? 'pnpm exec serve --no-clipboard --single -l 8082 ../apps/game/dist'
+        ? 'pnpm --dir ../apps/game exec wrangler dev --port 8082'
         : 'pnpm --dir ../apps/game exec expo start --web --port 8082',
       env: {
         EXPO_PUBLIC_API_URL: 'http://localhost:8789',

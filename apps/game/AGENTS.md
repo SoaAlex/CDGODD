@@ -49,6 +49,12 @@ root rules in [`../../AGENTS.md`](../../AGENTS.md) apply.
   that should be crawlable uses `expo-router` `<Link>` (real `<a href>`), not
   `router.push`. With `asChild`, pass a single flattened style object —
   function styles get dropped and array styles break the DOM.
+- **Page outline:** a screen gets one `<ThemedText heading={1}>` and sections
+  `heading={2}`. They render `<h1>`-`<h3>` on web, which is what crawlers read.
+- **Worker routing:** a new dynamic route with no prerendered pages needs a
+  rewrite in `public/_redirects`, or direct visits answer 404. See
+  `scripts/finish-web-export.mjs` for files with brackets in their name. Check
+  routing with `wrangler dev` on a `build:web` output, not `expo start`.
 
 ## Verify
 

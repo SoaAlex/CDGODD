@@ -31,6 +31,19 @@ test.describe('solo swipe game', () => {
     }).toPass({ timeout: 10_000 });
   });
 
+  test('the category filter leaves out empty categories', async ({ page }) => {
+    await page.route('**/categories?*', async (route) => {
+      const response = await route.fetch();
+      const body = await response.json();
+      body.categories.push({ key: 'nsfw', name: 'NSFW', count: 0 });
+      await route.fulfill({ response, json: body });
+    });
+    await page.goto('/solo');
+    await page.getByTestId('category-filter-trigger').click();
+    await expect(page.getByTestId('category-food')).toBeVisible();
+    await expect(page.getByTestId('category-nsfw')).toHaveCount(0);
+  });
+
   test('vote and report controls are present', async ({ page }) => {
     await page.goto('/solo');
     await expect(page.getByTestId('vote-left')).toBeVisible({ timeout: 30_000 });
