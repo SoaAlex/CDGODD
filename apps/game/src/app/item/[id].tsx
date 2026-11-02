@@ -158,6 +158,9 @@ export default function ItemScreen() {
           }
         />
         <link rel="canonical" href={`${SITE}/item/${item.seg}`} />
+        {/* Hundreds of same-template pages count against the site in AdSense's
+            "low value content" review, and bring almost no search traffic. */}
+        <meta name="robots" content="noindex" />
       </Head>
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <ScrollView contentContainerStyle={styles.scroll}>

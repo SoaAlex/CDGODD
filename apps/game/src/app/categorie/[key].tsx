@@ -12,6 +12,7 @@ import {
   categoryItemsRanked,
   getCategories,
   manifestCategoryName,
+  MIN_INDEXED_CATEGORY_ITEMS,
   totalVotes,
 } from '@/lib/item-manifest';
 
@@ -63,6 +64,9 @@ export default function CategoryScreen() {
           content={`${t('seo.categoryDescPrefix')} ${name}, ${t('seo.categoryDescSuffix')}`}
         />
         <link rel="canonical" href={`${SITE}/categorie/${categoryKey}`} />
+        {ranked.length < MIN_INDEXED_CATEGORY_ITEMS && (
+          <meta name="robots" content="noindex" />
+        )}
       </Head>
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <ScrollView contentContainerStyle={styles.scroll}>

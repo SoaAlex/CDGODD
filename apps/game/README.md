@@ -66,9 +66,12 @@ Android**. The web export is served as an assets-only Cloudflare Worker.
   drops a small sensitive-label blocklist (backstop for items missing the
   nsfw tag) and drops labels < 3 chars, so sensitive/junk items never get
   an indexed, ad-tagged page; `/settings`, `/history` and `/room/*` carry a
-  noindex meta;
+  noindex meta. So do all `/item/*` pages and categories under
+  `MIN_INDEXED_CATEGORY_ITEMS` (10): an answer to AdSense's "low value content"
+  refusal, since same-template pages made up 98% of the sitemap and brought 6
+  clicks from August to October 2026. Those pages stay online and linked;
   `scripts/generate-sitemap.mjs` rewrites `dist/sitemap.xml` with the
-  content pages only (no lobby/utility screens). Vote percentages on item
+  indexable content pages only (no lobby/utility screens). Vote percentages on item
   pages hydrate live from `/items/tallies`.
 - **Worker routing** — unknown URLs answer a real 404 with `dist/404.html`
   (`src/app/+not-found.tsx`), which still boots the app, so an item approved
